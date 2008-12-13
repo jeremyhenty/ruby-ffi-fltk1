@@ -1,3 +1,4 @@
+#!/usr/bin/env ruby
 
 # Copyright (C) 2008 Jeremy Henty.
 
@@ -17,11 +18,16 @@
 # along with this program. If not, see http://www.gnu.org/licenses/.
 
 
-# editor files
-*~
+$VERBOSE = true
 
-# extra development code
-/extra.rb
+require "rubygems"
+require "ffi/fltk1"
 
-# the wrapper library
-/lib/ffi/fltk1.so
+include FFI
+include FFI::FLTK
+
+Window.new(300, 300, "FFI-FLTK1 demonstration") do |win|
+  win.show
+end
+
+FLTK.run

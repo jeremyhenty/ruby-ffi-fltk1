@@ -86,3 +86,44 @@ task :run => :build do
   # run the demo
   sh "bin/#{demo_name}"
 end
+
+# Rubygems
+
+require "rubygems"
+require "rake/gempackagetask"
+
+specification = Gem::Specification.new do |s|
+  s.author = "Jeremy Henty"
+  s.email = "onepoint@starurchin.org"
+
+  s.name = "ffi-fltk1"
+  s.version = "0.0.1"
+  s.summary = "A binding of the FLTK1 GUI toolkit using FFI."
+
+  s.platform = Gem::Platform::RUBY
+  s.add_dependency "ffi", ">= 0.2.0"
+  s.files =
+    FileList["COPYING", "AUTHORS",
+             "lib/**/*.rb", "wrapper/*.cc", "bin/*"].to_a
+  s.extensions = "Rakefile"
+  s.executables = [ demo_name ]
+end
+
+class Rake::GemPackageTask
+  def gem_path
+    File.join(package_dir,gem_file)
+  end
+end
+
+package = Rake::GemPackageTask.new(specification) { }
+gem = package.gem_path
+
+desc "Install the gem"
+task :install => "package" do
+  sh "gem install #{gem}"
+end
+
+desc "Run the installed demonstration program"
+task :run_installed => :install do
+  sh demo_name
+end

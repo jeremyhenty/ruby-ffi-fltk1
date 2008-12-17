@@ -28,3 +28,6 @@
 
 # the gem
 /pkg/
+
+# turn a blind eye to disaster
+/core

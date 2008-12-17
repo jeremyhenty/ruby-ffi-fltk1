@@ -21,11 +21,11 @@
 #include <iostream>
 #endif // FFI_FLTK_TRACE_DELETE
 
-#include <FL/Fl.h>
-#include <FL/Fl_Widget.h>
-#include <FL/Fl_Window.h>
-#include <FL/Fl_Button.h>
-#include <FL/fl_ask.h>
+#include <FL/Fl.H>
+#include <FL/Fl_Widget.H>
+#include <FL/Fl_Window.H>
+#include <FL/Fl_Button.H>
+#include <FL/fl_ask.H>
 
 extern "C" {
 

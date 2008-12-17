@@ -22,14 +22,26 @@
 #endif // FFI_FLTK_TRACE_DELETE
 
 #include <FL/Fl.h>
+#include <FL/Fl_Widget.h>
 #include <FL/Fl_Window.h>
+#include <FL/Fl_Button.h>
+#include <FL/fl_ask.h>
 
 extern "C" {
+
+// FLTK
 
 int fltk_run()
 {
   return Fl::run();
 }
+
+void fltk_alert(const char *message)
+{
+  fl_alert("%s", message);
+}
+
+// Window
 
 void *window_new_xywhl(int x, int y, int w, int h, const char *l)
 {
@@ -52,6 +64,33 @@ void window_delete(void *p_win)
 void window_show(void *p_win)
 {
   ((Fl_Window *) p_win)->show();
+}
+
+typedef void FFI_Widget_Callback();
+static void widget_callback_caller(Fl_Widget *widget, void *p_cb)
+{
+  if (p_cb)
+    ((FFI_Widget_Callback *) p_cb)();
+}
+
+void widget_callback(void *p_widget, void *cb)
+{
+  ((Fl_Widget *) p_widget)->callback(widget_callback_caller,cb);
+}
+
+// Button
+
+void *button_new_xywhl(int x, int y, int w, int h, const char *l)
+{
+  return new Fl_Button(x, y, w, h, l);
+}
+
+void button_delete(void *p_win)
+{
+#ifdef FFI_FLTK_TRACE_DELETE
+  std::cout << "button_delete(): p_win = " << p_win << "\n";
+#endif // FFI_FLTK_TRACE_DELETE
+  delete (Fl_Button *) p_win;
 }
 
 } // extern "C"

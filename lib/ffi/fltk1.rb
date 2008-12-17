@@ -25,6 +25,7 @@ module FFI::FLTK
   ffi_lib(__FILE__.sub(%r{\.rb$},".so"))
 
   attach_function :fltk_run, [ ], :int
+  attach_function :fltk_alert, [ :string ], :void
 
   class Window
 
@@ -58,8 +59,53 @@ module FFI::FLTK
     end
   end
 
+  class Button
+
+    def self.attach_function(*args)
+      FFI::FLTK.attach_function(*args)
+    end
+
+    attach_function :button_new_xywhl, [ :int, :int, :int, :int, :string ], :pointer
+    attach_function :button_delete, [ :pointer ], :void
+    FFI::FLTK.callback :widget_callback_t, [ ], :void
+    attach_function :widget_callback, [ :pointer, :widget_callback_t ], :void
+
+    def initialize(*args)
+      count = args.size
+      @pointer =
+        case count
+        when 4: args << nil; button_new_xywhl(*args)
+        when 5: button_new_xywhl(*args)
+        else
+          raise ArgumentError, "wrong number of arguments (%d for %d))" %
+            [ count, count < 4 ? 4 : 5 ]
+        end
+      @auto_pointer = FFI::AutoPointer.new(@pointer, method(:button_delete))
+      yield self if block_given?
+    end
+
+    def callback(*cbs, &cb1)
+      return @ffi_callback if cbs.empty? && !cb1
+      count = cbs.size
+      raise ArgumentError, "wrong number of arguments (%d for 1))" %
+        [ count ] if count > 1
+      cb0 = cbs.first
+      raise "cannot supply both a Proc and a block" if cb0 && cb1
+      cb = cb0 || cb1
+      @ffi_callback = cb
+      widget_callback(@pointer, @ffi_callback)
+      return @ffi_callback
+    end
+
+    alias :callback= :callback
+  end
+
   def self.run
     fltk_run()
+  end
+
+  def self.alert(message)
+    fltk_alert(message)
   end
 
 end

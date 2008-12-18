@@ -27,11 +27,17 @@ module FFI::FLTK
   attach_function :fltk_run, [ ], :int
   attach_function :fltk_alert, [ :string ], :void
 
-  class Window
+  class Widget
 
     def self.attach_function(*args)
       FFI::FLTK.attach_function(*args)
     end
+
+    FFI::FLTK.callback :widget_callback_t, [ ], :void
+    attach_function :widget_callback, [ :pointer, :widget_callback_t ], :void
+  end
+
+  class Window < Widget
 
     attach_function :window_new_xywhl, [ :int, :int, :int, :int, :string ], :pointer
     attach_function :window_new_whl, [ :int, :int, :string ], :pointer
@@ -60,16 +66,10 @@ module FFI::FLTK
     end
   end
 
-  class Button
-
-    def self.attach_function(*args)
-      FFI::FLTK.attach_function(*args)
-    end
+  class Button < Widget
 
     attach_function :button_new_xywhl, [ :int, :int, :int, :int, :string ], :pointer
     attach_function :button_delete, [ :pointer ], :void
-    FFI::FLTK.callback :widget_callback_t, [ ], :void
-    attach_function :widget_callback, [ :pointer, :widget_callback_t ], :void
 
     def initialize(*args)
       count = args.size

@@ -91,7 +91,8 @@ module FFI::FLTK
       raise ArgumentError, "wrong number of arguments (%d for 1))" %
         [ count ] if count > 1
       cb0 = cbs.first
-      raise "cannot supply both a Proc and a block" if cb0 && cb1
+      raise ArgumentError, "cannot supply both a Proc and a block" if
+        cb0 && cb1
       cb = cb0 || cb1
       @ffi_callback = cb
       widget_callback(@ffi_pointer, @ffi_callback)

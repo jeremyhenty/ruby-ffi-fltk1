@@ -41,56 +41,149 @@ void fltk_alert(const char *message)
   fl_alert("%s", message);
 }
 
-// Window
+} // extern "C"
 
-void *window_new_xywhl(int x, int y, int w, int h, const char *l)
+// FFI wrapper
+
+class FFI
 {
-  return new Fl_Window(x, y, w, h, l);
+public:
+  typedef void FFI_Delete_Callback();
+private:
+  FFI_Delete_Callback *delete_callback;
+protected:
+  FFI();
+  virtual ~FFI();
+public:
+  void set_delete_callback(FFI_Delete_Callback *callback);
+};
+
+FFI::FFI() : delete_callback((FFI_Delete_Callback *) 0)
+{
 }
 
-void *window_new_whl(int w, int h, const char *l)
-{
-  return new Fl_Window(w, h, l);
+FFI::~FFI() {
+  if (delete_callback)
+    delete_callback();
 }
 
-void window_delete(void *p_win)
+void FFI::set_delete_callback(FFI_Delete_Callback *callback)
 {
-#ifdef FFI_FLTK_TRACE_DELETE
-  std::cout << "window_delete(): p_win = " << p_win << "\n";
-#endif // FFI_FLTK_TRACE_DELETE
-  delete (Fl_Window *) p_win;
+  delete_callback = callback;
 }
 
-void window_show(void *p_win)
+extern "C" {
+
+void ffi_set_delete_callback(void *p_ffi, FFI::FFI_Delete_Callback *callback)
 {
-  ((Fl_Window *) p_win)->show();
+  ((FFI *) p_ffi)->set_delete_callback(callback);
+}
+
+} // extern "C"
+
+// Widget
+
+class FFI_Widget : public FFI, public Fl_Widget
+{
+  FFI_Widget(int x, int y, int w, int h, const char *l);
+  virtual ~FFI_Widget();
+};
+
+FFI_Widget::FFI_Widget(int x, int y, int w, int h, const char *l) :
+  Fl_Widget(x, y, w, h, l)
+{
+}
+
+FFI_Widget::~FFI_Widget()
+{
 }
 
 typedef void FFI_Widget_Callback();
 static void widget_callback_caller(Fl_Widget *widget, void *p_cb)
 {
+  // We ignore widget, which is good since it has probably been
+  // coerced from (FFI_Widget *) to (FL_Widget *) via (void *) and is
+  // therefore bogus.
+
   if (p_cb)
     ((FFI_Widget_Callback *) p_cb)();
 }
 
+extern "C" {
+
 void widget_callback(void *p_widget, void *cb)
 {
-  ((Fl_Widget *) p_widget)->callback(widget_callback_caller,cb);
+  ((FFI_Widget *) p_widget)->callback(widget_callback_caller,cb);
 }
+
+} // extern "C"
+
+// Window
+
+class FFI_Window : public FFI, public Fl_Window
+{
+public:
+  FFI_Window(int x, int y, int w, int h, const char *l);
+  FFI_Window(int w, int h, const char *l);
+  virtual ~FFI_Window();
+};
+
+FFI_Window::FFI_Window(int x, int y, int w, int h, const char *l) :
+  Fl_Window(x, y, w, h, l)
+{
+}
+
+FFI_Window::FFI_Window(int w, int h, const char *l) :
+  Fl_Window(w, h, l)
+{
+}
+
+FFI_Window::~FFI_Window()
+{
+}
+
+extern "C" {
+
+void *window_new_xywhl(int x, int y, int w, int h, const char *l)
+{
+  return new FFI_Window(x, y, w, h, l);
+}
+
+void *window_new_whl(int w, int h, const char *l)
+{
+  return new FFI_Window(w, h, l);
+}
+
+void window_show(void *p_win)
+{
+  ((FFI_Window *) p_win)->show();
+}
+
+} // extern "C"
 
 // Button
 
-void *button_new_xywhl(int x, int y, int w, int h, const char *l)
+class FFI_Button : public FFI, public Fl_Button
 {
-  return new Fl_Button(x, y, w, h, l);
+public:
+  FFI_Button(int x, int y, int w, int h, const char *l);
+  virtual ~FFI_Button();
+};
+
+FFI_Button::FFI_Button(int x, int y, int w, int h, const char *l) :
+  Fl_Button(x, y, w, h, l)
+{
 }
 
-void button_delete(void *p_win)
+FFI_Button::~FFI_Button()
 {
-#ifdef FFI_FLTK_TRACE_DELETE
-  std::cout << "button_delete(): p_win = " << p_win << "\n";
-#endif // FFI_FLTK_TRACE_DELETE
-  delete (Fl_Button *) p_win;
+}
+
+extern "C" {
+
+void *button_new_xywhl(int x, int y, int w, int h, const char *l)
+{
+  return new FFI_Button(x, y, w, h, l);
 }
 
 } // extern "C"

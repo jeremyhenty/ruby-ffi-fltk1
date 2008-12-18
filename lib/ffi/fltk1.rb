@@ -18,8 +18,11 @@
 
 
 require "ffi"
+require "set"
 
 module FFI::FLTK
+
+  class Error < StandardError ; end
 
   extend FFI::Library
   ffi_lib(__FILE__.sub(%r{\.rb$},".so"))
@@ -29,20 +32,53 @@ module FFI::FLTK
 
   class Widget
 
+    class DeletedError < FFI::FLTK::Error ; end
+
+    WIDGETS = Set.new
+
     def self.attach_function(*args)
       FFI::FLTK.attach_function(*args)
     end
 
     FFI::FLTK.callback :widget_callback_t, [ ], :void
     attach_function :widget_callback, [ :pointer, :widget_callback_t ], :void
+
+    FFI::FLTK.callback :ffi_delete_callback_t, [ ], :void
+    attach_function :ffi_set_delete_callback,
+    [ :pointer, :ffi_delete_callback_t ], :void
+
+    def ffi_initialize
+      WIDGETS << self
+      @ffi_widget_deleted = false
+      @ffi_widget_deleted_callback = method(:ffi_widget_deleted)
+      ffi_set_delete_callback(@ffi_pointer, @ffi_widget_deleted_callback)
+    end
+
+    def ffi_widget_deleted
+      @ffi_pointer = nil
+      WIDGETS.delete(self)
+      @ffi_widget_deleted = true
+      @ffi_widget_deleted_callback = nil
+    end
+
+    def ffi_widget_not_deleted
+      raise DeletedError, "the FLTK widget is deleted", caller if
+        @ffi_widget_deleted
+    end
+
+    def ffi_widget_deleted?
+      @ffi_widget_deleted
+    end
   end
 
   class Window < Widget
 
-    attach_function :window_new_xywhl, [ :int, :int, :int, :int, :string ], :pointer
-    attach_function :window_new_whl, [ :int, :int, :string ], :pointer
-    attach_function :window_delete, [ :pointer ], :void
-    attach_function :window_show , [ :pointer ], :void
+    attach_function :window_new_xywhl,
+    [ :int, :int, :int, :int, :string ], :pointer
+    attach_function :window_new_whl,
+    [ :int, :int, :string ], :pointer
+
+    attach_function :window_show, [ :pointer ], :void
 
     def initialize(*args)
       count = args.size
@@ -56,20 +92,20 @@ module FFI::FLTK
           raise ArgumentError, "wrong number of arguments (%d for %d))" %
             [ count, count < 2 ? 2 : 5 ]
         end
-      @ffi_auto_pointer =
-        FFI::AutoPointer.new(@ffi_pointer, method(:window_delete))
+      ffi_initialize
       yield self if block_given?
     end
 
     def show
+      ffi_widget_not_deleted
       window_show(@ffi_pointer)
     end
   end
 
   class Button < Widget
 
-    attach_function :button_new_xywhl, [ :int, :int, :int, :int, :string ], :pointer
-    attach_function :button_delete, [ :pointer ], :void
+    attach_function :button_new_xywhl,
+    [ :int, :int, :int, :int, :string ], :pointer
 
     def initialize(*args)
       count = args.size
@@ -81,11 +117,11 @@ module FFI::FLTK
           raise ArgumentError, "wrong number of arguments (%d for %d))" %
             [ count, count < 4 ? 4 : 5 ]
         end
-      @ffi_auto_pointer =
-        FFI::AutoPointer.new(@ffi_pointer, method(:button_delete))
+      ffi_initialize
     end
 
     def callback(*cbs, &cb1)
+      ffi_widget_not_deleted
       return @ffi_callback if cbs.empty? && !cb1
       count = cbs.size
       raise ArgumentError, "wrong number of arguments (%d for 1))" %

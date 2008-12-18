@@ -40,7 +40,7 @@ module FFI::FLTK
 
     def initialize(*args)
       count = args.size
-      @pointer =
+      @ffi_pointer =
         case count
         when 2: args << nil; window_new_whl(*args)
         when 3: window_new_whl(*args)
@@ -50,12 +50,13 @@ module FFI::FLTK
           raise ArgumentError, "wrong number of arguments (%d for %d))" %
             [ count, count < 2 ? 2 : 5 ]
         end
-      @auto_pointer = FFI::AutoPointer.new(@pointer, method(:window_delete))
+      @ffi_auto_pointer =
+        FFI::AutoPointer.new(@ffi_pointer, method(:window_delete))
       yield self if block_given?
     end
 
     def show
-      window_show(@pointer)
+      window_show(@ffi_pointer)
     end
   end
 
@@ -72,7 +73,7 @@ module FFI::FLTK
 
     def initialize(*args)
       count = args.size
-      @pointer =
+      @ffi_pointer =
         case count
         when 4: args << nil; button_new_xywhl(*args)
         when 5: button_new_xywhl(*args)
@@ -80,7 +81,8 @@ module FFI::FLTK
           raise ArgumentError, "wrong number of arguments (%d for %d))" %
             [ count, count < 4 ? 4 : 5 ]
         end
-      @auto_pointer = FFI::AutoPointer.new(@pointer, method(:button_delete))
+      @ffi_auto_pointer =
+        FFI::AutoPointer.new(@ffi_pointer, method(:button_delete))
       yield self if block_given?
     end
 
@@ -93,7 +95,7 @@ module FFI::FLTK
       raise "cannot supply both a Proc and a block" if cb0 && cb1
       cb = cb0 || cb1
       @ffi_callback = cb
-      widget_callback(@pointer, @ffi_callback)
+      widget_callback(@ffi_pointer, @ffi_callback)
       return @ffi_callback
     end
 

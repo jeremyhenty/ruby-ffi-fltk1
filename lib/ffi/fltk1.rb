@@ -83,7 +83,6 @@ module FFI::FLTK
         end
       @ffi_auto_pointer =
         FFI::AutoPointer.new(@ffi_pointer, method(:button_delete))
-      yield self if block_given?
     end
 
     def callback(*cbs, &cb1)

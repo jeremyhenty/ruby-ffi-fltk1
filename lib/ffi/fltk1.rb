@@ -41,7 +41,10 @@ module FFI::FLTK
     end
 
     FFI::FLTK.callback :widget_callback_t, [ ], :void
-    attach_function :widget_callback, [ :pointer, :widget_callback_t ], :void
+    attach_function :ffi_widget_set_callback,
+    [ :pointer, :widget_callback_t ], :void
+    attach_function :ffi_widget_unset_callback,
+    [ :pointer ], :void
 
     FFI::FLTK.callback :ffi_delete_callback_t, [ ], :void
     attach_function :ffi_set_delete_callback,
@@ -81,7 +84,11 @@ module FFI::FLTK
         cb0 && cb1
       cb = cb0 || cb1
       @ffi_callback = cb
-      widget_callback(@ffi_pointer, @ffi_callback)
+      if @ffi_callback
+        ffi_widget_set_callback(@ffi_pointer, @ffi_callback)
+      else
+        ffi_widget_unset_callback(@ffi_pointer)
+      end
       return @ffi_callback
     end
 

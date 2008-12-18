@@ -111,9 +111,14 @@ static void widget_callback_caller(Fl_Widget *widget, void *p_cb)
 
 extern "C" {
 
-void widget_callback(void *p_widget, void *cb)
+void ffi_widget_set_callback(void *p_widget, void *cb)
 {
-  ((FFI_Widget *) p_widget)->callback(widget_callback_caller,cb);
+  ((FFI_Widget *) p_widget)->callback(widget_callback_caller, cb);
+}
+
+void ffi_widget_unset_callback(void *p_widget)
+{
+  ((FFI_Widget *) p_widget)->callback(widget_callback_caller, (void *) 0);
 }
 
 } // extern "C"

@@ -24,6 +24,7 @@
 #include <FL/Fl.H>
 #include <FL/Fl_Widget.H>
 #include <FL/Fl_Window.H>
+#include <FL/Fl_Box.H>
 #include <FL/Fl_Button.H>
 #include <FL/fl_ask.H>
 
@@ -166,6 +167,33 @@ void *ffi_window_new_whl(int w, int h, const char *l)
 void ffi_window_show(void *p_win)
 {
   ((FFI_Window *) p_win)->show();
+}
+
+} // extern "C"
+
+// Box
+
+class FFI_Box : public FFI, public Fl_Box
+{
+public:
+  FFI_Box(int x, int y, int w, int h, const char *l);
+  virtual ~FFI_Box();
+};
+
+FFI_Box::FFI_Box(int x, int y, int w, int h, const char *l) :
+  Fl_Box(x, y, w, h, l)
+{
+}
+
+FFI_Box::~FFI_Box()
+{
+}
+
+extern "C" {
+
+void *ffi_box_new_xywhl(int x, int y, int w, int h, const char *l)
+{
+  return new FFI_Box(x, y, w, h, l);
 }
 
 } // extern "C"

@@ -130,6 +130,25 @@ module FFI::FLTK
     end
   end
 
+  class Box < Widget
+
+    ffi_attach_function :ffi_box_new_xywhl,
+    [ :int, :int, :int, :int, :string ], :pointer
+
+    def initialize(*args)
+      count = args.size
+      @ffi_pointer =
+        case count
+        when 4: args << nil; ffi_box_new_xywhl(*args)
+        when 5: ffi_box_new_xywhl(*args)
+        else
+          raise ArgumentError, "wrong number of arguments (%d for %d))" %
+            [ count, count < 4 ? 4 : 5 ]
+        end
+      ffi_initialize
+    end
+  end
+
   class Button < Widget
 
     ffi_attach_function :ffi_button_new_xywhl,

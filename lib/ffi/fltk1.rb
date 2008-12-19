@@ -27,8 +27,8 @@ module FFI::FLTK
   extend FFI::Library
   ffi_lib(__FILE__.sub(%r{\.rb$},".so"))
 
-  attach_function :ffi_fltk_run, [ ], :int
-  attach_function :ffi_fltk_alert, [ :string ], :void
+  attach_function :run, :ffi_fltk_run, [ ], :int
+  attach_function :alert, :ffi_fltk_alert, [ :string ], :void
 
   class Widget
 
@@ -147,14 +147,6 @@ module FFI::FLTK
         end
       ffi_initialize
     end
-  end
-
-  def self.run
-    ffi_fltk_run()
-  end
-
-  def self.alert(message)
-    ffi_fltk_alert(message)
   end
 
 end

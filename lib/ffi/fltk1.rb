@@ -27,8 +27,8 @@ module FFI::FLTK
   extend FFI::Library
   ffi_lib(__FILE__.sub(%r{\.rb$},".so"))
 
-  attach_function :fltk_run, [ ], :int
-  attach_function :fltk_alert, [ :string ], :void
+  attach_function :ffi_fltk_run, [ ], :int
+  attach_function :ffi_fltk_alert, [ :string ], :void
 
   class Widget
 
@@ -36,19 +36,19 @@ module FFI::FLTK
 
     WIDGETS = Set.new
 
-    def self.attach_function(*args)
+    def self.ffi_attach_function(*args)
       FFI::FLTK.attach_function(*args)
     end
 
-    FFI::FLTK.callback :widget_callback_t, [ ], :void
-    attach_function :ffi_widget_set_callback,
-    [ :pointer, :widget_callback_t ], :void
-    attach_function :ffi_widget_unset_callback,
+    FFI::FLTK.callback :ffi_widget_callback, [ ], :void
+    ffi_attach_function :ffi_widget_set_callback,
+    [ :pointer, :ffi_widget_callback ], :void
+    ffi_attach_function :ffi_widget_unset_callback,
     [ :pointer ], :void
 
-    FFI::FLTK.callback :ffi_delete_callback_t, [ ], :void
-    attach_function :ffi_set_delete_callback,
-    [ :pointer, :ffi_delete_callback_t ], :void
+    FFI::FLTK.callback :ffi_delete_callback, [ ], :void
+    ffi_attach_function :ffi_set_delete_callback,
+    [ :pointer, :ffi_delete_callback ], :void
 
     def ffi_initialize
       WIDGETS << self
@@ -97,21 +97,21 @@ module FFI::FLTK
 
   class Window < Widget
 
-    attach_function :window_new_xywhl,
+    ffi_attach_function :ffi_window_new_xywhl,
     [ :int, :int, :int, :int, :string ], :pointer
-    attach_function :window_new_whl,
+    ffi_attach_function :ffi_window_new_whl,
     [ :int, :int, :string ], :pointer
 
-    attach_function :window_show, [ :pointer ], :void
+    ffi_attach_function :ffi_window_show, [ :pointer ], :void
 
     def initialize(*args)
       count = args.size
       @ffi_pointer =
         case count
-        when 2: args << nil; window_new_whl(*args)
-        when 3: window_new_whl(*args)
-        when 4: args << nil; window_new_xywhl(*args)
-        when 5: window_new_xywhl(*args)
+        when 2: args << nil; ffi_window_new_whl(*args)
+        when 3: ffi_window_new_whl(*args)
+        when 4: args << nil; ffi_window_new_xywhl(*args)
+        when 5: ffi_window_new_xywhl(*args)
         else
           raise ArgumentError, "wrong number of arguments (%d for %d))" %
             [ count, count < 2 ? 2 : 5 ]
@@ -122,21 +122,21 @@ module FFI::FLTK
 
     def show
       ffi_widget_not_deleted
-      window_show(@ffi_pointer)
+      ffi_window_show(@ffi_pointer)
     end
   end
 
   class Button < Widget
 
-    attach_function :button_new_xywhl,
+    ffi_attach_function :ffi_button_new_xywhl,
     [ :int, :int, :int, :int, :string ], :pointer
 
     def initialize(*args)
       count = args.size
       @ffi_pointer =
         case count
-        when 4: args << nil; button_new_xywhl(*args)
-        when 5: button_new_xywhl(*args)
+        when 4: args << nil; ffi_button_new_xywhl(*args)
+        when 5: ffi_button_new_xywhl(*args)
         else
           raise ArgumentError, "wrong number of arguments (%d for %d))" %
             [ count, count < 4 ? 4 : 5 ]
@@ -146,11 +146,11 @@ module FFI::FLTK
   end
 
   def self.run
-    fltk_run()
+    ffi_fltk_run()
   end
 
   def self.alert(message)
-    fltk_alert(message)
+    ffi_fltk_alert(message)
   end
 
 end

@@ -31,12 +31,12 @@ extern "C" {
 
 // FLTK
 
-int fltk_run()
+int ffi_fltk_run()
 {
   return Fl::run();
 }
 
-void fltk_alert(const char *message)
+void ffi_fltk_alert(const char *message)
 {
   fl_alert("%s", message);
 }
@@ -48,17 +48,17 @@ void fltk_alert(const char *message)
 class FFI
 {
 public:
-  typedef void FFI_Delete_Callback();
+  typedef void Delete_Callback();
 private:
-  FFI_Delete_Callback *delete_callback;
+  Delete_Callback *delete_callback;
 protected:
   FFI();
   virtual ~FFI();
 public:
-  void set_delete_callback(FFI_Delete_Callback *callback);
+  void set_delete_callback(Delete_Callback *callback);
 };
 
-FFI::FFI() : delete_callback((FFI_Delete_Callback *) 0)
+FFI::FFI() : delete_callback((Delete_Callback *) 0)
 {
 }
 
@@ -67,14 +67,14 @@ FFI::~FFI() {
     delete_callback();
 }
 
-void FFI::set_delete_callback(FFI_Delete_Callback *callback)
+void FFI::set_delete_callback(Delete_Callback *callback)
 {
   delete_callback = callback;
 }
 
 extern "C" {
 
-void ffi_set_delete_callback(void *p_ffi, FFI::FFI_Delete_Callback *callback)
+void ffi_set_delete_callback(void *p_ffi, FFI::Delete_Callback *callback)
 {
   ((FFI *) p_ffi)->set_delete_callback(callback);
 }
@@ -85,6 +85,9 @@ void ffi_set_delete_callback(void *p_ffi, FFI::FFI_Delete_Callback *callback)
 
 class FFI_Widget : public FFI, public Fl_Widget
 {
+public:
+  typedef void Callback();
+  static void callback_caller(Fl_Widget *widget, void *p_cb);
   FFI_Widget(int x, int y, int w, int h, const char *l);
   virtual ~FFI_Widget();
 };
@@ -98,27 +101,28 @@ FFI_Widget::~FFI_Widget()
 {
 }
 
-typedef void FFI_Widget_Callback();
-static void widget_callback_caller(Fl_Widget *widget, void *p_cb)
+void FFI_Widget::callback_caller(Fl_Widget *widget, void *p_cb)
 {
   // We ignore widget, which is good since it has probably been
   // coerced from (FFI_Widget *) to (FL_Widget *) via (void *) and is
   // therefore bogus.
 
   if (p_cb)
-    ((FFI_Widget_Callback *) p_cb)();
+    ((Callback *) p_cb)();
 }
 
 extern "C" {
 
 void ffi_widget_set_callback(void *p_widget, void *cb)
 {
-  ((FFI_Widget *) p_widget)->callback(widget_callback_caller, cb);
+  FFI_Widget *widget = (FFI_Widget *) p_widget;
+  widget->callback(FFI_Widget::callback_caller, cb);
 }
 
 void ffi_widget_unset_callback(void *p_widget)
 {
-  ((FFI_Widget *) p_widget)->callback(widget_callback_caller, (void *) 0);
+  FFI_Widget *widget = (FFI_Widget *) p_widget;
+  widget->callback(FFI_Widget::callback_caller, (void *) 0);
 }
 
 } // extern "C"
@@ -149,17 +153,17 @@ FFI_Window::~FFI_Window()
 
 extern "C" {
 
-void *window_new_xywhl(int x, int y, int w, int h, const char *l)
+void *ffi_window_new_xywhl(int x, int y, int w, int h, const char *l)
 {
   return new FFI_Window(x, y, w, h, l);
 }
 
-void *window_new_whl(int w, int h, const char *l)
+void *ffi_window_new_whl(int w, int h, const char *l)
 {
   return new FFI_Window(w, h, l);
 }
 
-void window_show(void *p_win)
+void ffi_window_show(void *p_win)
 {
   ((FFI_Window *) p_win)->show();
 }
@@ -186,7 +190,7 @@ FFI_Button::~FFI_Button()
 
 extern "C" {
 
-void *button_new_xywhl(int x, int y, int w, int h, const char *l)
+void *ffi_button_new_xywhl(int x, int y, int w, int h, const char *l)
 {
   return new FFI_Button(x, y, w, h, l);
 }

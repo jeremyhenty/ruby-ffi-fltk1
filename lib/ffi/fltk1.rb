@@ -40,13 +40,17 @@ module FFI::FLTK
       FFI::FLTK.attach_function(*args)
     end
 
-    FFI::FLTK.callback :ffi_widget_callback, [ ], :void
+    def self.ffi_callback(*args)
+      FFI::FLTK.callback(*args)
+    end
+
+    ffi_callback :ffi_widget_callback, [ ], :void
     ffi_attach_function :ffi_widget_set_callback,
     [ :pointer, :ffi_widget_callback ], :void
     ffi_attach_function :ffi_widget_unset_callback,
     [ :pointer ], :void
 
-    FFI::FLTK.callback :ffi_delete_callback, [ ], :void
+    ffi_callback :ffi_delete_callback, [ ], :void
     ffi_attach_function :ffi_set_delete_callback,
     [ :pointer, :ffi_delete_callback ], :void
 

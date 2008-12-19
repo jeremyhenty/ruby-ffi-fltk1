@@ -25,21 +25,7 @@ task :default => :build
 desc "Build all the files"
 task :build # we will add dependencies later
 
-# Call 'fltk-config' to get the FLTK development environment
-# configuration.
-
-def fltk_config
-  @fltk_config ||= fltk_config_
-end
-
-def fltk_config_
-  config = Hash.new
-  [ :version, :cxx, :cxxflags, :ldflags ].each do |key|
-    config[key] = %x{ fltk-config --#{key} }.chomp
-    raise "configuration check for --#{key} failed" unless $?.success?
-  end
-  return config
-end
+require "./rake/fltk_config"
 
 # Build hooks. Developers can add code in 'extra.rb' that modify
 # these.  Changes to 'extra.rb' only affect local builds, not the
@@ -104,7 +90,8 @@ specification = Gem::Specification.new do |s|
   s.add_dependency "ffi", ">= 0.2.0"
   s.files =
     FileList["COPYING", "AUTHORS",
-             "lib/**/*.rb", "wrapper/*.cc", "bin/*"].to_a
+             "lib/**/*.rb", "rake/**/*.rb",
+             "wrapper/*.cc", "bin/*"].to_a
   s.extensions = "Rakefile"
   s.executables = [ demo_name ]
 end

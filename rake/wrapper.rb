@@ -17,6 +17,9 @@
 # along with this program. If not, see http://www.gnu.org/licenses/.
 
 
+# Build hooks.  Add code to extra.rb to modify these.
+EXTRA_CPP_DEFINES = [ ]
+
 desc "Compile the wrapper library"
 wrapper_library = "lib/ffi/fltk1.so"
 wrapper_source = "wrapper/fltk1.cc"

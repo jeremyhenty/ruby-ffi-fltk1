@@ -17,11 +17,9 @@
 # along with this program. If not, see http://www.gnu.org/licenses/.
 
 
-# Build hooks. Developers can add code in 'extra.rb' that modify
-# these.  Changes to 'extra.rb' only affect local builds, not the
-# installed version.
-
-EXTRA_CPP_DEFINES = [ ]
+# Developers can add code in 'extra.rb' that modify the build hooks.
+# Changes to 'extra.rb' only affect local builds, not the installed
+# version.
 
 desc "Initialize 'extra.rb'"
 file "extra.rb" do |t|

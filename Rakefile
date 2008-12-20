@@ -25,22 +25,12 @@ task :default => :build
 desc "Build all the files"
 task :build # we will add dependencies later
 
+module Project ; end # a useful namespace
+
 require "./rake/fltk_config"
 require "./rake/extra"
 require "./rake/wrapper"
-
-desc "Run the demonstration program"
-demo_name = "ruby-ffi-fltk1-demo"
-task :run => :build do
-  # prepend the local lib directory to $RUBYLIB
-  lib_dir = File.join(Dir.pwd,"lib")
-  lib_path = ENV["RUBYLIB"]
-  ENV["RUBYLIB"] =
-    lib_path ? ((lib_path.split(':').unshift(lib_dir)) * ':') : lib_dir
-
-  # run the demo
-  sh "bin/#{demo_name}"
-end
+require "./rake/demo"
 
 # Rubygems
 
@@ -62,7 +52,7 @@ specification = Gem::Specification.new do |s|
              "lib/**/*.rb", "rake/**/*.rb",
              "wrapper/*.cc", "bin/*"].to_a
   s.extensions = "Rakefile"
-  s.executables = [ demo_name ]
+  s.executables = [ Project::DEMO_NAME ]
 end
 
 class Rake::GemPackageTask
@@ -81,5 +71,5 @@ end
 
 desc "Run the installed demonstration program"
 task :run_installed => :install do
-  sh demo_name
+  sh Project::DEMO_NAME
 end

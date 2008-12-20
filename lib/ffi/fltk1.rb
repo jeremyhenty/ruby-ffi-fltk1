@@ -48,23 +48,22 @@ module FFI::FLTK
     [ :int, :int, :int, :int, :string ], :pointer
 
     def initialize(*args)
-      count = args.size
-      @ffi_pointer =
-        case count
-        when 4: args << nil; ffi_widget_new_xywhl(*args)
-        when 5: ffi_widget_new_xywhl(*args)
-        else
-          raise ArgumentError, "wrong number of arguments (%d for %d))" %
-            [ count, count < 4 ? 4 : 5 ]
-        end
-      ffi_initialize
-    end
-
-    def ffi_initialize
+      @ffi_pointer = ffi_pointer(*args)
       WIDGETS << self
       @ffi_widget_deleted = false
       @ffi_widget_deleted_callback = method(:ffi_widget_deleted)
       ffi_set_delete_callback(@ffi_pointer, @ffi_widget_deleted_callback)
+    end
+
+    def ffi_pointer(*args)
+      count = args.size
+      case count
+      when 4: args << nil; ffi_widget_new_xywhl(*args)
+      when 5: ffi_widget_new_xywhl(*args)
+      else
+        raise ArgumentError, "wrong number of arguments (%d for %d))" %
+          [ count, count < 4 ? 4 : 5 ]
+      end
     end
 
     ffi_callback :ffi_widget_callback, [ ], :void
@@ -125,19 +124,21 @@ module FFI::FLTK
     ffi_attach_function :ffi_window_show, [ :pointer ], :void
 
     def initialize(*args)
-      count = args.size
-      @ffi_pointer =
-        case count
-        when 2: args << nil; ffi_window_new_whl(*args)
-        when 3: ffi_window_new_whl(*args)
-        when 4: args << nil; ffi_window_new_xywhl(*args)
-        when 5: ffi_window_new_xywhl(*args)
-        else
-          raise ArgumentError, "wrong number of arguments (%d for %d))" %
-            [ count, count < 2 ? 2 : 5 ]
-        end
-      ffi_initialize
+      super
       yield self if block_given?
+    end
+
+    def ffi_pointer(*args)
+      count = args.size
+      case count
+      when 2: args << nil; ffi_window_new_whl(*args)
+      when 3: ffi_window_new_whl(*args)
+      when 4: args << nil; ffi_window_new_xywhl(*args)
+      when 5: ffi_window_new_xywhl(*args)
+      else
+        raise ArgumentError, "wrong number of arguments (%d for %d))" %
+          [ count, count < 2 ? 2 : 5 ]
+      end
     end
 
     def show
@@ -151,17 +152,15 @@ module FFI::FLTK
     ffi_attach_function :ffi_box_new_xywhl,
     [ :int, :int, :int, :int, :string ], :pointer
 
-    def initialize(*args)
+    def ffi_pointer(*args)
       count = args.size
-      @ffi_pointer =
-        case count
-        when 4: args << nil; ffi_box_new_xywhl(*args)
-        when 5: ffi_box_new_xywhl(*args)
-        else
-          raise ArgumentError, "wrong number of arguments (%d for %d))" %
-            [ count, count < 4 ? 4 : 5 ]
-        end
-      ffi_initialize
+      case count
+      when 4: args << nil; ffi_box_new_xywhl(*args)
+      when 5: ffi_box_new_xywhl(*args)
+      else
+        raise ArgumentError, "wrong number of arguments (%d for %d))" %
+          [ count, count < 4 ? 4 : 5 ]
+      end
     end
   end
 
@@ -170,17 +169,15 @@ module FFI::FLTK
     ffi_attach_function :ffi_button_new_xywhl,
     [ :int, :int, :int, :int, :string ], :pointer
 
-    def initialize(*args)
+    def ffi_pointer(*args)
       count = args.size
-      @ffi_pointer =
-        case count
-        when 4: args << nil; ffi_button_new_xywhl(*args)
-        when 5: ffi_button_new_xywhl(*args)
-        else
-          raise ArgumentError, "wrong number of arguments (%d for %d))" %
-            [ count, count < 4 ? 4 : 5 ]
-        end
-      ffi_initialize
+      case count
+      when 4: args << nil; ffi_button_new_xywhl(*args)
+      when 5: ffi_button_new_xywhl(*args)
+      else
+        raise ArgumentError, "wrong number of arguments (%d for %d))" %
+          [ count, count < 4 ? 4 : 5 ]
+      end
     end
   end
 

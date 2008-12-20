@@ -44,6 +44,29 @@ module FFI::FLTK
       FFI::FLTK.callback(*args)
     end
 
+    ffi_attach_function :ffi_widget_new_xywhl,
+    [ :int, :int, :int, :int, :string ], :pointer
+
+    def initialize(*args)
+      count = args.size
+      @ffi_pointer =
+        case count
+        when 4: args << nil; ffi_widget_new_xywhl(*args)
+        when 5: ffi_widget_new_xywhl(*args)
+        else
+          raise ArgumentError, "wrong number of arguments (%d for %d))" %
+            [ count, count < 4 ? 4 : 5 ]
+        end
+      ffi_initialize
+    end
+
+    def ffi_initialize
+      WIDGETS << self
+      @ffi_widget_deleted = false
+      @ffi_widget_deleted_callback = method(:ffi_widget_deleted)
+      ffi_set_delete_callback(@ffi_pointer, @ffi_widget_deleted_callback)
+    end
+
     ffi_callback :ffi_widget_callback, [ ], :void
     ffi_attach_function :ffi_widget_set_callback,
     [ :pointer, :ffi_widget_callback ], :void
@@ -53,13 +76,6 @@ module FFI::FLTK
     ffi_callback :ffi_delete_callback, [ ], :void
     ffi_attach_function :ffi_set_delete_callback,
     [ :pointer, :ffi_delete_callback ], :void
-
-    def ffi_initialize
-      WIDGETS << self
-      @ffi_widget_deleted = false
-      @ffi_widget_deleted_callback = method(:ffi_widget_deleted)
-      ffi_set_delete_callback(@ffi_pointer, @ffi_widget_deleted_callback)
-    end
 
     def ffi_widget_deleted
       @ffi_pointer = nil

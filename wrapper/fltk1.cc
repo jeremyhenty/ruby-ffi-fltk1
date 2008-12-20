@@ -88,6 +88,7 @@ class FFI_Widget : public FFI, public Fl_Widget
 {
 public:
   typedef void Callback();
+  virtual void draw();
   static void callback_caller(Fl_Widget *widget, void *p_cb);
   FFI_Widget(int x, int y, int w, int h, const char *l);
   virtual ~FFI_Widget();
@@ -102,6 +103,10 @@ FFI_Widget::~FFI_Widget()
 {
 }
 
+void FFI_Widget::draw()
+{
+}
+
 void FFI_Widget::callback_caller(Fl_Widget *widget, void *p_cb)
 {
   // We ignore widget, which is good since it has probably been
@@ -113,6 +118,11 @@ void FFI_Widget::callback_caller(Fl_Widget *widget, void *p_cb)
 }
 
 extern "C" {
+
+void *ffi_widget_new_xywhl(int x, int y, int w, int h, const char *l)
+{
+  return new FFI_Widget(x, y, w, h, l);
+}
 
 void ffi_widget_set_callback(void *p_widget, void *cb)
 {

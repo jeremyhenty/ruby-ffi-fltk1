@@ -69,6 +69,23 @@ module FFI::FLTK
     def ffi_widget_deleted?
       @ffi_widget_deleted
     end
+
+    def callback(*cbs, &cb1)
+      ffi_widget_not_deleted
+      return @ffi_callback if cbs.empty? && !cb1
+      count = cbs.size
+      raise ArgumentError, "wrong number of arguments (%d for 1))" %
+        [ count ] if count > 1
+      cb0 = cbs.first
+      raise ArgumentError, "cannot supply both a Proc and a block" if
+        cb0 && cb1
+      cb = cb0 || cb1
+      @ffi_callback = cb
+      widget_callback(@ffi_pointer, @ffi_callback)
+      return @ffi_callback
+    end
+
+    alias :callback= :callback
   end
 
   class Window < Widget
@@ -119,23 +136,6 @@ module FFI::FLTK
         end
       ffi_initialize
     end
-
-    def callback(*cbs, &cb1)
-      ffi_widget_not_deleted
-      return @ffi_callback if cbs.empty? && !cb1
-      count = cbs.size
-      raise ArgumentError, "wrong number of arguments (%d for 1))" %
-        [ count ] if count > 1
-      cb0 = cbs.first
-      raise ArgumentError, "cannot supply both a Proc and a block" if
-        cb0 && cb1
-      cb = cb0 || cb1
-      @ffi_callback = cb
-      widget_callback(@ffi_pointer, @ffi_callback)
-      return @ffi_callback
-    end
-
-    alias :callback= :callback
   end
 
   def self.run

@@ -27,22 +27,7 @@ task :build # we will add dependencies later
 
 require "./rake/fltk_config"
 require "./rake/extra"
-
-desc "Compile the wrapper library"
-wrapper_library = "lib/ffi/fltk1.so"
-wrapper_source = "wrapper/fltk1.cc"
-CLOBBER.include(wrapper_library)
-file wrapper_library => [ "extra.rb", wrapper_source ] do |t|
-  puts "building '#{t.name}'"
-  require "./extra"
-  config = fltk_config
-  sh \
-  "#{config[:cxx]} -shared -fpic " \
-  "#{config[:cxxflags]} #{config[:ldflags]} " \
-  "#{EXTRA_CPP_DEFINES * ' '} " \
-  "-o #{t.name} #{wrapper_source}"
-end
-task :build => wrapper_library
+require "./rake/wrapper"
 
 desc "Run the demonstration program"
 demo_name = "ruby-ffi-fltk1-demo"

@@ -18,7 +18,7 @@
 
 
 # Build hooks.  Add code to extra.rb to modify these.
-EXTRA_CPP_DEFINES = [ ]
+Project::EXTRA_CPP_DEFINES = [ ]
 
 desc "Compile the wrapper library"
 wrapper_library = "lib/ffi/fltk1.so"
@@ -31,7 +31,7 @@ file wrapper_library => [ "extra.rb", wrapper_source ] do |t|
   sh \
   "#{config[:cxx]} -shared -fpic " \
   "#{config[:cxxflags]} #{config[:ldflags]} " \
-  "#{EXTRA_CPP_DEFINES * ' '} " \
+  "#{Project::EXTRA_CPP_DEFINES * ' '} " \
   "-o #{t.name} #{wrapper_source}"
 end
 task :build => wrapper_library

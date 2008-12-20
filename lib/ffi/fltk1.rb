@@ -122,6 +122,7 @@ module FFI::FLTK
     [ :int, :int, :string ], :pointer
 
     ffi_attach_function :ffi_window_show, [ :pointer ], :void
+    ffi_attach_function :ffi_window_hide, [ :pointer ], :void
 
     def initialize(*args)
       super
@@ -144,6 +145,11 @@ module FFI::FLTK
     def show
       ffi_widget_not_deleted
       ffi_window_show(@ffi_pointer)
+    end
+
+    def hide
+      ffi_widget_not_deleted
+      ffi_window_hide(@ffi_pointer)
     end
   end
 

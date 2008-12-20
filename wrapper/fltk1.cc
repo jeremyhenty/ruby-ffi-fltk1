@@ -179,6 +179,11 @@ void ffi_window_show(void *p_win)
   ((FFI_Window *) p_win)->show();
 }
 
+void ffi_window_hide(void *p_win)
+{
+  ((FFI_Window *) p_win)->hide();
+}
+
 } // extern "C"
 
 // Box

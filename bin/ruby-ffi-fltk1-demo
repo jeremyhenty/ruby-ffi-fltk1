@@ -27,9 +27,11 @@ include FFI
 include FFI::FLTK
 
 Window.new(300, 300, "FFI-FLTK1 demonstration") do |win|
-  Box.new(0, 0, 300, 150, "FFI-FLTK1!")
-  button = Button.new(0, 150, 300, 150, "Click Me!")
-  button.callback { FLTK.alert("Hello!") }
+  Box.new(0, 0, 300, 100, "FFI-FLTK1!")
+  click_button = Button.new(0, 100, 300, 100, "Click Me!")
+  click_button.callback { FLTK.alert("Hello!") }
+  close_button = Button.new(0, 200, 300, 100, "Close")
+  close_button.callback { win.hide }
   win.show
 end
 

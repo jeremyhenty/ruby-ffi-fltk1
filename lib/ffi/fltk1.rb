@@ -112,6 +112,22 @@ module FFI::FLTK
     end
 
     alias :callback= :callback
+
+    ffi_attach_function :ffi_widget_box, [ :pointer ], :int
+    ffi_attach_function :ffi_widget_box_set, [ :pointer, :int ], :void
+
+    def box(b=nil)
+      if b
+        ffi_widget_not_deleted
+        ffi_widget_box_set(@ffi_pointer, b)
+        return nil
+      else
+        ffi_widget_not_deleted
+        return ffi_widget_box(@ffi_pointer)
+      end
+    end
+
+    alias :box= box
   end
 
   class Window < Widget

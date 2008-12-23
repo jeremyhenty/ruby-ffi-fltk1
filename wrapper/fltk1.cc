@@ -136,6 +136,18 @@ void ffi_widget_unset_callback(void *p_widget)
   widget->callback(FFI_Widget::callback_caller, (void *) 0);
 }
 
+int ffi_widget_box(void *p_widget)
+{
+  FFI_Widget *widget = (FFI_Widget *) p_widget;
+  return widget->box();
+}
+
+void ffi_widget_box_set(void *p_widget, int box)
+{
+  FFI_Widget *widget = (FFI_Widget *) p_widget;
+  widget->box((Fl_Boxtype) box);
+}
+
 } // extern "C"
 
 // Window

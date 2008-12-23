@@ -17,21 +17,13 @@
 # along with this program. If not, see http://www.gnu.org/licenses/.
 
 
-# Build hooks.  Add code to extra.rb to modify these.
-Project::EXTRA_CPP_DEFINES = [ ]
-
-desc "Compile the wrapper library"
-wrapper_library = "lib/ffi/fltk1.so"
-wrapper_source = "wrapper/fltk1.cc"
-CLOBBER.include(wrapper_library)
-file wrapper_library => [ "extra.rb", wrapper_source ] do |t|
-  puts "building '#{t.name}'"
-  require "./extra"
-  config = fltk_config
-  sh \
-  "#{config[:cxx]} -shared -fpic " \
-  "#{config[:cxxflags]} #{config[:ldflags]} " \
-  "#{Project::EXTRA_CPP_DEFINES * ' '} " \
-  "-o #{t.name} #{wrapper_source}"
+module Project
+  desc "Compile the wrapper library"
+  wrapper = File.join FFI_DIR, "fltk1.so"
+  CLOBBER.include(wrapper)
+  file wrapper => [ "extra.rb", "wrapper/fltk1.cc" ] do |t|
+    puts "building '#{t.name}'"
+    dl_compile(t.name, t.prerequisites.last)
+  end
+  task :build => wrapper
 end
-task :build => wrapper_library

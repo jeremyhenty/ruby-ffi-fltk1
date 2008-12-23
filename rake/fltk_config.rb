@@ -20,15 +20,38 @@
 # Call 'fltk-config' to get the FLTK development environment
 # configuration.
 
-def fltk_config
-  @fltk_config ||= fltk_config_
-end
+module Project
 
-def fltk_config_
-  config = Hash.new
-  [ :version, :cxx, :cxxflags, :ldflags ].each do |key|
-    config[key] = %x{ fltk-config --#{key} }.chomp
-    raise "configuration check for --#{key} failed" unless $?.success?
+  module_function
+
+  # Build hooks.  Add code to extra.rb to modify these.
+  EXTRA_CPP_DEFINES = [ ]
+
+  # directories
+  FFI_DIR = "lib/ffi"
+  LIB_DIR = File.join FFI_DIR, "fltk"
+  directory LIB_DIR
+
+  def fltk_config
+    @@fltk_config ||= fltk_config_
   end
-  return config
+
+  def fltk_config_
+    config = Hash.new
+    [ :version, :cxx, :cxxflags, :ldflags ].each do |key|
+      config[key] = %x{ fltk-config --#{key} }.chomp
+      raise "configuration check for --#{key} failed" unless $?.success?
+    end
+    return config
+  end
+
+  def dl_compile(dl_path, *source_paths)
+    require "./extra"
+    config = fltk_config
+    sh \
+    "#{config[:cxx]} -shared -fpic " \
+    "#{config[:cxxflags]} #{config[:ldflags]} " \
+    "#{EXTRA_CPP_DEFINES * ' '} " \
+    "-o #{dl_path} #{source_paths * ' '}"
+  end
 end

@@ -43,9 +43,7 @@ module Project
   CLEAN << AUTO_DIR
 
   # auto-generated targets
-  lib_dir = "lib/ffi/fltk"
-  directory lib_dir
-  AUTO_LIB_DIR = File.join(lib_dir, "auto")
+  AUTO_LIB_DIR = File.join(LIB_DIR, "auto")
   directory AUTO_LIB_DIR
   CLOBBER << AUTO_LIB_DIR
 
@@ -91,13 +89,8 @@ module Project
       Project.run_erb(binding, box_ruby_src, t.name)
     end
 
-    file box_dl => [ Project::AUTO_DIR, box_dl_cc ] do |t|
-      config = fltk_config
-      sh \
-      "#{config[:cxx]} -shared -fpic " \
-      "#{config[:cxxflags]} #{config[:ldflags]} " \
-      "#{Project::EXTRA_CPP_DEFINES * ' '} " \
-      "-o #{t.name} #{t.prerequisites.last}"
+    file box_dl => [ Project::AUTO_DIR, "extra.rb", box_dl_cc ] do |t|
+      Project.dl_compile(t.name, t.prerequisites.last)
     end
 
     file box_dl_cc => [ Project::AUTO_DIR, box_dl_src ] do |t|

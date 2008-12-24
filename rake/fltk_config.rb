@@ -54,4 +54,13 @@ module Project
     "#{EXTRA_CPP_DEFINES * ' '} " \
     "-o #{dl_path} #{source_paths * ' '}"
   end
+
+  def header_pp(header_path)
+    config = fltk_config
+    return %x{
+    #{config[:cxx]} -E \
+    #{config[:cxxflags]} \
+    #{header_path}
+    }
+  end
 end

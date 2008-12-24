@@ -49,6 +49,9 @@ EOS
 
   # directories
 
+  # headers
+  HEADER_DIR = "include"
+
   # ERb
   ERB_DIR = "erb"
   def run_erb(binding,in_path,out_path)
@@ -73,21 +76,52 @@ EOS
 
     module_function
 
-    names =
-      [
-       "FL_FLAT_BOX",
-       "FL_UP_BOX",
-       "FL_DOWN_BOX",
-      ]
+    def names
+      @@names ||= names_
+    end
 
-    NAME_PATTERN =
-      %r{\AFL_(.*)_BOX\z}
+    def names_
+
+      enumeration_pattern = %r{
+\benum\b
+[[:space:]]+
+\bFl_Boxtype\b
+[[:space:]]*
+\{
+(.*?) # enumeration contents
+\}[[:space:]]*;
+}mx
+
+      # extract the Fl_Boxtype enumeration from the FLTK header
+      enumerations =
+        Project.header_pp(File.join(Project::HEADER_DIR,"enumerations.h"))
+      raise "missing Fl_Boxtype enumeration" unless
+        enumeration_match = enumeration_pattern.match(enumerations)
+      enumeration = enumeration_match.captures.first
+
+      # extract the names from the enumeration
+      enum_pattern = %r{(FL_[[:alpha:]_]+)}
+      enum_names = enumeration.split(',').collect do |enum|
+        next unless enum_match = enum_pattern.match(enum)
+        enum_match.captures.first
+      end.compact
+
+      # remove "FL_FREE_BOXTYPE", it's not a real box type
+      raise "missing FL_FREE_BOXTYPE" unless
+        enum_names.last == "FL_FREE_BOXTYPE"
+      enum_names.pop
+
+      return enum_names
+    end
 
     def mangle_name(name)
-      raise "invalid Box type name: #{name}" unless
+      raise "invalid Box type name: '#{name}'" unless
         name_match = NAME_PATTERN.match(name)
       return name_match.captures.first
     end
+
+    NAME_PATTERN =
+      %r{\AFL_(.*)\z}
 
     box_dl = File.join(Project::AUTO_DIR, "box.so")
     box_dl_cc = File.join(Project::AUTO_DIR, "box.cc")

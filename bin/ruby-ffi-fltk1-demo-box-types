@@ -28,7 +28,7 @@ include FFI::FLTK
 
 count = Box::TYPES.size
 height = 25
-width = 100
+width = 250
 
 Window.new(width, count * height, "Boxes") do |win|
   Box::TYPES.keys.sort.each_with_index do |key,i|

@@ -33,7 +33,8 @@ specification = Gem::Specification.new do |s|
   s.files =
     FileList["COPYING", "AUTHORS",
              "lib/**/*.rb", "rake/**/*.rb",
-             "wrapper/*.cc", "erb/*.erb", "bin/*"].to_a
+             "wrapper/*.cc", "erb/*.erb", "include/*.h",
+             "bin/*"].to_a
   s.extensions = "Rakefile"
   s.executables = [ Project::DEMO_NAME ]
 end

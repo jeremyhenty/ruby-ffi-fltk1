@@ -17,21 +17,30 @@
 # along with this program. If not, see http://www.gnu.org/licenses/.
 
 
-<%= Project.auto_generated_rb %>
+<%= Project.auto_generated_rb %><%
+
+names_mangled = names.collect { |name| mangle_name(name) }
+max_size = names_mangled.collect { |name| name.size }.max
+
+%>
 
 module FFI::FLTK
   class Box
 
     module Type
-<% names.zip(values) do |name, value|
-%>      <%= mangle_name(name) %> = <%= value %>
+<%
+name_format = "%%-%ds" % max_size
+names_mangled.zip(values) do |name, value|
+%>      <%= name_format % name %> = <%= value %>
 <% end
 %>    end
 
     TYPES = {
-<% names.each do |name|
-     name = mangle_name(name)
-%>      "<%= name %>" => Type::<%= name %>,
+<%
+quoted_format = '"%s"'
+name_format = "%%-%ds" % (max_size + 2)
+names_mangled.each do |name|
+%>      <%= name_format % (quoted_format % name) %> => Type::<%= name %>,
 <% end
 %>    }
   end

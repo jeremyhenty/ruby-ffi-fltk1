@@ -29,7 +29,7 @@ module Project
 
   # directories
   FFI_DIR = "lib/ffi"
-  LIB_DIR = File.join FFI_DIR, "fltk"
+  LIB_DIR = File.join FFI_DIR, "fltk1"
   directory LIB_DIR
 
   def fltk_config

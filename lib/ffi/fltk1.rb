@@ -186,7 +186,7 @@ module FFI::FLTK
     end
   end
 
-  require "ffi/fltk/auto/box"
+  require "ffi/fltk1/auto/box"
 
   class Button < Widget
 

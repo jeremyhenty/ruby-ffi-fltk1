@@ -27,6 +27,26 @@ module Project
 
   module_function
 
+  # auto-generation notices
+
+  def auto_generated_cc
+    auto_generated "// "
+  end
+
+  def auto_generated_rb
+    auto_generated "# "
+  end
+
+  def auto_generated(prefix)
+    AUTO_GENERATED.gsub(%r{^}, prefix)
+  end
+
+  AUTO_GENERATED = <<EOS
+
+This file was auto-generated. Do not edit it!
+
+EOS
+
   # directories
 
   # ERb

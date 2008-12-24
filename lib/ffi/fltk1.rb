@@ -170,6 +170,8 @@ module FFI::FLTK
     end
   end
 
+  require "ffi/fltk/auto/box"
+
   class Button < Widget
 
     ffi_attach_function :ffi_button_new_xywhl,

@@ -17,20 +17,23 @@
 # along with this program. If not, see http://www.gnu.org/licenses/.
 
 
-# editor files
-*~
+module FFI::FLTK
+  class Box
+    #
+    # auto-generated file
+    #
 
-# extra development code
-/extra.rb
+    module Type
+<% names.zip(values) do |name, value|
+%>      <%= mangle_name(name) %> = <%= value %>
+<% end
+%>    end
 
-# the wrapper library
-/lib/ffi/fltk1.so
-
-# auto-generated files
-auto/
-
-# the gem
-/pkg/
-
-# turn a blind eye to disaster
-/core
+    TYPES = {
+<% names.each do |name|
+     name = mangle_name(name)
+%>      "<%= name %>" => Type::<%= name %>,
+<% end
+%>    }
+  end
+end

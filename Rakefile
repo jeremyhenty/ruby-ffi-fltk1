@@ -29,6 +29,7 @@ module Project ; end # a useful namespace
 
 require "./rake/fltk_config"
 require "./rake/extra"
+require "./rake/constants"
 require "./rake/wrapper"
 require "./rake/demo"
 require "./rake/gem"

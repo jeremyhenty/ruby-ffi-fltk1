@@ -25,7 +25,7 @@ task :default => :build
 desc "Build all the files"
 task :build # we will add dependencies later
 
-module Project ; end # a useful namespace
+module Build ; end # a useful namespace
 
 require "./rake/fltk_config"
 require "./rake/extra"

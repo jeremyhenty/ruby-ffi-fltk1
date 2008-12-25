@@ -17,7 +17,7 @@
 # along with this program. If not, see http://www.gnu.org/licenses/.
 
 
-module Project
+module Build
   desc "Compile the wrapper library"
   wrapper = File.join FFI_DIR, "fltk1.so"
   CLOBBER.include(wrapper)

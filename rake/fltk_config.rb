@@ -20,7 +20,7 @@
 # Call 'fltk-config' to get the FLTK development environment
 # configuration.
 
-module Project
+module Build
 
   module_function
 

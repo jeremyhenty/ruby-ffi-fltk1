@@ -36,7 +36,7 @@ specification = Gem::Specification.new do |s|
              "wrapper/*.cc", "erb/*.erb", "include/*.h",
              "bin/*"].to_a
   s.extensions = "Rakefile"
-  s.executables = [ Project::DEMO_NAME ]
+  s.executables = [ Build::DEMO_NAME ]
 end
 
 class Rake::GemPackageTask
@@ -55,5 +55,5 @@ end
 
 desc "Run the installed demonstration program"
 task :run_installed => :install do
-  sh Project::DEMO_NAME
+  sh Build::DEMO_NAME
 end

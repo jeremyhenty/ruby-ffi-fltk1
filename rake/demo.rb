@@ -18,7 +18,7 @@
 
 
 desc "Run the demonstration program"
-Project::DEMO_NAME = "ruby-ffi-fltk1-demo"
+Build::DEMO_NAME = "ruby-ffi-fltk1-demo"
 task :run => :build do
   # prepend the local lib directory to $RUBYLIB
   lib_dir = File.join(Dir.pwd,"lib")
@@ -27,5 +27,5 @@ task :run => :build do
     lib_path ? ((lib_path.split(':').unshift(lib_dir)) * ':') : lib_dir
 
   # run the demo
-  sh "bin/#{Project::DEMO_NAME}"
+  sh "bin/#{Build::DEMO_NAME}"
 end

@@ -23,7 +23,7 @@
 # They use ERb to create Ruby and C++ source from lists of constant
 # names.
 
-module Project
+module Build
 
   module_function
 
@@ -94,7 +94,7 @@ EOS
 
       # extract the Fl_Boxtype enumeration from the FLTK header
       enumerations =
-        Project.header_pp(File.join(Project::HEADER_DIR,"enumerations.h"))
+        Build.header_pp(File.join(Build::HEADER_DIR,"enumerations.h"))
       raise "missing Fl_Boxtype enumeration" unless
         enumeration_match = enumeration_pattern.match(enumerations)
       enumeration = enumeration_match.captures.first
@@ -123,15 +123,15 @@ EOS
     NAME_PATTERN =
       %r{\AFL_(.*)\z}
 
-    box_dl = File.join(Project::AUTO_DIR, "box.so")
-    box_dl_cc = File.join(Project::AUTO_DIR, "box.cc")
-    box_dl_src = File.join(Project::ERB_DIR, "box.cc.erb")
-    box_ruby = File.join(Project::AUTO_LIB_DIR, "box.rb")
-    box_ruby_src = File.join(Project::ERB_DIR, "box.rb.erb")
+    box_dl = File.join(Build::AUTO_DIR, "box.so")
+    box_dl_cc = File.join(Build::AUTO_DIR, "box.cc")
+    box_dl_src = File.join(Build::ERB_DIR, "box.cc.erb")
+    box_ruby = File.join(Build::AUTO_LIB_DIR, "box.rb")
+    box_ruby_src = File.join(Build::ERB_DIR, "box.rb.erb")
 
     task :build => box_ruby
 
-    file box_ruby => [ Project::AUTO_LIB_DIR,
+    file box_ruby => [ Build::AUTO_LIB_DIR,
                        box_ruby_src, box_dl ] do |t|
 
       require "ffi"
@@ -140,15 +140,15 @@ EOS
       attach_function :ffi_fl_boxes, [ ], :pointer
 
       values = ffi_fl_boxes.read_array_of_int(names.size)
-      Project.run_erb(binding, box_ruby_src, t.name)
+      Build.run_erb(binding, box_ruby_src, t.name)
     end
 
-    file box_dl => [ Project::AUTO_DIR, "extra.rb", box_dl_cc ] do |t|
-      Project.dl_compile(t.name, t.prerequisites.last)
+    file box_dl => [ Build::AUTO_DIR, "extra.rb", box_dl_cc ] do |t|
+      Build.dl_compile(t.name, t.prerequisites.last)
     end
 
-    file box_dl_cc => [ Project::AUTO_DIR, box_dl_src ] do |t|
-      Project.run_erb(binding, t.prerequisites.last, t.name)
+    file box_dl_cc => [ Build::AUTO_DIR, box_dl_src ] do |t|
+      Build.run_erb(binding, t.prerequisites.last, t.name)
     end
   end
 end

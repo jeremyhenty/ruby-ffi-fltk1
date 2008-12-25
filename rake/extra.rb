@@ -21,13 +21,15 @@
 # Changes to 'extra.rb' only affect local builds, not the installed
 # version.
 
-desc "Initialize 'extra.rb'"
-file "extra.rb" do |t|
-  File.open(t.name,"w") do |extra|
-    extra.write <<EXTRA
+module Build
+  desc "Initialize 'extra.rb'"
+  file "extra.rb" do |t|
+    File.open(t.name,"w") do |extra|
+      extra.write <<EXTRA
 # This file was created by the build system. Developers can add extra
 # test/debug code here for the Rakefile to load. This code will not be
 # loaded when you build and install the gem.
 EXTRA
+    end
   end
 end

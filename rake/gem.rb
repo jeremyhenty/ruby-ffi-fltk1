@@ -20,40 +20,43 @@
 require "rubygems"
 require "rake/gempackagetask"
 
-specification = Gem::Specification.new do |s|
-  s.author = "Jeremy Henty"
-  s.email = "onepoint@starurchin.org"
+module Build
 
-  s.name = "ffi-fltk1"
-  s.version = "0.0.1"
-  s.summary = "A binding of the FLTK1 GUI toolkit using FFI."
+  specification = Gem::Specification.new do |s|
+    s.author = "Jeremy Henty"
+    s.email = "onepoint@starurchin.org"
 
-  s.platform = Gem::Platform::RUBY
-  s.add_dependency "ffi", ">= 0.2.0"
-  s.files =
-    FileList["COPYING", "AUTHORS",
-             "lib/**/*.rb", "rake/**/*.rb",
-             "wrapper/*.cc", "erb/*.erb", "include/*.h",
-             "bin/*"].to_a
-  s.extensions = "Rakefile"
-  s.executables = [ Build::DEMO_NAME ]
-end
+    s.name = "ffi-fltk1"
+    s.version = "0.0.1"
+    s.summary = "A binding of the FLTK1 GUI toolkit using FFI."
 
-class Rake::GemPackageTask
-  def gem_path
-    File.join(package_dir,gem_file)
+    s.platform = Gem::Platform::RUBY
+    s.add_dependency "ffi", ">= 0.2.0"
+    s.files =
+      FileList["COPYING", "AUTHORS",
+               "lib/**/*.rb", "rake/**/*.rb",
+               "wrapper/*.cc", "erb/*.erb", "include/*.h",
+               "bin/*"].to_a
+    s.extensions = "Rakefile"
+    s.executables = [ DEMO_NAME ]
   end
-end
 
-package = Rake::GemPackageTask.new(specification) { }
-gem = package.gem_path
+  class Rake::GemPackageTask
+    def gem_path
+      File.join(package_dir,gem_file)
+    end
+  end
 
-desc "Install the gem"
-task :install => "package" do
-  sh "gem install #{gem}"
-end
+  package = Rake::GemPackageTask.new(specification) { }
+  gem = package.gem_path
 
-desc "Run the installed demonstration program"
-task :run_installed => :install do
-  sh Build::DEMO_NAME
+  desc "Install the gem"
+  task :install => "package" do
+    sh "gem install #{gem}"
+  end
+
+  desc "Run the installed demonstration program"
+  task :run_installed => :install do
+    sh DEMO_NAME
+  end
 end

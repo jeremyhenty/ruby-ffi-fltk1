@@ -17,15 +17,17 @@
 # along with this program. If not, see http://www.gnu.org/licenses/.
 
 
-desc "Run the demonstration program"
-Build::DEMO_NAME = "ruby-ffi-fltk1-demo"
-task :run => :build do
-  # prepend the local lib directory to $RUBYLIB
-  lib_dir = File.join(Dir.pwd,"lib")
-  lib_path = ENV["RUBYLIB"]
-  ENV["RUBYLIB"] =
-    lib_path ? ((lib_path.split(':').unshift(lib_dir)) * ':') : lib_dir
+module Build
+  DEMO_NAME = "ruby-ffi-fltk1-demo"
+  desc "Run the demonstration program"
+  task :run => :build do
+    # prepend the local lib directory to $RUBYLIB
+    lib_dir = File.join(Dir.pwd,"lib")
+    lib_path = ENV["RUBYLIB"]
+    ENV["RUBYLIB"] =
+      lib_path ? ((lib_path.split(':').unshift(lib_dir)) * ':') : lib_dir
 
-  # run the demo
-  sh "bin/#{Build::DEMO_NAME}"
+    # run the demo
+    sh "bin/#{DEMO_NAME}"
+  end
 end

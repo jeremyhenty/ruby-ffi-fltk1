@@ -66,6 +66,11 @@ module FFI::FLTK
       end
     end
 
+    def ffi_send(meth, *args)
+      ffi_widget_not_deleted
+      send(meth, @ffi_pointer, *args)
+    end
+
     ffi_callback :ffi_widget_callback, [ ], :void
     ffi_attach_function :ffi_widget_set_callback,
     [ :pointer, :ffi_widget_callback ], :void
@@ -93,7 +98,6 @@ module FFI::FLTK
     end
 
     def callback(*cbs, &cb1)
-      ffi_widget_not_deleted
       return @ffi_callback if cbs.empty? && !cb1
       count = cbs.size
       raise ArgumentError, "wrong number of arguments (%d for 1))" %
@@ -104,9 +108,9 @@ module FFI::FLTK
       cb = cb0 || cb1
       @ffi_callback = cb
       if @ffi_callback
-        ffi_widget_set_callback(@ffi_pointer, @ffi_callback)
+        ffi_send(:ffi_widget_set_callback, @ffi_callback)
       else
-        ffi_widget_unset_callback(@ffi_pointer)
+        ffi_send(:ffi_widget_unset_callback)
       end
       return @ffi_callback
     end
@@ -118,12 +122,9 @@ module FFI::FLTK
 
     def box(b=nil)
       if b
-        ffi_widget_not_deleted
-        ffi_widget_box_set(@ffi_pointer, b)
-        return nil
+        ffi_send(:ffi_widget_box_set, b)
       else
-        ffi_widget_not_deleted
-        return ffi_widget_box(@ffi_pointer)
+        ffi_send(:ffi_widget_box)
       end
     end
 
@@ -158,15 +159,8 @@ module FFI::FLTK
       end
     end
 
-    def show
-      ffi_widget_not_deleted
-      ffi_window_show(@ffi_pointer)
-    end
-
-    def hide
-      ffi_widget_not_deleted
-      ffi_window_hide(@ffi_pointer)
-    end
+    def show ; ffi_send(:ffi_window_show) ; end
+    def hide ; ffi_send(:ffi_window_hide) ; end
   end
 
   class Box < Widget

@@ -25,7 +25,10 @@ task :default => :build
 desc "Build all the files"
 task :build # we will add dependencies later
 
-module Build ; end # a useful namespace
+# a useful namespace
+module Build
+  class Error < StandardError ; end
+end
 
 require "./rake/fltk_config"
 require "./rake/extra"

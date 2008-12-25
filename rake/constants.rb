@@ -95,7 +95,7 @@ EOS
       # extract the Fl_Boxtype enumeration from the FLTK header
       enumerations =
         Build.header_pp(File.join(Build::HEADER_DIR,"enumerations.h"))
-      raise "missing Fl_Boxtype enumeration" unless
+      raise Build::Error, "missing Fl_Boxtype enumeration" unless
         enumeration_match = enumeration_pattern.match(enumerations)
       enumeration = enumeration_match.captures.first
 
@@ -107,7 +107,7 @@ EOS
       end.compact
 
       # remove "FL_FREE_BOXTYPE", it's not a real box type
-      raise "missing FL_FREE_BOXTYPE" unless
+      raise Build::Error, "missing FL_FREE_BOXTYPE" unless
         enum_names.last == "FL_FREE_BOXTYPE"
       enum_names.pop
 
@@ -115,7 +115,7 @@ EOS
     end
 
     def mangle_name(name)
-      raise "invalid Box type name: '#{name}'" unless
+      raise Build::Error, "invalid Box type name: '#{name}'" unless
         name_match = NAME_PATTERN.match(name)
       return name_match.captures.first
     end

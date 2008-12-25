@@ -40,7 +40,8 @@ module Build
     config = Hash.new
     [ :version, :cxx, :cxxflags, :ldflags ].each do |key|
       config[key] = %x{ fltk-config --#{key} }.chomp
-      raise "configuration check for --#{key} failed" unless $?.success?
+      raise Build::Error,
+      "configuration check for --#{key} failed" unless $?.success?
     end
     return config
   end

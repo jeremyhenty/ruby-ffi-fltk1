@@ -20,7 +20,8 @@
 <%= Project.auto_generated_rb %><%
 
 names_mangled = names.collect { |name| mangle_name(name) }
-max_size = names_mangled.collect { |name| name.size }.max
+max_name_size = names_mangled.collect { |name| name.size }.max
+max_value_size = values.collect { |value| value.to_s.size }.max
 
 %>
 
@@ -29,16 +30,17 @@ module FFI::FLTK
 
     module Type
 <%
-name_format = "%%-%ds" % max_size
+name_format = "%%-%ds" % max_name_size
+value_format = "%%%ds" % max_value_size
 names_mangled.zip(values) do |name, value|
-%>      <%= name_format % name %> = <%= value %>
+%>      <%= name_format % name %> = <%= value_format % value %>
 <% end
 %>    end
 
     TYPES = {
 <%
 quoted_format = '"%s"'
-name_format = "%%-%ds" % (max_size + 2)
+name_format = "%%-%ds" % (max_name_size + 2)
 names_mangled.each do |name|
 %>      <%= name_format % (quoted_format % name) %> => Type::<%= name %>,
 <% end

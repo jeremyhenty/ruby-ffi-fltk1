@@ -25,7 +25,7 @@ module FFI::FLTK
   class Error < StandardError ; end
 
   extend FFI::Library
-  ffi_lib(__FILE__.sub(%r{\.rb$},".so"))
+  ffi_lib(*Dir.glob("#{File.dirname(__FILE__)}/**/*.so"))
 
   attach_function :run, :ffi_fltk_run, [ ], :int
   attach_function :alert, :ffi_fltk_alert, [ :string ], :void
@@ -181,6 +181,9 @@ module FFI::FLTK
     def show ; ffi_send(:ffi_window_show) ; end
     def hide ; ffi_send(:ffi_window_hide) ; end
   end
+
+  attach_function :ffi_fl_box_initialize, [ ], :void
+  ffi_fl_box_initialize
 
   class Box < Widget
     ffi_pointer_method :ffi_box_new_xywhl

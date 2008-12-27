@@ -19,9 +19,8 @@
 
 module Build
   desc "Compile the wrapper library"
-  wrapper = File.join FFI_DIR, "fltk1.so"
-  CLOBBER.include(wrapper)
-  file wrapper => [ "extra.rb", "wrapper/fltk1.cc" ] do |t|
+  wrapper = File.join AUTO_LIB_DIR, "fltk.so"
+  file wrapper => [ "extra.rb", "wrapper/fltk.cc" ] do |t|
     puts "building '#{t.name}'"
     dl_compile(t.name, t.prerequisites.last)
   end

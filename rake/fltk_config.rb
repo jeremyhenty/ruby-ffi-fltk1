@@ -32,6 +32,11 @@ module Build
   LIB_DIR = File.join FFI_DIR, "fltk1"
   directory LIB_DIR
 
+  # auto-generated targets
+  AUTO_LIB_DIR = File.join(LIB_DIR, "auto")
+  directory AUTO_LIB_DIR
+  CLOBBER << AUTO_LIB_DIR
+
   def fltk_config
     @@fltk_config ||= fltk_config_
   end

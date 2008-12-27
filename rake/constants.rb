@@ -65,11 +65,6 @@ EOS
   directory AUTO_DIR
   CLEAN << AUTO_DIR
 
-  # auto-generated targets
-  AUTO_LIB_DIR = File.join(LIB_DIR, "auto")
-  directory AUTO_LIB_DIR
-  CLOBBER << AUTO_LIB_DIR
-
   # boxes
 
   module Box

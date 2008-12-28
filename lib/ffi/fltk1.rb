@@ -186,6 +186,15 @@ module FFI::FLTK
     def group_end
       ffi_send(:ffi_group_end)
     end
+
+    ffi_attach_function :ffi_group_resizable_set,
+    [ :pointer, :pointer ], :void
+
+    def resizable(widget)
+      ffi_send(:ffi_group_resizable_set, widget.ffi_pointer)
+    end
+
+    alias :resizable= :resizable
   end
 
   class Window < Group

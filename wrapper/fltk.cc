@@ -186,6 +186,11 @@ void ffi_group_end(void *p_group)
   ((FFI_Group *) p_group)->end();
 }
 
+void ffi_group_resizable_set(void *p_group, void *p_widget)
+{
+  ((FFI_Group *) p_group)->resizable((FFI_Widget *) p_widget);
+}
+
 } // extern "C"
 
 // Window

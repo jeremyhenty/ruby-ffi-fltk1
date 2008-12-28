@@ -222,6 +222,14 @@ module FFI::FLTK
 
     def show ; ffi_send(:ffi_window_show) ; end
     def hide ; ffi_send(:ffi_window_hide) ; end
+
+    ffi_attach_function :ffi_window_size_range,
+    [ :pointer, :int, :int, :int, :int, :int, :int, :int ], :void
+
+    def size_range(minw, minh, maxw=0, maxh=0, dw=0, dh=0, aspect=0)
+      ffi_send(:ffi_window_size_range,
+               minw, minh, maxw, maxh, dw, dh, aspect)
+    end
   end
 
   attach_function :ffi_fl_box_initialize, [ ], :void

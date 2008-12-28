@@ -239,6 +239,14 @@ void ffi_window_hide(void *p_win)
   ((FFI_Window *) p_win)->hide();
 }
 
+void ffi_window_size_range(void *p_win,
+			   int minw, int minh, int maxw, int maxh,
+			   int dw, int dh, int aspect)
+{
+  ((FFI_Window *) p_win)->size_range(minw, minh, maxw, maxh,
+				     dw, dh, aspect);
+}
+
 } // extern "C"
 
 // Box

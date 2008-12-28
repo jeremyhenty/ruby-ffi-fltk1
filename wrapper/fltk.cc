@@ -176,6 +176,16 @@ void *ffi_group_new_xywhl(int x, int y, int w, int h, const char *l)
   return new FFI_Group(x, y, w, h, l);
 }
 
+void ffi_group_begin(void *p_group)
+{
+  ((FFI_Group *) p_group)->begin();
+}
+
+void ffi_group_end(void *p_group)
+{
+  ((FFI_Group *) p_group)->end();
+}
+
 } // extern "C"
 
 // Window

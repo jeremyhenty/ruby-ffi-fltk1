@@ -156,7 +156,33 @@ module FFI::FLTK
 
     def initialize(*args)
       super
-      yield self if block_given?
+      if block_given?
+        # the FLTK constructor has already called Group::begin
+        begin yield self
+        ensure group_end
+        end
+      end
+    end
+
+    ffi_attach_function :ffi_group_begin, [ :pointer ], :void
+    ffi_attach_function :ffi_group_end, [ :pointer ], :void
+
+    def group_begin
+      if block_given?
+        group_begin_
+        begin yield
+        ensure group_end
+        end
+      else group_begin_
+      end
+    end
+
+    def group_begin_
+      ffi_send(:ffi_group_begin)
+    end
+
+    def group_end
+      ffi_send(:ffi_group_end)
     end
   end
 

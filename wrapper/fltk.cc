@@ -23,6 +23,7 @@
 
 #include <FL/Fl.H>
 #include <FL/Fl_Widget.H>
+#include <FL/Fl_Group.H>
 #include <FL/Fl_Window.H>
 #include <FL/Fl_Box.H>
 #include <FL/Fl_Button.H>
@@ -146,6 +147,33 @@ void ffi_widget_box_set(void *p_widget, int box)
 {
   FFI_Widget *widget = (FFI_Widget *) p_widget;
   widget->box((Fl_Boxtype) box);
+}
+
+} // extern "C"
+
+// Group
+
+class FFI_Group : public FFI, public Fl_Group
+{
+public:
+  FFI_Group(int x, int y, int w, int h, const char *l);
+  virtual ~FFI_Group();
+};
+
+FFI_Group::FFI_Group(int x, int y, int w, int h, const char *l) :
+  Fl_Group(x, y, w, h, l)
+{
+}
+
+FFI_Group::~FFI_Group()
+{
+}
+
+extern "C" {
+
+void *ffi_group_new_xywhl(int x, int y, int w, int h, const char *l)
+{
+  return new FFI_Group(x, y, w, h, l);
 }
 
 } // extern "C"

@@ -150,7 +150,17 @@ module FFI::FLTK
     alias :box= box
   end
 
-  class Window < Widget
+  class Group < Widget
+
+    ffi_pointer_method :ffi_group_new_xywhl
+
+    def initialize(*args)
+      super
+      yield self if block_given?
+    end
+  end
+
+  class Window < Group
 
     ffi_attach_function :ffi_window_new_xywhl,
     [ :int, :int, :int, :int, :string ], :pointer
@@ -159,11 +169,6 @@ module FFI::FLTK
 
     ffi_attach_function :ffi_window_show, [ :pointer ], :void
     ffi_attach_function :ffi_window_hide, [ :pointer ], :void
-
-    def initialize(*args)
-      super
-      yield self if block_given?
-    end
 
     def ffi_pointer(*args)
       count = args.size

@@ -36,6 +36,8 @@ module FFI::FLTK
 
     WIDGETS = Set.new
 
+    attr_reader :ffi_pointer
+
     def self.ffi_attach_function(*args)
       FFI::FLTK.attach_function(*args)
     end
@@ -44,14 +46,14 @@ module FFI::FLTK
       FFI::FLTK.callback(*args)
     end
 
-    def self.ffi_pointer_method(*args)
+    def self.ffi_pointer_new_method(*args)
       count = args.size
       case count
       when 0
-        @ffi_pointer_method
+        @ffi_pointer_new_method
       when 1
-        @ffi_pointer_method = args.first
-        ffi_attach_function @ffi_pointer_method,
+        @ffi_pointer_new_method = args.first
+        ffi_attach_function @ffi_pointer_new_method,
         [ :int, :int, :int, :int, :string ], :pointer
         nil
       else
@@ -60,29 +62,29 @@ module FFI::FLTK
       end
     end
 
-    ffi_pointer_method :ffi_widget_new_xywhl
+    ffi_pointer_new_method :ffi_widget_new_xywhl
 
     def initialize(*args)
-      @ffi_pointer = ffi_pointer(*args)
+      @ffi_pointer = ffi_pointer_new(*args)
       WIDGETS << self
       @ffi_widget_deleted = false
       @ffi_widget_deleted_callback = method(:ffi_widget_deleted)
       ffi_set_delete_callback(@ffi_pointer, @ffi_widget_deleted_callback)
     end
 
-    def ffi_pointer(*args)
+    def ffi_pointer_new(*args)
       count = args.size
       case count
-      when 4: args << nil; ffi_pointer_(*args)
-      when 5: ffi_pointer_(*args)
+      when 4: args << nil; ffi_pointer_new_(*args)
+      when 5: ffi_pointer_new_(*args)
       else
         raise ArgumentError, "wrong number of arguments (%d for %d))" %
           [ count, count < 4 ? 4 : 5 ]
       end
     end
 
-    def ffi_pointer_(*args)
-      send(self.class.ffi_pointer_method, *args)
+    def ffi_pointer_new_(*args)
+      send(self.class.ffi_pointer_new_method, *args)
     end
 
     def ffi_send(meth, *args)
@@ -152,7 +154,7 @@ module FFI::FLTK
 
   class Group < Widget
 
-    ffi_pointer_method :ffi_group_new_xywhl
+    ffi_pointer_new_method :ffi_group_new_xywhl
 
     def initialize(*args)
       super
@@ -196,7 +198,7 @@ module FFI::FLTK
     ffi_attach_function :ffi_window_show, [ :pointer ], :void
     ffi_attach_function :ffi_window_hide, [ :pointer ], :void
 
-    def ffi_pointer(*args)
+    def ffi_pointer_new(*args)
       count = args.size
       case count
       when 2: args << nil; ffi_window_new_whl(*args)
@@ -217,13 +219,13 @@ module FFI::FLTK
   ffi_fl_box_initialize
 
   class Box < Widget
-    ffi_pointer_method :ffi_box_new_xywhl
+    ffi_pointer_new_method :ffi_box_new_xywhl
   end
 
   require "ffi/fltk1/auto/box"
 
   class Button < Widget
-    ffi_pointer_method :ffi_button_new_xywhl
+    ffi_pointer_new_method :ffi_button_new_xywhl
   end
 
 end

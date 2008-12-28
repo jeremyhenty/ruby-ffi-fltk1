@@ -26,20 +26,22 @@ require "ffi/fltk1"
 include FFI
 include FFI::FLTK
 
-def run_demo(demo)
-  demo_path = File.join(File.dirname(__FILE__), demo)
-  fork { exec demo_path }
-end
+xs = [ 0, 100, 300, 400 ]
+ys = [ 0, 100, 300, 400 ]
 
-Window.new(300, 400, "FFI-FLTK1 demonstration") do |win|
-  click_button = Button.new(0,   0, 300, 100, "Click Me!")
-  click_button.callback { FLTK.alert("Hello!") }
-  boxes_button = Button.new(0, 100, 300, 100, "Boxes")
-  boxes_button.callback { run_demo "ruby-ffi-fltk1-demo-box-types" }
-  resizing_button = Button.new(0, 200, 300, 100, "Resizing")
-  resizing_button.callback { run_demo "ruby-ffi-fltk1-demo-resizing" }
-  close_button = Button.new(0, 300, 300, 100, "Close")
-  close_button.callback { win.hide }
+Window.new(xs.last, ys.last, "Resizing") do |win|
+  resizable = nil
+  (ys.size - 1).times do |j|
+    (xs.size - 1).times do |i|
+      x = xs[i] ; w = xs[i+1] - x
+      y = ys[j] ; h = xs[j+1] - y
+      box = Box.new(x, y, w, h)
+      box.box(Box::Type::DOWN_BOX)
+      resizable = box if i == 1 && j == 1
+    end
+  end
+  win.resizable(resizable)
+  win.size_range(1, 1, 0, 0)
   win.show
 end
 

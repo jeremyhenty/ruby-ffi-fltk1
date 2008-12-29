@@ -147,6 +147,12 @@ void ffi_widget_unset_callback(void *p_widget)
   widget->callback(FFI_Widget::callback_caller, (void *) 0);
 }
 
+void ffi_widget_redraw(void *p_widget)
+{
+  FFI_Widget *widget = (FFI_Widget *) p_widget;
+  widget->redraw();
+}
+
 int ffi_widget_box(void *p_widget)
 {
   FFI_Widget *widget = (FFI_Widget *) p_widget;

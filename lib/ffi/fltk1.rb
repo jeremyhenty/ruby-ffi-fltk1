@@ -138,6 +138,12 @@ module FFI::FLTK
 
     alias :callback= :callback
 
+    ffi_attach_function :ffi_widget_redraw, [ :pointer ], :void
+
+    def redraw()
+      ffi_send(:ffi_widget_redraw)
+    end
+
     [ :box, :x, :y, :w, :h ].each do |meth|
 
       ffi_attach_function :"ffi_widget_#{meth}",

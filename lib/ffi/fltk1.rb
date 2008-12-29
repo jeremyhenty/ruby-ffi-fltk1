@@ -138,18 +138,25 @@ module FFI::FLTK
 
     alias :callback= :callback
 
-    ffi_attach_function :ffi_widget_box, [ :pointer ], :int
-    ffi_attach_function :ffi_widget_box_set, [ :pointer, :int ], :void
+    [ :box, :x, :y, :w, :h ].each do |meth|
 
-    def box(b=nil)
-      if b
-        ffi_send(:ffi_widget_box_set, b)
-      else
-        ffi_send(:ffi_widget_box)
+      ffi_attach_function :"ffi_widget_#{meth}",
+      [ :pointer ], :int
+      ffi_attach_function :"ffi_widget_#{meth}_set",
+      [ :pointer, :int ], :void
+
+      class_eval <<DEF, __FILE__, __LINE__
+      def #{meth}(_#{meth}=nil)
+        if _#{meth}
+          ffi_send(:ffi_widget_#{meth}_set, _#{meth})
+        else
+          ffi_send(:ffi_widget_#{meth})
+        end
       end
-    end
+DEF
 
-    alias :box= box
+      alias_method :"#{meth}=", meth
+    end
   end
 
   class Group < Widget

@@ -93,6 +93,16 @@ public:
   static void callback_caller(Fl_Widget *widget, void *p_cb);
   FFI_Widget(int x, int y, int w, int h, const char *l);
   virtual ~FFI_Widget();
+
+  // publicize some protected Fl_Widget members
+  int x() { return Fl_Widget::x(); }
+  void x(int _x) { Fl_Widget::x(_x); }
+  int y() { return Fl_Widget::y(); }
+  void y(int _y) { Fl_Widget::y(_y); }
+  int w() { return Fl_Widget::w(); }
+  void w(int _w) { Fl_Widget::w(_w); }
+  int h() { return Fl_Widget::h(); }
+  void h(int _h) { Fl_Widget::h(_h); }
 };
 
 FFI_Widget::FFI_Widget(int x, int y, int w, int h, const char *l) :
@@ -147,6 +157,54 @@ void ffi_widget_box_set(void *p_widget, int box)
 {
   FFI_Widget *widget = (FFI_Widget *) p_widget;
   widget->box((Fl_Boxtype) box);
+}
+
+int ffi_widget_x(void *p_widget)
+{
+  FFI_Widget *widget = (FFI_Widget *) p_widget;
+  return widget->x();
+}
+
+void ffi_widget_x_set(void *p_widget, int x)
+{
+  FFI_Widget *widget = (FFI_Widget *) p_widget;
+  widget->x(x);
+}
+
+int ffi_widget_y(void *p_widget)
+{
+  FFI_Widget *widget = (FFI_Widget *) p_widget;
+  return widget->y();
+}
+
+void ffi_widget_y_set(void *p_widget, int y)
+{
+  FFI_Widget *widget = (FFI_Widget *) p_widget;
+  widget->y(y);
+}
+
+int ffi_widget_w(void *p_widget)
+{
+  FFI_Widget *widget = (FFI_Widget *) p_widget;
+  return widget->w();
+}
+
+void ffi_widget_w_set(void *p_widget, int w)
+{
+  FFI_Widget *widget = (FFI_Widget *) p_widget;
+  widget->w(w);
+}
+
+int ffi_widget_h(void *p_widget)
+{
+  FFI_Widget *widget = (FFI_Widget *) p_widget;
+  return widget->h();
+}
+
+void ffi_widget_h_set(void *p_widget, int h)
+{
+  FFI_Widget *widget = (FFI_Widget *) p_widget;
+  widget->h(h);
 }
 
 } // extern "C"

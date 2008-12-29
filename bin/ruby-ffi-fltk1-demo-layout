@@ -1,0 +1,84 @@
+#!/usr/bin/env ruby
+
+# Copyright (C) 2008 Jeremy Henty.
+
+# This file is part of Ruby-FFI-FLTK1.
+
+# Ruby-FFI-FLTK1 is free software: you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+
+# Ruby-FFI-FLTK1 is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+# General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see http://www.gnu.org/licenses/.
+
+
+$VERBOSE = true
+
+require "rubygems"
+require "ffi/fltk1"
+
+include FFI
+include FFI::FLTK
+
+keypad =
+  [ [ 7, 8, 9 ],
+    [ 4, 5, 6 ],
+    [ 1, 2, 3 ] ]
+
+Window.new(400, 400, "Layout") do |win|
+  sw = 40 ; sh = 40 # the semi-{width,height} of the box
+  box = Box.new(win.w/2 - sw, win.h/2 - sh, 2*sw, 2*sh)
+  box.box(Box::Type::UP_BOX)
+
+  resize_buttons = [ ]
+
+  [ # the (x,y)-coordinates of the four directions
+   [ +1,  0 ],
+   [ -1,  0 ],
+   [  0, -1 ],
+   [  0, +1 ],
+  ].each do |dx, dy|
+
+    # the keypad numbers that point in this direction and the opposite
+    this_way = keypad[dy+1][dx+1]
+    that_way = keypad[1-dy][1-dx]
+
+    # the move button in this direction
+    button = Button.new(190*(dx+1), 190*(dy+1), 20, 20, "@#{this_way}>")
+    button.callback do
+      [ box, *resize_buttons ].each do |b|
+        b.x += 10 * dx
+        b.y += 10 * dy
+      end
+      win.redraw
+    end
+
+    # the stretch/shrink buttons in this direction
+    buttons = *[ [  1, this_way ], [ -1, that_way ] ].collect do |d, dir|
+      Button.new(190+(dx*(sw+d*10)), 190+(dy*(sh+d*10)), 20, 20, "@#{dir}>")
+    end
+    resize_buttons.concat(buttons)
+    buttons.zip([ +1, -1 ]) do |b,d|
+      b.callback do
+        buttons.each do |b1|
+          b1.x += 10*d*dx
+          b1.y += 10*d*dy
+        end
+        box.x += 10*d*(dx == -1 ? -1 : 0)
+        box.y += 10*d*(dy == -1 ? -1 : 0)
+        box.w += 10*d*dx.abs
+        box.h += 10*d*dy.abs
+        win.redraw
+      end
+    end
+  end
+  win.show 
+end
+
+FLTK.run

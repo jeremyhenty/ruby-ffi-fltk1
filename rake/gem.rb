@@ -36,7 +36,7 @@ module Build
       FileList["COPYING", "AUTHORS",
                "lib/**/*.rb", "rake/**/*.rb",
                "wrapper/*.cc", "erb/*.erb", "include/*.h",
-               "bin/*"].to_a
+               "bin/*", "demo/*"].to_a
     s.extensions = "Rakefile"
     s.executables = [ DEMO_NAME ]
   end

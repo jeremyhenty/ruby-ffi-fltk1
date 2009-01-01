@@ -1,5 +1,5 @@
 
-# Copyright (C) 2008 Jeremy Henty.
+# Copyright (C) 2008, 2009 Jeremy Henty.
 
 # This file is part of Ruby-FFI-FLTK1.
 

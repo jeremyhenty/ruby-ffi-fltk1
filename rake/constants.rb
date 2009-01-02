@@ -27,43 +27,10 @@ module Build
 
   module_function
 
-  # auto-generation notices
-
-  def auto_generated_cc
-    auto_generated "// "
-  end
-
-  def auto_generated_rb
-    auto_generated "# "
-  end
-
-  def auto_generated(prefix)
-    AUTO_GENERATED.gsub(%r{^}, prefix)
-  end
-
-  AUTO_GENERATED = <<EOS
-
-This file was auto-generated. Do not edit it!
-
-EOS
-
   # directories
 
   # headers
   HEADER_DIR = "include"
-
-  # ERb
-  ERB_DIR = "erb"
-  def run_erb(binding,in_path,out_path)
-    require "erb"
-    content = ERB.new(IO.read(in_path)).result(binding)
-    File.open(out_path, "w") { |output| output.write(content) }
-  end
-
-  # auto-generated intermediates
-  AUTO_DIR = "auto"
-  directory AUTO_DIR
-  CLEAN << AUTO_DIR
 
   # boxes
 
@@ -115,50 +82,57 @@ EOS
       return name_match.captures.first
     end
 
+    def values
+      @@values ||= values_
+    end
+
+    def values_
+
+      require "ffi"
+      extend FFI::Library
+      ffi_lib File.join(Build::Auto::DIR, "box.so")
+      attach_function :ffi_fl_boxes, [ ], :pointer
+
+      return ffi_fl_boxes.read_array_of_int(names.size)
+    end
+
     NAME_PATTERN =
       %r{\AFL_(.*)\z}
 
-    box_dl = File.join(Build::AUTO_DIR, "box.so")
-    box_dl_cc = File.join(Build::AUTO_DIR, "box.cc")
-    box_dl_src = File.join(Build::ERB_DIR, "box.cc.erb")
+    box_dl = File.join(Build::Auto::DIR, "box.so")
+    box_dl_cc = File.join(Build::Auto::DIR, "box.cc")
+    box_dl_src = File.join(Build::Auto::ERB_DIR, "box.cc.erb")
 
     box_init_dl = File.join(Build::AUTO_LIB_DIR, "box_init.so")
-    box_init_dl_cc = File.join(Build::AUTO_DIR, "box_init.cc")
-    box_init_dl_src = File.join(Build::ERB_DIR, "box_init.cc.erb")
+    box_init_dl_cc = File.join(Build::Auto::DIR, "box_init.cc")
+    box_init_dl_src = File.join(Build::Auto::ERB_DIR, "box_init.cc.erb")
 
     box_ruby = File.join(Build::AUTO_LIB_DIR, "box.rb")
-    box_ruby_src = File.join(Build::ERB_DIR, "box.rb.erb")
+    box_ruby_src = File.join(Build::Auto::ERB_DIR, "box.rb.erb")
 
     task :build => box_ruby
 
     file box_ruby => [ Build::AUTO_LIB_DIR,
                        box_ruby_src, box_dl ] do |t|
-
-      require "ffi"
-      extend FFI::Library
-      ffi_lib box_dl
-      attach_function :ffi_fl_boxes, [ ], :pointer
-
-      values = ffi_fl_boxes.read_array_of_int(names.size)
-      Build.run_erb(binding, box_ruby_src, t.name)
+      Build::Auto.erb(box_ruby_src, t.name)
     end
 
-    file box_dl => [ Build::AUTO_DIR, "extra.rb", box_dl_cc ] do |t|
+    file box_dl => [ Build::Auto::DIR, "extra.rb", box_dl_cc ] do |t|
       Build.dl_compile(t.name, t.prerequisites.last)
     end
 
-    file box_dl_cc => [ Build::AUTO_DIR, box_dl_src ] do |t|
-      Build.run_erb(binding, t.prerequisites.last, t.name)
+    file box_dl_cc => [ Build::Auto::DIR, box_dl_src ] do |t|
+      Build::Auto.erb(t.prerequisites.last, t.name)
     end
 
     task :build => box_init_dl
 
-    file box_init_dl => [ Build::AUTO_DIR, "extra.rb", box_init_dl_cc ] do |t|
+    file box_init_dl => [ Build::Auto::DIR, "extra.rb", box_init_dl_cc ] do |t|
       Build.dl_compile(t.name, t.prerequisites.last)
     end
 
-    file box_init_dl_cc => [ Build::AUTO_DIR, box_init_dl_src ] do |t|
-      Build.run_erb(binding, t.prerequisites.last, t.name)
+    file box_init_dl_cc => [ Build::Auto::DIR, box_init_dl_src ] do |t|
+      Build::Auto.erb(t.prerequisites.last, t.name)
     end
   end
 end

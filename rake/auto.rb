@@ -17,33 +17,49 @@
 # along with this program. If not, see http://www.gnu.org/licenses/.
 
 
-<%= generated_rb %><%
+# Tasks and methods to auto-generate files from templates using ERb.
 
-names_mangled = Box.names.collect { |name| Box.mangle_name(name) }
-max_name_size = names_mangled.collect { |name| name.size }.max
-max_value_size = Box.values.collect { |value| value.to_s.size }.max
+module Build
 
-%>
+  class Auto
 
-module FFI::FLTK
-  class Box
+    # directory
+    DIR = "auto"
+    directory DIR
+    CLEAN << DIR
 
-    module Type
-<%
-name_format = "%%-%ds" % max_name_size
-value_format = "%%%ds" % max_value_size
-names_mangled.zip(Box.values) do |name, value|
-%>      <%= name_format % name %> = <%= value_format % value %>
-<% end
-%>    end
+    # auto-generation notices
 
-    TYPES = {
-<%
-quoted_format = '"%s"'
-name_format = "%%-%ds" % (max_name_size + 2)
-names_mangled.each do |name|
-%>      <%= name_format % (quoted_format % name) %> => Type::<%= name %>,
-<% end
-%>    }
+    def generated_cc
+      generated "// "
+    end
+
+    def generated_rb
+      generated "# "
+    end
+
+    def generated(prefix)
+      GENERATED.gsub(%r{^}, prefix)
+    end
+
+    GENERATED = <<EOS
+
+This file was auto-generated. Do not edit it!
+
+EOS
+
+    # ERb
+    ERB_DIR = "erb"
+
+    def self.erb(*args)
+      new.erb(*args)
+    end
+
+    def erb(in_path, out_path)
+      require "erb"
+      content = ERB.new(IO.read(in_path)).result(binding)
+      File.open(out_path, "w") { |output| output.write(content) }
+    end
+
   end
 end

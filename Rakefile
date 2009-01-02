@@ -30,6 +30,7 @@ module Build
   class Error < StandardError ; end
 end
 
+require "./rake/auto"
 require "./rake/fltk_config"
 require "./rake/extra"
 require "./rake/constants"

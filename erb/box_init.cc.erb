@@ -17,7 +17,7 @@
 // along with this program. If not, see http://www.gnu.org/licenses/.
 
 
-<%= Build.auto_generated_cc %>
+<%= generated_cc %>
 
 #include <FL/Enumerations.H>
 
@@ -30,7 +30,7 @@ extern "C" {
 
 void *ffi_fl_box_initialize()
 {
-<% names.each do |name|
+<% Box.names.each do |name|
 %>  (void) (<%= name %>);
 <% end
 %>}

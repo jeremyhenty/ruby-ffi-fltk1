@@ -17,12 +17,12 @@
 // along with this program. If not, see http://www.gnu.org/licenses/.
 
 
-<%= Build.auto_generated_cc %>
+<%= generated_cc %>
 
 #include <FL/Enumerations.H>
 
-static int boxes[<%= names.size %>] = {
-<% names.each do |name|
+static int boxes[<%= Box.names.size %>] = {
+<% Box.names.each do |name|
 %>  <%= name %>,
 <% end %>};
 

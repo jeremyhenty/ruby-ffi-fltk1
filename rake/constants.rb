@@ -27,8 +27,6 @@ module Build
 
   module_function
 
-  # directories
-
   # headers
   HEADER_DIR = "include"
 
@@ -101,38 +99,24 @@ module Build
 
     box_dl = File.join(Build::Auto::DIR, "box.so")
     box_dl_cc = File.join(Build::Auto::DIR, "box.cc")
-    box_dl_src = File.join(Build::Auto::ERB_DIR, "box.cc.erb")
 
-    box_init_dl = File.join(Build::AUTO_LIB_DIR, "box_init.so")
+    box_init_dl = File.join(Build::Auto::LIB_DIR, "box_init.so")
     box_init_dl_cc = File.join(Build::Auto::DIR, "box_init.cc")
-    box_init_dl_src = File.join(Build::Auto::ERB_DIR, "box_init.cc.erb")
 
-    box_ruby = File.join(Build::AUTO_LIB_DIR, "box.rb")
-    box_ruby_src = File.join(Build::Auto::ERB_DIR, "box.rb.erb")
+    box_ruby = File.join(Build::Auto::LIB_DIR, "box.rb")
 
     task :build => box_ruby
 
-    file box_ruby => [ Build::AUTO_LIB_DIR,
-                       box_ruby_src, box_dl ] do |t|
-      Build::Auto.erb(box_ruby_src, t.name)
-    end
+    file box_ruby => box_dl
 
     file box_dl => [ Build::Auto::DIR, "extra.rb", box_dl_cc ] do |t|
       Build.dl_compile(t.name, t.prerequisites.last)
-    end
-
-    file box_dl_cc => [ Build::Auto::DIR, box_dl_src ] do |t|
-      Build::Auto.erb(t.prerequisites.last, t.name)
     end
 
     task :build => box_init_dl
 
     file box_init_dl => [ Build::Auto::DIR, "extra.rb", box_init_dl_cc ] do |t|
       Build.dl_compile(t.name, t.prerequisites.last)
-    end
-
-    file box_init_dl_cc => [ Build::Auto::DIR, box_init_dl_src ] do |t|
-      Build::Auto.erb(t.prerequisites.last, t.name)
     end
   end
 end

@@ -21,12 +21,19 @@
 
 module Build
 
+  # directories
+  FFI_DIR = "lib/ffi"
+  LIB_DIR = File.join(FFI_DIR, "fltk1")
+
   class Auto
 
-    # directory
+    # directories
+
     DIR = "auto"
-    directory DIR
     CLEAN << DIR
+
+    LIB_DIR = File.join(Build::LIB_DIR, "auto")
+    CLOBBER << LIB_DIR
 
     # auto-generation notices
 
@@ -49,7 +56,6 @@ This file was auto-generated. Do not edit it!
 EOS
 
     # ERb
-    ERB_DIR = "erb"
 
     def self.erb(*args)
       new.erb(*args)
@@ -61,5 +67,18 @@ EOS
       File.open(out_path, "w") { |output| output.write(content) }
     end
 
+    [
+     [ "auto", DIR     ],
+     [ "lib",  LIB_DIR ],
+    ].each do |erb_dir, prefix|
+        Dir.glob("erb/#{erb_dir}/**/*") do |source|
+        target = File.join(prefix, source.sub(%r{^erb/.*?/}, ""))
+        target_dir = File.dirname(target)
+        directory target_dir
+        file target => [ target_dir, source ] do
+          erb(source, target)
+        end
+      end
+    end
   end
 end

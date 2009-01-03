@@ -19,10 +19,11 @@
 
 module Build
   desc "Compile the wrapper library"
-  wrapper = File.join Auto::LIB_DIR, "fltk.so"
-  file wrapper => [ "extra.rb", "wrapper/fltk.cc" ] do |t|
+  library = File.join(Auto::LIB_DIR, "fltk.so")
+  source = File.join(Auto::DIR, "fltk.cc")
+  file library => [ "extra.rb", source ] do |t|
     puts "building '#{t.name}'"
     dl_compile(t.name, t.prerequisites.last)
   end
-  task :build => wrapper
+  task :build => library
 end

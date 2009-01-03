@@ -88,7 +88,7 @@ void ffi_set_delete_callback(void *p_ffi, FFI::Delete_Callback *callback)
 // Widget
 
 class FFI_Widget : public FFI, public Fl_Widget
-{
+{ // <% widget_class do %>
 public:
   typedef void Callback();
   virtual void draw();
@@ -217,10 +217,12 @@ void ffi_widget_h_set(void *p_widget, int h)
 
 } // extern "C"
 
+// <% end %>
+
 // Group
 
 class FFI_Group : public FFI, public Fl_Group
-{
+{ // <% widget_class do %>
 public:
   FFI_Group(int x, int y, int w, int h, const char *l);
   virtual ~FFI_Group();
@@ -259,10 +261,12 @@ void ffi_group_resizable_set(void *p_group, void *p_widget)
 
 } // extern "C"
 
+// <% end %>
+
 // Window
 
 class FFI_Window : public FFI, public Fl_Window
-{
+{ // <% widget_class do %>
 public:
   FFI_Window(int x, int y, int w, int h, const char *l);
   FFI_Window(int w, int h, const char *l);
@@ -315,10 +319,12 @@ void ffi_window_size_range(void *p_win,
 
 } // extern "C"
 
+// <% end %>
+
 // Box
 
 class FFI_Box : public FFI, public Fl_Box
-{
+{ // <% widget_class do %>
 public:
   FFI_Box(int x, int y, int w, int h, const char *l);
   virtual ~FFI_Box();
@@ -342,10 +348,12 @@ void *ffi_box_new_xywhl(int x, int y, int w, int h, const char *l)
 
 } // extern "C"
 
+// <% end %>
+
 // Button
 
 class FFI_Button : public FFI, public Fl_Button
-{
+{ // <% widget_class do %>
 public:
   FFI_Button(int x, int y, int w, int h, const char *l);
   virtual ~FFI_Button();
@@ -368,3 +376,5 @@ void *ffi_button_new_xywhl(int x, int y, int w, int h, const char *l)
 }
 
 } // extern "C"
+
+// <% end %>

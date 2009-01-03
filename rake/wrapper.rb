@@ -18,6 +18,13 @@
 
 
 module Build
+
+  class Auto
+    def widget_class
+      yield
+    end
+  end
+
   desc "Compile the wrapper library"
   library = File.join(Auto::LIB_DIR, "fltk.so")
   source = File.join(Auto::DIR, "fltk.cc")

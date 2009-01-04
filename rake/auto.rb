@@ -57,6 +57,7 @@ module Build
     # auto-generation notice
 
     def generated
+      comment_strip
       GENERATED.gsub(%r{^}, comment_prefix + " ")
     end
 

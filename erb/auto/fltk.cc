@@ -17,7 +17,7 @@
 // along with this program. If not, see http://www.gnu.org/licenses/.
 
 
-<%= generated_cc %>
+<%= generated %>
 
 #ifdef FFI_FLTK_TRACE_DELETE
 #include <iostream>

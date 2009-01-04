@@ -17,7 +17,7 @@
 # along with this program. If not, see http://www.gnu.org/licenses/.
 
 
-<%= generated_rb %><%
+<%= generated %><%
 
 names_mangled = Box.names.collect { |name| Box.mangle_name(name) }
 max_name_size = names_mangled.collect { |name| name.size }.max

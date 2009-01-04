@@ -35,18 +35,29 @@ module Build
     LIB_DIR = File.join(Build::LIB_DIR, "auto")
     CLOBBER << LIB_DIR
 
-    # auto-generation notices
+    # initialize in and out paths
 
-    def generated_cc
-      generated "// "
+    def initialize(in_path, out_path)
+      @in_path  = in_path
+      @out_path = out_path
     end
 
-    def generated_rb
-      generated "# "
+    # comments
+
+    def comment_prefix
+      @comment_prefix ||=
+        case @out_path
+        when %r{\.rb$}; "#"
+        when %r{\.cc$}; "//"
+        else raise Build::Error,
+          "the comment prefix for #{@out_path} is unknown"
+        end
     end
 
-    def generated(prefix)
-      GENERATED.gsub(%r{^}, prefix)
+    # auto-generation notice
+
+    def generated
+      GENERATED.gsub(%r{^}, comment_prefix + " ")
     end
 
     GENERATED = <<EOS
@@ -58,13 +69,13 @@ EOS
     # ERb
 
     def self.erb(*args)
-      new.erb(*args)
+      new(*args).erb
     end
 
-    def erb(in_path, out_path)
+    def erb
       require "erb"
-      content = ERB.new(IO.read(in_path)).result(binding)
-      File.open(out_path, "w") { |output| output.write(content) }
+      content = ERB.new(IO.read(@in_path)).result(binding)
+      File.open(@out_path, "w") { |output| output.write(content) }
     end
 
     [

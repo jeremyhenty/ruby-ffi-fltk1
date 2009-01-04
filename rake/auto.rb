@@ -74,8 +74,18 @@ EOS
 
     def erb
       require "erb"
-      content = ERB.new(IO.read(@in_path)).result(binding)
-      File.open(@out_path, "w") { |output| output.write(content) }
+      input = IO.read(@in_path)
+      template = ERB.new(input, nil, nil, "@erb_out")
+      output = template.result(binding)
+      File.open(@out_path, "w") { |out_file| out_file.write(output) }
+    end
+
+    def comment_strip
+      @comment_strip_regexp ||=
+        Regexp.new('[[:blank:]]*' +
+                   Regexp.escape(comment_prefix) +
+                   '[[:blank:]]*\z')
+      @erb_out.sub!(@comment_strip_regexp, "")
     end
 
     [

@@ -20,10 +20,50 @@
 module Build
 
   class Auto
-    def widget_class
-      comment_strip
-      yield
-      comment_strip
+
+    def widget_class(&block)
+      Widget_Class.new(self).run(&block)
+    end
+
+    class Widget_Class
+
+      def initialize(auto)
+        @auto = auto
+      end
+
+      def run
+        @auto.comment_strip
+        raise Build::Error, "cannot find a widget class declaration" unless
+          declaration_match = DECLARATION_PATTERN.match(@auto.erb_out)
+        _class_name, = *declaration_match.captures
+        raise Build::Error, "invalid widget class name #{class_name}" unless
+          name_match = NAME_PATTERN.match(_class_name)
+        _class_key, = *name_match.captures
+        _class_key.downcase!
+        puts "class: #{_class_name}"
+        yield
+        @auto.comment_strip
+        @auto.erb_out << <<EXTERN
+// auto-generated definitions : begin
+
+extern "C" {
+
+void *ffi_#{_class_key}_new_xywhl(int x, int y, int w, int h, const char *l)
+{
+  return new #{_class_name}(x, y, w, h, l);
+}
+
+}
+
+// auto-generated definitions : end
+EXTERN
+      end
+
+      DECLARATION_PATTERN =
+        %r{^class[[:blank:]]+([^[:blank:]]+).*\n\{\z}
+
+      NAME_PATTERN =
+        %r{\AFFI_(.*)\z}
     end
   end
 

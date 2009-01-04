@@ -73,6 +73,8 @@ EOS
       new(*args).erb
     end
 
+    attr_reader :erb_out
+
     def erb
       require "erb"
       input = IO.read(@in_path)

@@ -132,11 +132,6 @@ void FFI_Widget::callback_caller(Fl_Widget *widget, void *p_cb)
 
 extern "C" {
 
-void *ffi_widget_new_xywhl(int x, int y, int w, int h, const char *l)
-{
-  return new FFI_Widget(x, y, w, h, l);
-}
-
 void ffi_widget_set_callback(void *p_widget, void *cb)
 {
   FFI_Widget *widget = (FFI_Widget *) p_widget;
@@ -239,11 +234,6 @@ FFI_Group::~FFI_Group()
 
 extern "C" {
 
-void *ffi_group_new_xywhl(int x, int y, int w, int h, const char *l)
-{
-  return new FFI_Group(x, y, w, h, l);
-}
-
 void ffi_group_begin(void *p_group)
 {
   ((FFI_Group *) p_group)->begin();
@@ -288,11 +278,6 @@ FFI_Window::~FFI_Window()
 }
 
 extern "C" {
-
-void *ffi_window_new_xywhl(int x, int y, int w, int h, const char *l)
-{
-  return new FFI_Window(x, y, w, h, l);
-}
 
 void *ffi_window_new_whl(int w, int h, const char *l)
 {
@@ -341,11 +326,6 @@ FFI_Box::~FFI_Box()
 
 extern "C" {
 
-void *ffi_box_new_xywhl(int x, int y, int w, int h, const char *l)
-{
-  return new FFI_Box(x, y, w, h, l);
-}
-
 } // extern "C"
 
 // <% end %>
@@ -369,11 +349,6 @@ FFI_Button::~FFI_Button()
 }
 
 extern "C" {
-
-void *ffi_button_new_xywhl(int x, int y, int w, int h, const char *l)
-{
-  return new FFI_Button(x, y, w, h, l);
-}
 
 } // extern "C"
 

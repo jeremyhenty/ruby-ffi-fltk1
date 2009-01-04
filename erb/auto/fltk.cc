@@ -324,10 +324,6 @@ FFI_Box::~FFI_Box()
 {
 }
 
-extern "C" {
-
-} // extern "C"
-
 // <% end %>
 
 // Button
@@ -347,9 +343,5 @@ FFI_Button::FFI_Button(int x, int y, int w, int h, const char *l) :
 FFI_Button::~FFI_Button()
 {
 }
-
-extern "C" {
-
-} // extern "C"
 
 // <% end %>

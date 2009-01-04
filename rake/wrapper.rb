@@ -35,28 +35,38 @@ module Build
         @auto.comment_strip
         raise Build::Error, "cannot find a widget class declaration" unless
           declaration_match = DECLARATION_PATTERN.match(@auto.erb_out)
-        _class_name, = *declaration_match.captures
+        ffi_class_name, = *declaration_match.captures
         raise Build::Error, "invalid widget class name #{class_name}" unless
-          name_match = NAME_PATTERN.match(_class_name)
-        _class_key, = *name_match.captures
-        _class_key.downcase!
-        puts "class: #{_class_name}"
+          name_match = NAME_PATTERN.match(ffi_class_name)
+        ffi_class_key, = *name_match.captures
+        fl_class_name = "Fl_#{ffi_class_key}"
+        ffi_class_key.downcase!
+        puts "class: #{ffi_class_name}"
         yield
         @auto.comment_strip
-        @auto.erb_out << <<EXTERN
+        @auto.erb_out << <<DEFINITIONS
 // auto-generated definitions : begin
+
+#{ffi_class_name}::#{ffi_class_name}(int x, int y, int w, int h, const char *l) :
+  #{fl_class_name}(x, y, w, h, l)
+{
+}
+
+#{ffi_class_name}::~#{ffi_class_name}()
+{
+}
 
 extern "C" {
 
-void *ffi_#{_class_key}_new_xywhl(int x, int y, int w, int h, const char *l)
+void *ffi_#{ffi_class_key}_new_xywhl(int x, int y, int w, int h, const char *l)
 {
-  return new #{_class_name}(x, y, w, h, l);
+  return new #{ffi_class_name}(x, y, w, h, l);
 }
 
 }
 
 // auto-generated definitions : end
-EXTERN
+DEFINITIONS
       end
 
       DECLARATION_PATTERN =

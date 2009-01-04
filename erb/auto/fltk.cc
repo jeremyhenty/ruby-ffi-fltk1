@@ -107,15 +107,6 @@ public:
   void h(int _h) { Fl_Widget::h(_h); }
 };
 
-FFI_Widget::FFI_Widget(int x, int y, int w, int h, const char *l) :
-  Fl_Widget(x, y, w, h, l)
-{
-}
-
-FFI_Widget::~FFI_Widget()
-{
-}
-
 void FFI_Widget::draw()
 {
 }
@@ -223,15 +214,6 @@ public:
   virtual ~FFI_Group();
 };
 
-FFI_Group::FFI_Group(int x, int y, int w, int h, const char *l) :
-  Fl_Group(x, y, w, h, l)
-{
-}
-
-FFI_Group::~FFI_Group()
-{
-}
-
 extern "C" {
 
 void ffi_group_begin(void *p_group)
@@ -263,17 +245,8 @@ public:
   virtual ~FFI_Window();
 };
 
-FFI_Window::FFI_Window(int x, int y, int w, int h, const char *l) :
-  Fl_Window(x, y, w, h, l)
-{
-}
-
 FFI_Window::FFI_Window(int w, int h, const char *l) :
   Fl_Window(w, h, l)
-{
-}
-
-FFI_Window::~FFI_Window()
 {
 }
 
@@ -315,15 +288,6 @@ public:
   virtual ~FFI_Box();
 };
 
-FFI_Box::FFI_Box(int x, int y, int w, int h, const char *l) :
-  Fl_Box(x, y, w, h, l)
-{
-}
-
-FFI_Box::~FFI_Box()
-{
-}
-
 // <% end %>
 
 // Button
@@ -334,14 +298,5 @@ public:
   FFI_Button(int x, int y, int w, int h, const char *l);
   virtual ~FFI_Button();
 };
-
-FFI_Button::FFI_Button(int x, int y, int w, int h, const char *l) :
-  Fl_Button(x, y, w, h, l)
-{
-}
-
-FFI_Button::~FFI_Button()
-{
-}
 
 // <% end %>

@@ -21,7 +21,9 @@ module Build
 
   class Auto
     def widget_class
+      comment_strip
       yield
+      comment_strip
     end
   end
 

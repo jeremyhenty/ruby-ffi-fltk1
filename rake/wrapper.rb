@@ -45,6 +45,11 @@ module Build
         ffi_class_key.downcase!
         puts "class: #{ffi_class_name}"
 
+        # augment the class declaration
+        @auto.erb_out.sub!(DECLARATION_END_PATTERN) do
+          " : public FFI, public #{fl_class_name}#{$1}"
+        end
+
         # add the automatic declarations
         @auto.comment_strip
         @auto.erb_out << <<DECLARATIONS
@@ -86,10 +91,13 @@ DEFINITIONS
       end
 
       DECLARATION_PATTERN =
-        %r{^class[[:blank:]]+([^[:blank:]]+).*\n\{\z}
+        %r{^class[[:blank:]]+([^[:blank:]]+)[[:blank:]]*\n\{\z}x
 
       NAME_PATTERN =
         %r{\AFFI_(.*)\z}
+
+      DECLARATION_END_PATTERN =
+        %r{[[:blank:]]*(\n.*)\z}
     end
   end
 

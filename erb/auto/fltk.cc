@@ -87,7 +87,7 @@ void ffi_set_delete_callback(void *p_ffi, FFI::Delete_Callback *callback)
 
 // Widget
 
-class FFI_Widget : public FFI, public Fl_Widget
+class FFI_Widget
 { // <% widget_class do %>
 public:
   typedef void Callback();
@@ -205,7 +205,7 @@ void ffi_widget_h_set(void *p_widget, int h)
 
 // Group
 
-class FFI_Group : public FFI, public Fl_Group
+class FFI_Group
 { // <% widget_class do %>
 };
 
@@ -232,7 +232,7 @@ void ffi_group_resizable_set(void *p_group, void *p_widget)
 
 // Window
 
-class FFI_Window : public FFI, public Fl_Window
+class FFI_Window
 { // <% widget_class do %>
 public:
   FFI_Window(int w, int h, const char *l);
@@ -274,7 +274,7 @@ void ffi_window_size_range(void *p_win,
 
 // Box
 
-class FFI_Box : public FFI, public Fl_Box
+class FFI_Box
 { // <% widget_class do %>
 };
 
@@ -282,7 +282,7 @@ class FFI_Box : public FFI, public Fl_Box
 
 // Button
 
-class FFI_Button : public FFI, public Fl_Button
+class FFI_Button
 { // <% widget_class do %>
 };
 

@@ -93,8 +93,6 @@ public:
   typedef void Callback();
   virtual void draw();
   static void callback_caller(Fl_Widget *widget, void *p_cb);
-  FFI_Widget(int x, int y, int w, int h, const char *l);
-  virtual ~FFI_Widget();
 
   // publicize some protected Fl_Widget members
   int x() { return Fl_Widget::x(); }
@@ -209,9 +207,6 @@ void ffi_widget_h_set(void *p_widget, int h)
 
 class FFI_Group : public FFI, public Fl_Group
 { // <% widget_class do %>
-public:
-  FFI_Group(int x, int y, int w, int h, const char *l);
-  virtual ~FFI_Group();
 };
 
 extern "C" {
@@ -240,9 +235,7 @@ void ffi_group_resizable_set(void *p_group, void *p_widget)
 class FFI_Window : public FFI, public Fl_Window
 { // <% widget_class do %>
 public:
-  FFI_Window(int x, int y, int w, int h, const char *l);
   FFI_Window(int w, int h, const char *l);
-  virtual ~FFI_Window();
 };
 
 FFI_Window::FFI_Window(int w, int h, const char *l) :
@@ -283,9 +276,6 @@ void ffi_window_size_range(void *p_win,
 
 class FFI_Box : public FFI, public Fl_Box
 { // <% widget_class do %>
-public:
-  FFI_Box(int x, int y, int w, int h, const char *l);
-  virtual ~FFI_Box();
 };
 
 // <% end %>
@@ -294,9 +284,6 @@ public:
 
 class FFI_Button : public FFI, public Fl_Button
 { // <% widget_class do %>
-public:
-  FFI_Button(int x, int y, int w, int h, const char *l);
-  virtual ~FFI_Button();
 };
 
 // <% end %>

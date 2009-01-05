@@ -32,6 +32,8 @@ module Build
       end
 
       def run
+
+        # parse the class declaration
         @auto.comment_strip
         raise Build::Error, "cannot find a widget class declaration" unless
           declaration_match = DECLARATION_PATTERN.match(@auto.erb_out)
@@ -42,7 +44,21 @@ module Build
         fl_class_name = "Fl_#{ffi_class_key}"
         ffi_class_key.downcase!
         puts "class: #{ffi_class_name}"
+
+        # add the automatic declarations
+        @auto.comment_strip
+        @auto.erb_out << <<DECLARATIONS
+
+// auto-generated declarations : begin
+public:
+  #{ffi_class_name}(int x, int y, int w, int h, const char *l);
+  virtual ~#{ffi_class_name}();
+// auto-generated declarations : end
+DECLARATIONS
+
         yield
+
+        # add the automatic definitions
         @auto.comment_strip
         @auto.erb_out << <<DEFINITIONS
 // auto-generated definitions : begin

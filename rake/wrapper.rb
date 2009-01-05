@@ -43,7 +43,8 @@ module Build
         ffi_class_key, = *name_match.captures
         fl_class_name = "Fl_#{ffi_class_key}"
         ffi_class_key.downcase!
-        puts "class: #{ffi_class_name}"
+        puts "line %4s: class: %s" %
+          [ caller[1].match(CALLER_PATTERN)[1], ffi_class_name ]
 
         # augment the class declaration
         @auto.erb_out.sub!(DECLARATION_END_PATTERN) do
@@ -95,6 +96,9 @@ DEFINITIONS
 
       NAME_PATTERN =
         %r{\AFFI_(.*)\z}
+
+      CALLER_PATTERN =
+        %r{:([[:digit:]]+):}
 
       DECLARATION_END_PATTERN =
         %r{[[:blank:]]*(\n.*)\z}

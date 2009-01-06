@@ -121,6 +121,11 @@ void FFI_Widget::callback_caller(Fl_Widget *widget, void *p_cb)
 
 extern "C" {
 
+void *ffi_widget_fl_pointer(void *p_widget)
+{
+  return (Fl_Widget *)((FFI_Widget *) p_widget);
+}
+
 void ffi_widget_set_callback(void *p_widget, void *cb)
 {
   FFI_Widget *widget = (FFI_Widget *) p_widget;

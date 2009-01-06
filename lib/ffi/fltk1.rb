@@ -18,7 +18,6 @@
 
 
 require "ffi"
-require "set"
 
 module FFI::FLTK
 
@@ -34,7 +33,7 @@ module FFI::FLTK
 
     class DeletedError < FFI::FLTK::Error ; end
 
-    WIDGETS = Set.new
+    WIDGETS = Hash.new
 
     attr_reader :ffi_pointer
 
@@ -66,10 +65,11 @@ module FFI::FLTK
 
     def initialize(*args)
       @ffi_pointer = ffi_pointer_new(*args)
-      WIDGETS << self
       @ffi_widget_deleted = false
       @ffi_widget_deleted_callback = method(:ffi_widget_deleted)
       ffi_set_delete_callback(@ffi_pointer, @ffi_widget_deleted_callback)
+      @ffi_fl_address = ffi_send(:ffi_widget_fl_pointer).address
+      WIDGETS[@ffi_fl_address] = self
     end
 
     def ffi_pointer_new(*args)
@@ -92,6 +92,8 @@ module FFI::FLTK
       send(meth, @ffi_pointer, *args)
     end
 
+    ffi_attach_function :ffi_widget_fl_pointer, [ :pointer ], :pointer
+
     ffi_callback :ffi_widget_callback, [ ], :void
     ffi_attach_function :ffi_widget_set_callback,
     [ :pointer, :ffi_widget_callback ], :void
@@ -104,7 +106,7 @@ module FFI::FLTK
 
     def ffi_widget_deleted
       @ffi_pointer = nil
-      WIDGETS.delete(self)
+      WIDGETS.delete(@ffi_fl_address)
       @ffi_widget_deleted = true
       @ffi_widget_deleted_callback = nil
     end

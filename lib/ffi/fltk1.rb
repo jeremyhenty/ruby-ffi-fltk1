@@ -202,11 +202,23 @@ DEF
       ffi_send(:ffi_group_end)
     end
 
+    ffi_attach_function :ffi_group_resizable,
+    [ :pointer ], :pointer
     ffi_attach_function :ffi_group_resizable_set,
     [ :pointer, :pointer ], :void
 
-    def resizable(widget)
-      ffi_send(:ffi_group_resizable_set, widget.ffi_pointer)
+    def resizable(*args)
+      count = args.size
+      case count
+      when 0
+        WIDGETS[ffi_send(:ffi_group_resizable).address]
+      when 1
+        ffi_send(:ffi_group_resizable_set, args.first.ffi_pointer)
+        nil
+      else
+        raise ArgumentError,
+        "wrong number of arguments (%d for 1))" % [ count ]
+      end
     end
 
     alias :resizable= :resizable

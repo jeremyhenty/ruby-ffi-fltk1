@@ -272,4 +272,28 @@ DEF
     ffi_pointer_new_method :ffi_button_new_xywhl
   end
 
+  class Check_Button < Button
+    ffi_pointer_new_method :ffi_check_button_new_xywhl
+  end
+
+  class Light_Button < Button
+    ffi_pointer_new_method :ffi_light_button_new_xywhl
+  end
+
+  class Repeat_Button < Button
+    ffi_pointer_new_method :ffi_repeat_button_new_xywhl
+  end
+
+  class Return_Button < Button
+    ffi_pointer_new_method :ffi_return_button_new_xywhl
+  end
+
+  class Round_Button < Button
+    ffi_pointer_new_method :ffi_round_button_new_xywhl
+  end
+
+  class Toggle_Button < Button
+    ffi_pointer_new_method :ffi_toggle_button_new_xywhl
+  end
+
 end

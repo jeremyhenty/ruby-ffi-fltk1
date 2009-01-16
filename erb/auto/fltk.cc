@@ -29,6 +29,12 @@
 #include <FL/Fl_Window.H>
 #include <FL/Fl_Box.H>
 #include <FL/Fl_Button.H>
+#include <FL/Fl_Check_Button.H>
+#include <FL/Fl_Light_Button.H>
+#include <FL/Fl_Repeat_Button.H>
+#include <FL/Fl_Return_Button.H>
+#include <FL/Fl_Round_Button.H>
+#include <FL/Fl_Toggle_Button.H>
 #include <FL/fl_ask.H>
 
 extern "C" {
@@ -293,6 +299,54 @@ class FFI_Box
 // Button
 
 class FFI_Button
+{ // <% widget_class do %>
+};
+
+// <% end %>
+
+// Check_Button
+
+class FFI_Check_Button
+{ // <% widget_class do %>
+};
+
+// <% end %>
+
+// Light_Button
+
+class FFI_Light_Button
+{ // <% widget_class do %>
+};
+
+// <% end %>
+
+// Repeat_Button
+
+class FFI_Repeat_Button
+{ // <% widget_class do %>
+};
+
+// <% end %>
+
+// Return_Button
+
+class FFI_Return_Button
+{ // <% widget_class do %>
+};
+
+// <% end %>
+
+// Round_Button
+
+class FFI_Round_Button
+{ // <% widget_class do %>
+};
+
+// <% end %>
+
+// Toggle_Button
+
+class FFI_Toggle_Button
 { // <% widget_class do %>
 };
 

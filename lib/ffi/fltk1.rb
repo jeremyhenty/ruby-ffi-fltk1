@@ -75,8 +75,12 @@ module FFI::FLTK
     def ffi_pointer_new(*args)
       count = args.size
       case count
-      when 4: args << nil; ffi_pointer_new_(*args)
-      when 5: ffi_pointer_new_(*args)
+      when 4
+        args << nil
+        ffi_pointer_new_(*args)
+      when 5
+        args[-1] = String(args.last)
+        ffi_pointer_new_(*args)
       else
         raise ArgumentError, "wrong number of arguments (%d for %d))" %
           [ count, count < 4 ? 4 : 5 ]
@@ -237,10 +241,18 @@ DEF
     def ffi_pointer_new(*args)
       count = args.size
       case count
-      when 2: args << nil; ffi_window_new_whl(*args)
-      when 3: ffi_window_new_whl(*args)
-      when 4: args << nil; ffi_window_new_xywhl(*args)
-      when 5: ffi_window_new_xywhl(*args)
+      when 2
+        args << nil
+        ffi_window_new_whl(*args)
+      when 3
+        args[-1] = String(args.last)
+        ffi_window_new_whl(*args)
+      when 4
+        args << nil
+        ffi_window_new_xywhl(*args)
+      when 5
+        args[-1] = String(args.last) 
+        ffi_window_new_xywhl(*args)
       else
         raise ArgumentError, "wrong number of arguments (%d for %d))" %
           [ count, count < 2 ? 2 : 5 ]

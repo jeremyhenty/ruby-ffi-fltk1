@@ -26,24 +26,25 @@ require "ffi/fltk1"
 include FFI
 include FFI::FLTK
 
-def run_demo(demo)
-  demo_path =
-    File.join(File.dirname(File.dirname(__FILE__)),
-              "demo", demo)
-  fork { exec demo_path }
-end
+button_classes =
+  [
+   Button,
+   Check_Button,
+   Light_Button,
+   Repeat_Button,
+   Return_Button,
+   Round_Button,
+   Toggle_Button,
+  ]
 
-Window.new(300, 500, "FFI-FLTK1 demonstration") do |win|
-  buttons_button = Button.new(0,   0, 300, 100, "Buttons")
-  buttons_button.callback { run_demo "buttons" }
-  boxes_button = Button.new(0, 100, 300, 100, "Boxes")
-  boxes_button.callback { run_demo "box-types" }
-  resizing_button = Button.new(0, 200, 300, 100, "Resizing")
-  resizing_button.callback { run_demo "resizing" }
-  layout_button = Button.new(0, 300, 300, 100, "Layout")
-  layout_button.callback { run_demo "layout" }
-  close_button = Button.new(0, 400, 300, 100, "Close")
-  close_button.callback { win.hide }
+height = 25
+width = 250
+
+Window.new(width, button_classes.size * height, "Buttons") do |win|
+  button_classes.each_with_index do |_class,i|
+    label = _class.name.gsub(%r{\AFFI::FLTK::}, "")
+    button = _class.new(0, i * height, width, height, label)
+  end
   win.show
 end
 

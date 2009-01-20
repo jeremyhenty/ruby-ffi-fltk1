@@ -254,6 +254,8 @@ DEF
     ffi_wrapper
   end
 
+  require "ffi/fltk1/auto/pack"
+
   class Window < Group
 
     ffi_wrapper :attach_new => false

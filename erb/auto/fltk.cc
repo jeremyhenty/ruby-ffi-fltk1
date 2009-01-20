@@ -150,6 +150,18 @@ void ffi_widget_redraw(void *p_widget)
   widget->redraw();
 }
 
+uchar ffi_widget_type(void *p_widget)
+{
+  FFI_Widget *widget = (FFI_Widget *) p_widget;
+  return widget->type();
+}
+
+void ffi_widget_type_set(void *p_widget, uchar type)
+{
+  FFI_Widget *widget = (FFI_Widget *) p_widget;
+  widget->type(type);
+}
+
 int ffi_widget_box(void *p_widget)
 {
   FFI_Widget *widget = (FFI_Widget *) p_widget;

@@ -166,15 +166,21 @@ module FFI::FLTK
       ffi_send(:ffi_widget_redraw)
     end
 
-    [ :box, :x, :y, :w, :h ].each do |meth|
+    [ :type, :box, :x, :y, :w, :h ].each do |meth|
 
       ffi_attach_function :"ffi_widget_#{meth}",
       [ :pointer ], :int
       ffi_attach_function :"ffi_widget_#{meth}_set",
       [ :pointer, :int ], :void
 
+      meth0 =
+        case meth
+        when :type ; "widget_#{meth}"
+        else ; meth
+        end
+
       class_eval <<DEF, __FILE__, __LINE__
-      def #{meth}(_#{meth}=nil)
+      def #{meth0}(_#{meth}=nil)
         if _#{meth}
           ffi_send(:ffi_widget_#{meth}_set, _#{meth})
         else
@@ -183,7 +189,7 @@ module FFI::FLTK
       end
 DEF
 
-      alias_method :"#{meth}=", meth
+      alias_method :"#{meth0}=", meth0
     end
   end
 

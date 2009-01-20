@@ -29,20 +29,23 @@ module FFI::FLTK
   attach_function :run, :ffi_fltk_run, [ ], :int
   attach_function :alert, :ffi_fltk_alert, [ :string ], :void
 
-  class Widget
+  class FFI_Wrapper
 
-    class DeletedError < FFI::FLTK::Error ; end
+    DEFAULTS = {
+      :attach_new => true,
+    }
 
-    WIDGETS = Hash.new
-
-    attr_reader :ffi_pointer
+    def self.ffi_wrapper(options_=nil)
+      options = DEFAULTS.dup
+      options.merge!(options_) if options_
+      if options[:attach_new]
+        key = name.gsub(%r{\A.*::}, "").downcase
+        ffi_pointer_new_method :"ffi_#{key}_new_xywhl"
+      end
+    end
 
     def self.ffi_attach_function(*args)
       FFI::FLTK.attach_function(*args)
-    end
-
-    def self.ffi_callback(*args)
-      FFI::FLTK.callback(*args)
     end
 
     def self.ffi_pointer_new_method(*args)
@@ -60,8 +63,21 @@ module FFI::FLTK
         "wrong number of arguments (%d for 1))" % [ count ]
       end
     end
+  end
 
-    ffi_pointer_new_method :ffi_widget_new_xywhl
+  class Widget < FFI_Wrapper
+
+    ffi_wrapper
+
+    class DeletedError < FFI::FLTK::Error ; end
+
+    WIDGETS = Hash.new
+
+    attr_reader :ffi_pointer
+
+    def self.ffi_callback(*args)
+      FFI::FLTK.callback(*args)
+    end
 
     def initialize(*args)
       @ffi_pointer = ffi_pointer_new(*args)
@@ -173,7 +189,7 @@ DEF
 
   class Group < Widget
 
-    ffi_pointer_new_method :ffi_group_new_xywhl
+    ffi_wrapper
 
     def initialize(*args)
       super
@@ -230,6 +246,8 @@ DEF
 
   class Window < Group
 
+    ffi_wrapper :attach_new => false
+
     ffi_attach_function :ffi_window_new_xywhl,
     [ :int, :int, :int, :int, :string ], :pointer
     ffi_attach_function :ffi_window_new_whl,
@@ -275,37 +293,37 @@ DEF
   ffi_fl_box_initialize
 
   class Box < Widget
-    ffi_pointer_new_method :ffi_box_new_xywhl
+    ffi_wrapper
   end
 
   require "ffi/fltk1/auto/box"
 
   class Button < Widget
-    ffi_pointer_new_method :ffi_button_new_xywhl
+    ffi_wrapper
   end
 
   class Check_Button < Button
-    ffi_pointer_new_method :ffi_check_button_new_xywhl
+    ffi_wrapper
   end
 
   class Light_Button < Button
-    ffi_pointer_new_method :ffi_light_button_new_xywhl
+    ffi_wrapper
   end
 
   class Repeat_Button < Button
-    ffi_pointer_new_method :ffi_repeat_button_new_xywhl
+    ffi_wrapper
   end
 
   class Return_Button < Button
-    ffi_pointer_new_method :ffi_return_button_new_xywhl
+    ffi_wrapper
   end
 
   class Round_Button < Button
-    ffi_pointer_new_method :ffi_round_button_new_xywhl
+    ffi_wrapper
   end
 
   class Toggle_Button < Button
-    ffi_pointer_new_method :ffi_toggle_button_new_xywhl
+    ffi_wrapper
   end
 
 end

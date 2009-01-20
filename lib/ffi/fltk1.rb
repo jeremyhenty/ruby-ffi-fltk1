@@ -250,6 +250,10 @@ DEF
     alias :resizable= :resizable
   end
 
+  class Pack < Group
+    ffi_wrapper
+  end
+
   class Window < Group
 
     ffi_wrapper :attach_new => false

@@ -26,26 +26,28 @@ require "ffi/fltk1"
 include FFI
 include FFI::FLTK
 
-def run_demo(demo)
-  demo_path =
-    File.join(File.dirname(File.dirname(__FILE__)),
-              "demo", demo)
-  fork { exec demo_path }
-end
-
-Window.new(300, 600, "FFI-FLTK1 demonstration") do |win|
-  buttons_button = Button.new(0,   0, 300, 100, "Buttons")
-  buttons_button.callback { run_demo "buttons" }
-  boxes_button = Button.new(0, 100, 300, 100, "Boxes")
-  boxes_button.callback { run_demo "box-types" }
-  resizing_button = Button.new(0, 200, 300, 100, "Resizing")
-  resizing_button.callback { run_demo "resizing" }
-  packs_button = Button.new(0, 300, 300, 100, "Packs")
-  packs_button.callback { run_demo "packs" }
-  layout_button = Button.new(0, 400, 300, 100, "Layout")
-  layout_button.callback { run_demo "layout" }
-  close_button = Button.new(0, 500, 300, 100, "Close")
-  close_button.callback { win.hide }
+Window.new(300, 300, "Packs") do |win|
+  size = 25
+  label = 1
+  pack_types = [ Pack::Type::VERTICAL, Pack::Type::HORIZONTAL ]
+  position= [ 0, 0, win.w, win.h ]
+  parent = win
+  5.times do |count|
+    parent.group_begin do
+      Pack.new(*position) do |pack|
+        (count + 1).times do |count1|
+          Box.new(size, size, label).box(Box::Type::DOWN_BOX)
+          label += 1
+          position[count % 2] += size
+          position[count % 2 + 2] -= size
+        end
+        pack.widget_type(pack_types[count % 2])
+        parent.resizable(pack)
+        parent = pack
+      end
+    end
+  end
+  win.size_range(1, 1, 0, 0)
   win.show
 end
 

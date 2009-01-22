@@ -73,7 +73,26 @@ module FFI::FLTK
 
     WIDGETS = Hash.new
 
+    def self.from_ffi(pointer)
+      WIDGETS[pointer.address]
+    end
+
+    def from_ffi(pointer)
+      self.class.from_ffi(pointer) 
+    end
+
     attr_reader :ffi_pointer
+
+    def self.to_ffi(arg)
+      case arg
+      when Widget ; arg.ffi_pointer
+      else arg
+      end
+    end
+
+    def to_ffi(arg)
+      self.class.to_ffi(arg) 
+    end
 
     def self.ffi_callback(*args)
       FFI::FLTK.callback(*args)
@@ -83,7 +102,7 @@ module FFI::FLTK
       @ffi_pointer = ffi_pointer_new(*args)
       @ffi_widget_deleted = false
       @ffi_widget_deleted_callback = method(:ffi_widget_deleted)
-      ffi_set_delete_callback(@ffi_pointer, @ffi_widget_deleted_callback)
+      ffi_send(:ffi_set_delete_callback, @ffi_widget_deleted_callback)
       @ffi_fl_address = ffi_send(:ffi_widget_fl_pointer).address
       WIDGETS[@ffi_fl_address] = self
     end
@@ -109,12 +128,18 @@ module FFI::FLTK
     end
 
     def ffi_pointer_new_(*args)
-      send(self.class.ffi_pointer_new_method, *args)
+      FFI::FLTK.send(self.class.ffi_pointer_new_method, *args)
+    end
+
+    def self.ffi_send(meth, *args)
+      args = args.collect { |arg| to_ffi(arg) }
+      FFI::FLTK.send(meth, *args)
     end
 
     def ffi_send(meth, *args)
       ffi_widget_not_deleted
-      send(meth, @ffi_pointer, *args)
+      args = args.collect { |arg| to_ffi(arg) }
+      FFI::FLTK.send(meth, @ffi_pointer, *args)
     end
 
     ffi_attach_function :ffi_widget_fl_pointer, [ :pointer ], :pointer
@@ -242,9 +267,9 @@ DEF
       count = args.size
       case count
       when 0
-        WIDGETS[ffi_send(:ffi_group_resizable).address]
+        from_ffi(ffi_send(:ffi_group_resizable))
       when 1
-        ffi_send(:ffi_group_resizable_set, args.first.ffi_pointer)
+        ffi_send(:ffi_group_resizable_set, args.first)
         nil
       else
         raise ArgumentError,

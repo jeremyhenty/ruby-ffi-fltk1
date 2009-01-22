@@ -227,6 +227,27 @@ DEF
 
     ffi_wrapper
 
+    ffi_attach_function :ffi_group_current, [ ], :pointer
+    ffi_attach_function :ffi_group_current_set, [ :pointer ], :void
+
+    def self.current(*args)
+      count = args.size
+      case count
+      when 0
+        from_ffi(ffi_send(:ffi_group_current))
+      when 1
+        ffi_send(:ffi_group_current_set, args.first)
+        nil
+      else 
+        raise ArgumentError,
+        "wrong number of arguments (%d for 1))" % [ count ]
+      end
+    end
+
+    class << self
+      alias :current= :current
+    end
+
     def initialize(*args)
       super
       if block_given?

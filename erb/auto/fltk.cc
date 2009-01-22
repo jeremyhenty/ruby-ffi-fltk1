@@ -235,6 +235,16 @@ class FFI_Group
 
 extern "C" {
 
+void *ffi_group_current()
+{
+  return Fl_Group::current();
+}
+
+void ffi_group_current_set(void *p_group)
+{
+  Fl_Group::current((FFI_Group *) p_group);
+}
+
 void ffi_group_begin(void *p_group)
 {
   ((FFI_Group *) p_group)->begin();

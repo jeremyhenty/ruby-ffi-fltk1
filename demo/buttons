@@ -41,9 +41,12 @@ height = 25
 width = 250
 
 Window.new(width, button_classes.size * height, "Buttons") do |win|
-  button_classes.each_with_index do |_class,i|
-    label = _class.name.gsub(%r{\AFFI::FLTK::}, "")
-    button = _class.new(0, i * height, width, height, label)
+  Pack.new do |pack|
+    pack.widget_type = Pack::Type::VERTICAL
+    button_classes.each do |_class|
+      label = _class.name.gsub(%r{\AFFI::FLTK::}, "")
+      button = _class.new(width, height, label)
+    end
   end
   win.show
 end

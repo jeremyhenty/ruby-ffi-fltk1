@@ -69,7 +69,7 @@ module FFI::FLTK
 
     ffi_wrapper
 
-    class DeletedError < FFI::FLTK::Error ; end
+    class Error < FFI::FLTK::Error ; end
 
     WIDGETS = Hash.new
 
@@ -110,6 +110,12 @@ module FFI::FLTK
     def ffi_pointer_new(*args)
       count = args.size
       case count
+      when 0
+        args.unshift(*current_group_size)
+        args << nil
+      when 1
+        args.unshift(*current_group_size)
+        args[-1] = String(args.last)
       when 2
         args.unshift(0, 0)
         args << nil
@@ -121,10 +127,23 @@ module FFI::FLTK
       when 5
         args[-1] = String(args.last)
       else
-        raise ArgumentError, "wrong number of arguments (%d for %d))" %
-          [ count, count < 2 ? 2 : 5 ]
+        raise ArgumentError, "wrong number of arguments (%d for 5))" %
+          [ count ]
       end
       ffi_pointer_new_(*args)
+    end
+
+    class NoCurrentGroupError < Error ; end
+
+    def current_group_size
+      current = Group::current
+      unless current
+        raise NoCurrentGroupError,
+        "there is no current group, so you must specify the widget size"
+      end
+      x = current.is_a?(Window) ? 0 : current.x
+      y = current.is_a?(Window) ? 0 : current.y
+      return [ x, y, current.w, current.h ]
     end
 
     def ffi_pointer_new_(*args)
@@ -149,6 +168,8 @@ module FFI::FLTK
     [ :pointer, :ffi_widget_callback ], :void
     ffi_attach_function :ffi_widget_unset_callback,
     [ :pointer ], :void
+
+    class DeletedError < Error ; end
 
     ffi_callback :ffi_delete_callback, [ ], :void
     ffi_attach_function :ffi_set_delete_callback,

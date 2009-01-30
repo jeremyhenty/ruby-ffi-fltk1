@@ -30,15 +30,40 @@ module Build
   # headers
   HEADER_DIR = "include"
 
+  module Constants
+
+    def names
+      @names ||= names_
+    end
+
+    def values
+      @values ||=
+        begin
+          require "ffi"
+          extend FFI::Library
+          ffi_lib File.join(Build::Auto::DIR, dl_name)
+          attach_function ffi_name, [ ], :pointer
+          send(ffi_name).read_array_of_int(names.size)
+        end
+    end
+
+    def dl_name
+      @dl_name ||= "#{name.sub(%r{\A.*::}, "").downcase}.so"
+    end
+
+    def ffi_name
+      @ffi_name ||= ffi_name_
+    end
+
+  end
+
   # boxes
 
   module Box
 
-    module_function
+    extend Constants
 
-    def names
-      @@names ||= names_
-    end
+    module_function
 
     def names_
 
@@ -80,24 +105,12 @@ module Build
       return name_match.captures.first
     end
 
-    def values
-      @@values ||= values_
-    end
-
-    def values_
-
-      require "ffi"
-      extend FFI::Library
-      ffi_lib File.join(Build::Auto::DIR, "box.so")
-      attach_function :ffi_fl_boxes, [ ], :pointer
-
-      return ffi_fl_boxes.read_array_of_int(names.size)
-    end
+    def ffi_name_ ; :ffi_fl_boxes ; end
 
     NAME_PATTERN =
       %r{\AFL_(.*)\z}
 
-    box_dl = File.join(Build::Auto::DIR, "box.so")
+    box_dl = File.join(Build::Auto::DIR, dl_name)
     box_dl_cc = File.join(Build::Auto::DIR, "box.cc")
 
     box_init_dl = File.join(Build::Auto::LIB_DIR, "box_init.so")
@@ -124,11 +137,9 @@ module Build
 
   module Pack
 
-    module_function
+    extend Constants
 
-    def names
-      @@names ||= names_
-    end
+    module_function
 
     def names_
 
@@ -167,21 +178,9 @@ module Build
       return enum_names
     end
 
-    def values
-      @@values ||= values_
-    end
+    def ffi_name_ ; :ffi_fl_pack_types ; end
 
-    def values_
-
-      require "ffi"
-      extend FFI::Library
-      ffi_lib File.join(Build::Auto::DIR, "pack.so")
-      attach_function :ffi_fl_pack_types, [ ], :pointer
-
-      return ffi_fl_pack_types.read_array_of_int(names.size)
-    end
-
-    pack_dl = File.join(Build::Auto::DIR, "pack.so")
+    pack_dl = File.join(Build::Auto::DIR, dl_name)
     pack_dl_cc = File.join(Build::Auto::DIR, "pack.cc")
 
     pack_ruby = File.join(Build::Auto::LIB_DIR, "pack.rb")

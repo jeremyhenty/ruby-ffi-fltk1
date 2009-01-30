@@ -47,8 +47,12 @@ module Build
         end
     end
 
+    def name_root
+      @name_root ||= name.sub(%r{\A.*::}, "").downcase
+    end
+
     def dl_name
-      @dl_name ||= "#{name.sub(%r{\A.*::}, "").downcase}.so"
+      @dl_name ||= "#{name_root}.so"
     end
 
     def ffi_name
@@ -62,8 +66,7 @@ module Build
 
     def ruby_path
       @ruby_path ||=
-        File.join(Build::Auto::LIB_DIR,
-                  "#{name.sub(%r{\A.*::}, "").downcase}.rb")
+        File.join(Build::Auto::LIB_DIR, "#{name_root}.rb")
     end
 
     def dl_path

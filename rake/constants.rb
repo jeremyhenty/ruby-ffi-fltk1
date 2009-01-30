@@ -55,6 +55,22 @@ module Build
       @ffi_name ||= ffi_name_
     end
 
+    def create_ruby_task
+      task :build => ruby_path
+      file ruby_path => dl_path
+    end
+
+    def ruby_path
+      @ruby_path ||=
+        File.join(Build::Auto::LIB_DIR,
+                  "#{name.sub(%r{\A.*::}, "").downcase}.rb")
+    end
+
+    def dl_path
+      @dl_path ||=
+        File.join(Build::Auto::DIR, dl_name)
+    end
+
   end
 
   # boxes
@@ -116,15 +132,11 @@ module Build
     box_init_dl = File.join(Build::Auto::LIB_DIR, "box_init.so")
     box_init_dl_cc = File.join(Build::Auto::DIR, "box_init.cc")
 
-    box_ruby = File.join(Build::Auto::LIB_DIR, "box.rb")
-
-    task :build => box_ruby
-
-    file box_ruby => box_dl
-
     file box_dl => [ Build::Auto::DIR, "extra.rb", box_dl_cc ] do |t|
       Build.dl_compile(t.name, t.prerequisites.last)
     end
+
+    create_ruby_task
 
     task :build => box_init_dl
 
@@ -182,15 +194,10 @@ module Build
 
     pack_dl = File.join(Build::Auto::DIR, dl_name)
     pack_dl_cc = File.join(Build::Auto::DIR, "pack.cc")
-
-    pack_ruby = File.join(Build::Auto::LIB_DIR, "pack.rb")
-
-    task :build => pack_ruby
-
-    file pack_ruby => pack_dl
-
     file pack_dl => [ Build::Auto::DIR, "extra.rb", pack_dl_cc ] do |t|
       Build.dl_compile(t.name, t.prerequisites.last)
     end
+
+    create_ruby_task
   end
 end

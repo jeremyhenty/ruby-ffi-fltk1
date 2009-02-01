@@ -108,7 +108,7 @@ DEFINITIONS
   desc "Compile the wrapper library"
   library = File.join(Auto::LIB_DIR, "fltk.so")
   source = File.join(Auto::DIR, "fltk.cc")
-  file library => [ "extra.rb", source ] do |t|
+  file library => [ source ] do |t|
     puts "building '#{t.name}'"
     dl_compile(t.name, t.prerequisites.last)
   end

@@ -37,3 +37,6 @@ require "./rake/constants"
 require "./rake/wrapper"
 require "./rake/demo"
 require "./rake/gem"
+
+Rake::Task["extra.rb"].invoke
+require "./extra"

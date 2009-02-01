@@ -135,7 +135,7 @@ module Build
     box_init_dl = File.join(Build::Auto::LIB_DIR, "box_init.so")
     box_init_dl_cc = File.join(Build::Auto::DIR, "box_init.cc")
 
-    file box_dl => [ Build::Auto::DIR, "extra.rb", box_dl_cc ] do |t|
+    file box_dl => [ Build::Auto::DIR, box_dl_cc ] do |t|
       Build.dl_compile(t.name, t.prerequisites.last)
     end
 
@@ -143,7 +143,7 @@ module Build
 
     task :build => box_init_dl
 
-    file box_init_dl => [ Build::Auto::DIR, "extra.rb", box_init_dl_cc ] do |t|
+    file box_init_dl => [ Build::Auto::DIR, box_init_dl_cc ] do |t|
       Build.dl_compile(t.name, t.prerequisites.last)
     end
   end
@@ -197,7 +197,7 @@ module Build
 
     pack_dl = File.join(Build::Auto::DIR, dl_name)
     pack_dl_cc = File.join(Build::Auto::DIR, "pack.cc")
-    file pack_dl => [ Build::Auto::DIR, "extra.rb", pack_dl_cc ] do |t|
+    file pack_dl => [ Build::Auto::DIR, pack_dl_cc ] do |t|
       Build.dl_compile(t.name, t.prerequisites.last)
     end
 

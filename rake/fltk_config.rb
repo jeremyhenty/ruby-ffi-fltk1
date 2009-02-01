@@ -42,7 +42,6 @@ module Build
   end
 
   def dl_compile(dl_path, *source_paths)
-    require "./extra"
     config = fltk_config
     sh \
     "#{config[:cxx]} -shared -fpic " \

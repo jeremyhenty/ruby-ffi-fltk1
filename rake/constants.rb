@@ -32,6 +32,11 @@ module Build
 
   module Constants
 
+    def header(path)
+      header_dir = Build.fltk_config[:header_dir]
+      return IO.read(File.join(header_dir, path))
+    end
+
     def names
       @names ||= names_
     end

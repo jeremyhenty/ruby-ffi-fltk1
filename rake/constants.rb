@@ -55,7 +55,12 @@ module Build
       @ffi_name ||= ffi_name_
     end
 
-    def create_ruby_task
+    def default_tasks
+      ruby_task
+      dl_task
+    end
+
+    def ruby_task
       task :build => ruby_path
       file ruby_path => dl_path
     end
@@ -65,8 +70,8 @@ module Build
         File.join(Build::Auto::LIB_DIR, "#{name_root}.rb")
     end
 
-    def create_dl_task
-      create_dl_compile_task(dl_path, dl_source)
+    def dl_task
+      dl_compile_task(dl_path, dl_source)
     end
 
     def dl_path
@@ -79,7 +84,7 @@ module Build
         File.join(Build::Auto::DIR, "#{name_root}.cc")
     end
 
-    def create_dl_compile_task(path,source)
+    def dl_compile_task(path,source)
       file path => [ File.dirname(path), source ] do |t|
         Build.dl_compile(t.name, t.prerequisites.last)
       end
@@ -139,12 +144,11 @@ module Build
     NAME_PATTERN =
       %r{\AFL_(.*)\z}
 
-    create_ruby_task
-    create_dl_task
+    default_tasks
 
     box_init_dl = File.join(Build::Auto::LIB_DIR, "box_init.so")
     box_init_dl_cc = File.join(Build::Auto::DIR, "box_init.cc")
-    create_dl_compile_task(box_init_dl, box_init_dl_cc)
+    dl_compile_task(box_init_dl, box_init_dl_cc)
     task :build => box_init_dl
   end
 
@@ -195,7 +199,6 @@ module Build
 
     def ffi_name_ ; :ffi_fl_pack_types ; end
 
-    create_ruby_task
-    create_dl_task
+    default_tasks
   end
 end

@@ -66,9 +66,7 @@ module Build
     end
 
     def create_dl_task
-      file dl_path => [ Build::Auto::DIR, dl_source ] do |t|
-        Build.dl_compile(t.name, t.prerequisites.last)
-      end
+      create_dl_compile_task(dl_path, dl_source)
     end
 
     def dl_path
@@ -79,6 +77,12 @@ module Build
     def dl_source
       @dl_source ||=
         File.join(Build::Auto::DIR, "#{name_root}.cc")
+    end
+
+    def create_dl_compile_task(path,source)
+      file path => [ File.dirname(path), source ] do |t|
+        Build.dl_compile(t.name, t.prerequisites.last)
+      end
     end
   end
 
@@ -135,17 +139,13 @@ module Build
     NAME_PATTERN =
       %r{\AFL_(.*)\z}
 
-    box_init_dl = File.join(Build::Auto::LIB_DIR, "box_init.so")
-    box_init_dl_cc = File.join(Build::Auto::DIR, "box_init.cc")
-
     create_ruby_task
     create_dl_task
 
+    box_init_dl = File.join(Build::Auto::LIB_DIR, "box_init.so")
+    box_init_dl_cc = File.join(Build::Auto::DIR, "box_init.cc")
+    create_dl_compile_task(box_init_dl, box_init_dl_cc)
     task :build => box_init_dl
-
-    file box_init_dl => [ Build::Auto::DIR, box_init_dl_cc ] do |t|
-      Build.dl_compile(t.name, t.prerequisites.last)
-    end
   end
 
   # Pack

@@ -41,7 +41,7 @@ module Build
         begin
           require "ffi"
           extend FFI::Library
-          ffi_lib File.join(Build::Auto::DIR, dl_name)
+          ffi_lib dl_path
           attach_function ffi_name, [ ], :pointer
           send(ffi_name).read_array_of_int(names.size)
         end
@@ -49,10 +49,6 @@ module Build
 
     def name_root
       @name_root ||= name.sub(%r{\A.*::}, "").downcase
-    end
-
-    def dl_name
-      @dl_name ||= "#{name_root}.so"
     end
 
     def ffi_name
@@ -77,7 +73,7 @@ module Build
 
     def dl_path
       @dl_path ||=
-        File.join(Build::Auto::DIR, dl_name)
+        File.join(Build::Auto::DIR, "#{name_root}.so")
     end
 
     def dl_source

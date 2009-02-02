@@ -32,12 +32,47 @@ module Build
   end
 
   def fltk_config_
+
     config = Hash.new
+
+    # save the output of fltk-config
     [ :version, :cxx, :cxxflags, :ldflags ].each do |key|
       config[key] = %x{ fltk-config --#{key} }.chomp
       raise Build::Error,
       "configuration check for --#{key} failed" unless $?.success?
     end
+
+    # we also want the includedir, but fltk-config has no --includedir
+    # :-(
+
+    # workaround: search the cxxflags for the include directory that
+    # contains Fl.H
+
+    # search the cxxflags for include directories
+    flags = config[:cxxflags].split(%r{[[:space:]]+})
+    flag_pattern = %r{\A-I(.*)\z}
+    include_dirs = flags.collect do |flag|
+      flag_match = flag_pattern.match(flag)
+      next unless flag_match
+      flag_match.captures.first 
+    end.compact
+
+    # special case: fltk-config always omits /usr/include, so add it
+    include_dirs.unshift("/usr/include")
+
+    # search the include directories for the one that contains Fl.H
+    include_dirs.each do |dir|
+      header_dir = File.join(dir, "FL")
+      if File.exist?(File.join(header_dir, "Fl.H"))
+        config[:header_dir] = header_dir
+        break
+      end
+    end
+    raise Build::Error,
+    "configuration check for the header directory failed" unless
+      config[:header_dir]
+    puts "header directory: #{config[:header_dir]}" 
+
     return config
   end
 

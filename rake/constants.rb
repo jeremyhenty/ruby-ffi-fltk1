@@ -117,8 +117,7 @@ module Build
 }mx
 
       # extract the Fl_Boxtype enumeration from the FLTK header
-      enumerations =
-        Build.header_pp(File.join(Build::HEADER_DIR,"enumerations.h"))
+      enumerations = header("Enumerations.h")
       raise Build::Error, "missing Fl_Boxtype enumeration" unless
         enumeration_match = enumeration_pattern.match(enumerations)
       enumeration = enumeration_match.captures.first
@@ -181,8 +180,7 @@ module Build
         %r{\benum\b[[:space:]]*\{(.*?)\}}m
 
       # extract the class declaration from the FLTK header
-      pack_header =
-        Build.header_pp(File.join(Build::HEADER_DIR,"pack.h"))
+      pack_header = header("Fl_Pack.h")
       raise Build::Error, "missing Fl_Pack class declaration" unless
         _class_decl_match = _class_decl_pattern.match(pack_header)
       _class_decl = _class_decl_match.captures.first
@@ -193,8 +191,8 @@ module Build
       enumeration = enumeration_match.captures.first
 
       # extract the names from the enumeration
-      enum_pattern = %r{([[:alpha:]_]+)}
-      enum_names = enumeration.split(',').collect do |enum|
+      enum_pattern = %r{\A[[:blank:]]*([[:alpha:]_]+)[[:blank:]]+=}
+      enum_names = enumeration.split("\n").collect do |enum|
         next unless enum_match = enum_pattern.match(enum)
         enum_match.captures.first
       end.compact

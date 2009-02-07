@@ -25,11 +25,6 @@
 
 module Build
 
-  module_function
-
-  # headers
-  HEADER_DIR = "include"
-
   module Constants
 
     def header(path)

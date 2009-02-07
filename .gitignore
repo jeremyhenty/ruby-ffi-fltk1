@@ -27,7 +27,8 @@
 /lib/ffi/fltk1.so
 
 # auto-generated files
-auto/
+/auto/
+/lib/ffi/fltk1/auto/
 
 # the gem
 /pkg/

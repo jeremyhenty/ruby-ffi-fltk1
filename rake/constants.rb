@@ -56,23 +56,38 @@ module Build
       @name_root ||= name.sub(%r{\A.*::}, "").downcase
     end
 
-    def cc_name_root(*args)
+    def do_constant_method(_method, *args)
+      @_constants ||= Hash.new
       count = args.size
       case count
       when 0
         raise Build::Error,
-        "cc_name_root has not been specified" unless @cc_name_root
-        @cc_name_root
+        "%s has not been specified" % [ _method ] unless
+          value = @_constants[_method]
+        value
       when 1
-        @cc_name_root, = *args
+        value, = *args
+        @_constants[_method] = value
       else
         raise ArgumentError,
         "wrong number of arguments (%d for 1)" % [ count ]
       end
     end
 
+    [ :cc_name_root, :cc_headers ].each do |_method|
+      define_method(_method) do |*args|
+        do_constant_method(_method, *args)
+      end
+    end
+
     def cc_variable ; cc_name_root ; end
     def ffi_name ; "ffi_#{cc_variable}" ; end
+
+    def include_cc_headers
+      "\n" + cc_headers.collect do |header|
+        "#include<FL/#{header}>"
+      end * "\n"
+    end
 
     def default_tasks
       ruby_task
@@ -158,6 +173,7 @@ module Build
     end
 
     cc_name_root "boxes"
+    cc_headers [ "Enumerations.H" ]
 
     NAME_PATTERN =
       %r{\AFL_(.*)\z}
@@ -215,6 +231,7 @@ module Build
     end
 
     cc_name_root "pack_types"
+    cc_headers [ "Fl_Pack.H" ]
 
     default_tasks
   end

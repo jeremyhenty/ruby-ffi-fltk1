@@ -21,7 +21,7 @@
 
 // <% builder = Box %>
 
-#include <FL/Enumerations.H>
+// <%= builder.include_cc_headers %>
 
 static int <%= builder.cc_variable %>[<%= builder.names.size %>] = {
 <% builder.names.each do |name|

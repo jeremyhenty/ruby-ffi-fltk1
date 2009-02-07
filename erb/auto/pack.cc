@@ -25,7 +25,7 @@
 
 static int <%= builder.cc_variable %>[<%= builder.names.size %>] = {
 <% builder.names.each do |name|
-%>  Fl_Pack::<%= name %>,
+%>  <%= builder.cc_name(name) %>,
 <% end %>};
 
 extern "C" {

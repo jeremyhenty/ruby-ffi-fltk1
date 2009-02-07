@@ -172,6 +172,8 @@ module Build
       return name_match.captures.first
     end
 
+    def cc_name(name) ; name ; end
+
     cc_name_root "boxes"
     cc_headers [ "Enumerations.H" ]
 
@@ -229,6 +231,8 @@ module Build
 
       return enum_names
     end
+
+    def cc_name(name) ; "Fl_Pack::#{name}" ; end
 
     cc_name_root "pack_types"
     cc_headers [ "Fl_Pack.H" ]

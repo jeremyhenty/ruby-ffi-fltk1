@@ -19,19 +19,21 @@
 
 <%= generated %><%
 
-max_name_size = Pack.names.collect { |name| name.size }.max
-max_value_size = Pack.values.collect { |value| value.to_s.size }.max
+builder = Pack
+
+max_name_size = builder.ruby_names.collect { |name| name.size }.max
+max_value_size = builder.values.collect { |value| value.to_s.size }.max
 
 %>
 
 module FFI::FLTK
-  class Pack
+  class <%= builder.ruby_class_name %>
 
     module Type
 <%
 name_format = "%%-%ds" % max_name_size
 value_format = "%%%ds" % max_value_size
-Pack.names.zip(Pack.values) do |name, value|
+builder.ruby_names.zip(builder.values) do |name, value|
 %>      <%= name_format % name %> = <%= value_format % value %>
 <% end
 %>    end
@@ -40,7 +42,7 @@ Pack.names.zip(Pack.values) do |name, value|
 <%
 quoted_format = '"%s"'
 name_format = "%%-%ds" % (max_name_size + 2)
-Pack.names.each do |name|
+builder.ruby_names.each do |name|
 %>      <%= name_format % (quoted_format % name) %> => Type::<%= name %>,
 <% end
 %>    }

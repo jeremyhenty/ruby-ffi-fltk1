@@ -52,8 +52,18 @@ module Build
         end
     end
 
+    def name_base
+      @name_base ||= name.sub(%r{\A.*::}, "")
+    end
+
     def name_root
-      @name_root ||= name.sub(%r{\A.*::}, "").downcase
+      @name_root ||= name_base.downcase
+    end
+
+    def ruby_class_name ; name_base ; end
+
+    def ruby_names
+      @ruby_names ||= ruby_names_
     end
 
     def do_constant_method(_method, *args)
@@ -166,10 +176,12 @@ module Build
       return enum_names
     end
 
-    def mangle_name(name)
-      raise Build::Error, "invalid Box type name: '#{name}'" unless
-        name_match = NAME_PATTERN.match(name)
-      return name_match.captures.first
+    def ruby_names_
+      names.collect do |name|
+        raise Build::Error, "invalid Box type name: '#{name}'" unless
+          name_match = NAME_PATTERN.match(name)
+        name_match.captures.first
+      end
     end
 
     def cc_name(name) ; name ; end
@@ -231,6 +243,8 @@ module Build
 
       return enum_names
     end
+
+    def ruby_names_ ; names ; end
 
     def cc_name(name) ; "Fl_Pack::#{name}" ; end
 

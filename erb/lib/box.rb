@@ -19,20 +19,21 @@
 
 <%= generated %><%
 
-names_mangled = Box.names.collect { |name| Box.mangle_name(name) }
-max_name_size = names_mangled.collect { |name| name.size }.max
-max_value_size = Box.values.collect { |value| value.to_s.size }.max
+builder = Box
+
+max_name_size = builder.ruby_names.collect { |name| name.size }.max
+max_value_size = builder.values.collect { |value| value.to_s.size }.max
 
 %>
 
 module FFI::FLTK
-  class Box
+  class <%= builder.ruby_class_name %>
 
     module Type
 <%
 name_format = "%%-%ds" % max_name_size
 value_format = "%%%ds" % max_value_size
-names_mangled.zip(Box.values) do |name, value|
+builder.ruby_names.zip(builder.values) do |name, value|
 %>      <%= name_format % name %> = <%= value_format % value %>
 <% end
 %>    end
@@ -41,7 +42,7 @@ names_mangled.zip(Box.values) do |name, value|
 <%
 quoted_format = '"%s"'
 name_format = "%%-%ds" % (max_name_size + 2)
-names_mangled.each do |name|
+builder.ruby_names.each do |name|
 %>      <%= name_format % (quoted_format % name) %> => Type::<%= name %>,
 <% end
 %>    }

@@ -56,9 +56,23 @@ module Build
       @name_root ||= name.sub(%r{\A.*::}, "").downcase
     end
 
-    def ffi_name
-      @ffi_name ||= ffi_name_
+    def cc_name_root(*args)
+      count = args.size
+      case count
+      when 0
+        raise Build::Error,
+        "cc_name_root has not been specified" unless @cc_name_root
+        @cc_name_root
+      when 1
+        @cc_name_root, = *args
+      else
+        raise ArgumentError,
+        "wrong number of arguments (%d for 1)" % [ count ]
+      end
     end
+
+    def cc_variable ; cc_name_root ; end
+    def ffi_name ; "ffi_#{cc_variable}" ; end
 
     def default_tasks
       ruby_task
@@ -143,7 +157,7 @@ module Build
       return name_match.captures.first
     end
 
-    def ffi_name_ ; :ffi_fl_boxes ; end
+    cc_name_root "boxes"
 
     NAME_PATTERN =
       %r{\AFL_(.*)\z}
@@ -200,7 +214,7 @@ module Build
       return enum_names
     end
 
-    def ffi_name_ ; :ffi_fl_pack_types ; end
+    cc_name_root "pack_types"
 
     default_tasks
   end

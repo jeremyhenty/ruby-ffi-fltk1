@@ -19,18 +19,20 @@
 
 // <%= generated %>
 
+// <% builder = Box %>
+
 #include <FL/Enumerations.H>
 
-static int boxes[<%= Box.names.size %>] = {
-<% Box.names.each do |name|
+static int <%= builder.cc_variable %>[<%= builder.names.size %>] = {
+<% builder.names.each do |name|
 %>  <%= name %>,
 <% end %>};
 
 extern "C" {
 
-int *ffi_fl_boxes()
+int *<%= builder.ffi_name %>()
 {
-  return boxes;
+  return <%= builder.cc_variable %>;
 }
 
 }

@@ -32,11 +32,12 @@ end
 
 require "./rake/auto"
 require "./rake/fltk_config"
-require "./rake/extra"
 require "./rake/constants"
 require "./rake/fltk"
 require "./rake/demo"
 require "./rake/gem"
 
+# ensure that "extra.rb" exists, and load it
+require "./rake/extra"
 Rake::Task["extra.rb"].invoke
 require "./extra"

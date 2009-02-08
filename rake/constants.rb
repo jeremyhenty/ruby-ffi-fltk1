@@ -32,14 +32,15 @@ module Build
     module Extension
 
       def define_constant_methods(*methods)
-        methods.each do |_method|
-          delegate_to_class_(_method)
-          (class << self ; self ; end).class_eval do
+        delegate_to_class(*methods)
+        _module = Module.new do
+          methods.each do |_method|
             define_method(_method) do |*args|
               constant_method(_method, *args)
             end
           end
         end
+        extend _module
       end
 
       def delegate_to_class(*methods)

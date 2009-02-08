@@ -168,7 +168,8 @@ module Build
     def cc_variable ; cc_name_root ; end
 
     def include_cc_headers
-      "\n" + cc_headers.collect do |header|
+      comment_strip
+      cc_headers.collect do |header|
         "#include<FL/#{header}>"
       end * "\n"
     end

@@ -19,20 +19,18 @@
 
 // <%= generated %>
 
-// <% builder = Pack %>
+// <%= include_cc_headers %>
 
-// <%= builder.include_cc_headers %>
-
-static int <%= builder.cc_variable %>[<%= builder.names.size %>] = {
-<% builder.names.each do |name|
-%>  <%= builder.cc_name(name) %>,
+static int <%= cc_variable %>[<%= names.size %>] = {
+<% names.each do |name|
+%>  <%= cc_name(name) %>,
 <% end %>};
 
 extern "C" {
 
-int *<%= builder.ffi_name %>()
+int *<%= ffi_name %>()
 {
-  return <%= builder.cc_variable %>;
+  return <%= cc_variable %>;
 }
 
 }

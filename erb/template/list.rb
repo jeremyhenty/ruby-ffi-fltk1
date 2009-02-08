@@ -19,21 +19,19 @@
 
 <%= generated %><%
 
-builder = Box
-
-max_name_size = builder.ruby_names.collect { |name| name.size }.max
-max_value_size = builder.values.collect { |value| value.to_s.size }.max
+max_name_size = ruby_names.collect { |name| name.size }.max
+max_value_size = values.collect { |value| value.to_s.size }.max
 
 %>
 
 module FFI::FLTK
-  class <%= builder.ruby_class_name %>
+  class <%= ruby_class_name %>
 
     module Type
 <%
 name_format = "%%-%ds" % max_name_size
 value_format = "%%%ds" % max_value_size
-builder.ruby_names.zip(builder.values) do |name, value|
+ruby_names.zip(values) do |name, value|
 %>      <%= name_format % name %> = <%= value_format % value %>
 <% end
 %>    end
@@ -42,7 +40,7 @@ builder.ruby_names.zip(builder.values) do |name, value|
 <%
 quoted_format = '"%s"'
 name_format = "%%-%ds" % (max_name_size + 2)
-builder.ruby_names.each do |name|
+ruby_names.each do |name|
 %>      <%= name_format % (quoted_format % name) %> => Type::<%= name %>,
 <% end
 %>    }

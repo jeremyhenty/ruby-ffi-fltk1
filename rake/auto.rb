@@ -24,15 +24,18 @@ module Build
   # directories
   FFI_DIR = "lib/ffi"
   LIB_DIR = File.join(FFI_DIR, "fltk1")
+  directory LIB_DIR
 
   class Auto
 
     # directories
 
     DIR = "auto"
+    directory DIR
     CLEAN << DIR
 
     LIB_DIR = File.join(Build::LIB_DIR, "auto")
+    directory LIB_DIR
     CLOBBER << LIB_DIR
 
     # initialize in and out paths
@@ -69,6 +72,16 @@ EOS
 
     # ERb
 
+    ERB_DIR = "erb"
+
+    def self.erb_task(source, target)
+      target_dir = File.dirname(target)
+      directory target_dir
+      file target => [ target_dir, source ] do
+        erb(source, target)
+      end
+    end
+
     def self.erb(*args)
       new(*args).erb
     end
@@ -93,15 +106,10 @@ EOS
 
     [
      [ "auto", DIR     ],
-     [ "lib",  LIB_DIR ],
     ].each do |erb_dir, prefix|
-        Dir.glob("erb/#{erb_dir}/**/*") do |source|
+        Dir.glob(File.join(ERB_DIR, "#{erb_dir}/**/*")) do |source|
         target = File.join(prefix, source.sub(%r{^erb/.*?/}, ""))
-        target_dir = File.dirname(target)
-        directory target_dir
-        file target => [ target_dir, source ] do
-          erb(source, target)
-        end
+        erb_task(source, target)
       end
     end
   end

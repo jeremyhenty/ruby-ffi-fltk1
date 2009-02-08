@@ -19,20 +19,20 @@
 
 // <%= generated %>
 
-// <% builder = Box %>
-
-// <%= builder.include_cc_headers %>
-
-static int <%= builder.cc_variable %>[<%= builder.names.size %>] = {
-<% builder.names.each do |name|
-%>  <%= builder.cc_name(name) %>,
-<% end %>};
+#include <FL/Enumerations.H>
 
 extern "C" {
 
-int *<%= builder.ffi_name %>()
+// Some box types are referenced by macros that initialize their entry
+// in the box type table. That initialization won't happen when FFI
+// calls directly into the library, so we must explicitly initialize
+// all the types.
+
+void *ffi_fl_box_initialize()
 {
-  return <%= builder.cc_variable %>;
-}
+<% names.each do |name|
+%>  (void) (<%= name %>);
+<% end
+%>}
 
 }

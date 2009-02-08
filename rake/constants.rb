@@ -25,35 +25,138 @@
 
 module Build
 
-  module Constants
+  class Constants < Build::Auto
 
-    def header(path)
-      header_dir = Build.fltk_config[:header_dir]
-      return IO.read(File.join(header_dir, path))
-    end
+    TEMPLATE_DIR = File.join(Build::Auto::ERB_DIR, "template")
 
-    def names
-      @names ||= names_
-    end
+    module Extension
 
-    def values
-      @values ||=
-        begin
-          require "ffi"
-          extend FFI::Library
-          ffi_lib dl_path
-          attach_function ffi_name, [ ], :pointer
-          send(ffi_name).read_array_of_int(names.size)
+      def define_constant_methods(*methods)
+        methods.each do |_method|
+          delegate_to_class_(_method)
+          (class << self ; self ; end).class_eval do
+            define_method(_method) do |*args|
+              constant_method(_method, *args)
+            end
+          end
         end
+      end
+
+      def delegate_to_class(*methods)
+        methods.each do |_method|
+          delegate_to_class_(_method)
+        end
+      end
+
+      def delegate_to_class_(_method)
+        define_method(_method) do
+          self.class.send(_method)
+        end
+      end
+
+      def constant_method(_method, *args)
+        count = args.size
+        case count
+        when 0
+          value = @constants && @constants[_method]
+          raise Build::Error,
+          "constant method %s has not been defined" % [ _method ] unless value
+          return value
+        when 1
+          value, = *args
+          (@constants ||= Hash.new)[_method] = value
+        else
+          raise ArgumentError,
+          "wrong number of arguments (%d for 1)" % [ count ]
+        end
+      end
+
+      def default_tasks
+        erb_tasks
+        ruby_task
+        dl_task
+      end
+
+      def erb_tasks
+        erb_task(dl_template, dl_source)
+      end
+
+      def ruby_task
+        task :build => ruby_path
+        erb_task(ruby_template, ruby_path)
+        file ruby_path => dl_path
+      end
+
+      def ruby_path
+        @ruby_path ||=
+          File.join(Build::Auto::LIB_DIR, "#{name_root}.rb")
+      end
+
+      def ruby_template
+        @ruby_template ||=
+          File.join(TEMPLATE_DIR, "list.rb")
+      end
+
+      def dl_task
+        dl_compile_task(dl_path, dl_source)
+      end
+
+      def dl_path
+        @dl_path ||=
+          File.join(Build::Auto::DIR, "#{name_root}.so")
+      end
+
+      def dl_source
+        @dl_source ||=
+          File.join(Build::Auto::DIR, "#{name_root}.cc")
+      end
+
+      def dl_template
+        @dl_template ||=
+          File.join(TEMPLATE_DIR, "list.cc")
+      end
+
+      def dl_compile_task(path,source)
+        file path => [ File.dirname(path), source ] do |t|
+          Build.dl_compile(t.name, t.prerequisites.last)
+        end
+      end
+
+      def name_base
+        @name_base ||= name.sub(%r{\A.*::}, "")
+      end
+
+      def name_root
+        @name_root ||= name_base.downcase
+      end
+
+      def values
+        @values ||=
+          begin
+            require "ffi"
+            extend FFI::Library
+            ffi_lib dl_path
+            attach_function ffi_name, [ ], :pointer
+            send(ffi_name).read_array_of_int(names.size)
+          end
+      end
+
+      def names
+        @names ||= names_
+      end
+
+      def ffi_name ; "ffi_#{cc_name_root}" ; end
+
+      def header(path)
+        header_dir = Build.fltk_config[:header_dir]
+        return IO.read(File.join(header_dir, path))
+      end
     end
 
-    def name_base
-      @name_base ||= name.sub(%r{\A.*::}, "")
-    end
+    extend Extension
 
-    def name_root
-      @name_root ||= name_base.downcase
-    end
+    define_constant_methods :cc_name_root, :cc_headers
+    delegate_to_class :name_base, :names, :values, :ffi_name
 
     def ruby_class_name ; name_base ; end
 
@@ -61,84 +164,20 @@ module Build
       @ruby_names ||= ruby_names_
     end
 
-    def do_constant_method(_method, *args)
-      @_constants ||= Hash.new
-      count = args.size
-      case count
-      when 0
-        raise Build::Error,
-        "%s has not been specified" % [ _method ] unless
-          value = @_constants[_method]
-        value
-      when 1
-        value, = *args
-        @_constants[_method] = value
-      else
-        raise ArgumentError,
-        "wrong number of arguments (%d for 1)" % [ count ]
-      end
-    end
-
-    [ :cc_name_root, :cc_headers ].each do |_method|
-      define_method(_method) do |*args|
-        do_constant_method(_method, *args)
-      end
-    end
-
     def cc_variable ; cc_name_root ; end
-    def ffi_name ; "ffi_#{cc_variable}" ; end
 
     def include_cc_headers
       "\n" + cc_headers.collect do |header|
         "#include<FL/#{header}>"
       end * "\n"
     end
-
-    def default_tasks
-      ruby_task
-      dl_task
-    end
-
-    def ruby_task
-      task :build => ruby_path
-      file ruby_path => dl_path
-    end
-
-    def ruby_path
-      @ruby_path ||=
-        File.join(Build::Auto::LIB_DIR, "#{name_root}.rb")
-    end
-
-    def dl_task
-      dl_compile_task(dl_path, dl_source)
-    end
-
-    def dl_path
-      @dl_path ||=
-        File.join(Build::Auto::DIR, "#{name_root}.so")
-    end
-
-    def dl_source
-      @dl_source ||=
-        File.join(Build::Auto::DIR, "#{name_root}.cc")
-    end
-
-    def dl_compile_task(path,source)
-      file path => [ File.dirname(path), source ] do |t|
-        Build.dl_compile(t.name, t.prerequisites.last)
-      end
-    end
   end
 
   # boxes
 
-  module Box
+  class Box < Constants
 
-    extend Constants
-
-    module_function
-
-    def names_
+    def self.names_
 
       enumeration_pattern = %r{
 \benum\b
@@ -191,19 +230,17 @@ module Build
 
     box_init_dl = File.join(Build::Auto::LIB_DIR, "box_init.so")
     box_init_dl_cc = File.join(Build::Auto::DIR, "box_init.cc")
+    box_init_template = File.join(TEMPLATE_DIR, "box_init.cc")
+    erb_task(box_init_template, box_init_dl_cc)
     dl_compile_task(box_init_dl, box_init_dl_cc)
     task :build => box_init_dl
   end
 
   # Pack
 
-  module Pack
+  class Pack < Constants
 
-    extend Constants
-
-    module_function
-
-    def names_
+    def self.names_
 
       _class_decl_pattern = %r{
 ^\bclass\b

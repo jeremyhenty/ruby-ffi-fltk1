@@ -106,7 +106,7 @@ DEFINITIONS
 
     library = File.join(Auto::LIB_DIR, "fltk.so")
     source = File.join(Auto::DIR, "fltk.cc")
-    template = File.join(Auto::TEMPLATE_DIR, "fltk.cc")
+    template = File.join(Auto::ERB_DIR, "fltk.cc")
 
     erb_task(template, source)
 

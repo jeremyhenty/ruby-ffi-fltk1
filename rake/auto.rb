@@ -74,8 +74,6 @@ EOS
 
     ERB_DIR = "erb"
 
-    TEMPLATE_DIR = File.join(ERB_DIR, "template")
-
     def self.erb_task(source, target)
       target_dir = File.dirname(target)
       directory target_dir

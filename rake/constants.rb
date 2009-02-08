@@ -95,7 +95,7 @@ module Build
 
       def ruby_template
         @ruby_template ||=
-          File.join(Auto::TEMPLATE_DIR, "list.rb")
+          File.join(Auto::ERB_DIR, "list.rb")
       end
 
       def dl_task
@@ -114,7 +114,7 @@ module Build
 
       def dl_template
         @dl_template ||=
-          File.join(Auto::TEMPLATE_DIR, "list.cc")
+          File.join(Auto::ERB_DIR, "list.cc")
       end
 
       def dl_compile_task(path,source)
@@ -232,7 +232,7 @@ module Build
 
     box_init_dl = File.join(Auto::LIB_DIR, "box_init.so")
     box_init_dl_cc = File.join(Auto::DIR, "box_init.cc")
-    box_init_template = File.join(Auto::TEMPLATE_DIR, "box_init.cc")
+    box_init_template = File.join(Auto::ERB_DIR, "box_init.cc")
     erb_task(box_init_template, box_init_dl_cc)
     dl_compile_task(box_init_dl, box_init_dl_cc)
     task :build => box_init_dl

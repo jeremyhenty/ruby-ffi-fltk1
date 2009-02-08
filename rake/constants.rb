@@ -23,6 +23,8 @@
 # They use ERb to create Ruby and C++ source from lists of constant
 # names.
 
+require "./rake/auto"
+
 module Build
 
   class Constants < Build::Auto

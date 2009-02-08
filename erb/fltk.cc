@@ -27,6 +27,7 @@
 #include <FL/Fl_Widget.H>
 #include <FL/Fl_Group.H>
 #include <FL/Fl_Pack.H>
+#include <FL/Fl_Scroll.H>
 #include <FL/Fl_Window.H>
 #include <FL/Fl_Box.H>
 #include <FL/Fl_Button.H>
@@ -272,6 +273,14 @@ void ffi_group_resizable_set(void *p_group, void *p_widget)
 // Pack
 
 class FFI_Pack
+{ // <% widget_class do %>
+};
+
+// <% end %>
+
+// Scroll
+
+class FFI_Scroll
 { // <% widget_class do %>
 };
 

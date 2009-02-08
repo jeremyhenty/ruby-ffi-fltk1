@@ -328,6 +328,10 @@ DEF
 
   require "ffi/fltk1/auto/pack"
 
+  class Scroll < Group
+    ffi_wrapper
+  end
+
   class Window < Group
 
     ffi_wrapper :attach_new => false

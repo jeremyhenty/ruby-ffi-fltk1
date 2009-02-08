@@ -34,7 +34,7 @@ require "./rake/auto"
 require "./rake/fltk_config"
 require "./rake/extra"
 require "./rake/constants"
-require "./rake/wrapper"
+require "./rake/fltk"
 require "./rake/demo"
 require "./rake/gem"
 

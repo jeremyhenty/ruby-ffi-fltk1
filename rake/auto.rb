@@ -103,5 +103,12 @@ EOS
                    '[[:blank:]]*\z')
       @erb_out.sub!(@comment_strip_regexp, "")
     end
+
+    # compiling
+    def self.dl_compile_task(path,source)
+      file path => [ File.dirname(path), source ] do |t|
+        Build.dl_compile(t.name, t.prerequisites.last)
+      end
+    end
   end
 end

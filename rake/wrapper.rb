@@ -111,12 +111,7 @@ DEFINITIONS
     template = File.join(Auto::ERB_DIR, "fltk.cc")
 
     erb_task(template, source)
-
-    desc "Compile the wrapper library"
-    file library => [ source ] do |t|
-      puts "building '#{t.name}'"
-      Build.dl_compile(t.name, t.prerequisites.last)
-    end
+    dl_compile_task(library, source)
     task :build => library
   end
 end

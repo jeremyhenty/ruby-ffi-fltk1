@@ -117,12 +117,6 @@ module Build
           File.join(Auto::ERB_DIR, "list.cc")
       end
 
-      def dl_compile_task(path,source)
-        file path => [ File.dirname(path), source ] do |t|
-          Build.dl_compile(t.name, t.prerequisites.last)
-        end
-      end
-
       def name_base
         @name_base ||= name.sub(%r{\A.*::}, "")
       end

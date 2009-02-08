@@ -19,7 +19,7 @@
 
 module Build
 
-  class Auto
+  class FLTK < Auto
 
     def widget_class(&block)
       Widget_Class.new(self).run(&block)
@@ -103,14 +103,18 @@ DEFINITIONS
       DECLARATION_END_PATTERN =
         %r{[[:blank:]]*(\n.*)\z}
     end
-  end
 
-  desc "Compile the wrapper library"
-  library = File.join(Auto::LIB_DIR, "fltk.so")
-  source = File.join(Auto::DIR, "fltk.cc")
-  file library => [ source ] do |t|
-    puts "building '#{t.name}'"
-    dl_compile(t.name, t.prerequisites.last)
+    library = File.join(Auto::LIB_DIR, "fltk.so")
+    source = File.join(Auto::DIR, "fltk.cc")
+    template = File.join(Auto::TEMPLATE_DIR, "fltk.cc")
+
+    erb_task(template, source)
+
+    desc "Compile the wrapper library"
+    file library => [ source ] do |t|
+      puts "building '#{t.name}'"
+      Build.dl_compile(t.name, t.prerequisites.last)
+    end
+    task :build => library
   end
-  task :build => library
 end

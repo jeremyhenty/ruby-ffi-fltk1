@@ -27,9 +27,7 @@ require "./rake/auto"
 
 module Build
 
-  class Constants < Build::Auto
-
-    TEMPLATE_DIR = File.join(Build::Auto::ERB_DIR, "template")
+  class Constants < Auto
 
     module Extension
 
@@ -92,12 +90,12 @@ module Build
 
       def ruby_path
         @ruby_path ||=
-          File.join(Build::Auto::LIB_DIR, "#{name_root}.rb")
+          File.join(Auto::LIB_DIR, "#{name_root}.rb")
       end
 
       def ruby_template
         @ruby_template ||=
-          File.join(TEMPLATE_DIR, "list.rb")
+          File.join(Auto::TEMPLATE_DIR, "list.rb")
       end
 
       def dl_task
@@ -106,17 +104,17 @@ module Build
 
       def dl_path
         @dl_path ||=
-          File.join(Build::Auto::DIR, "#{name_root}.so")
+          File.join(Auto::DIR, "#{name_root}.so")
       end
 
       def dl_source
         @dl_source ||=
-          File.join(Build::Auto::DIR, "#{name_root}.cc")
+          File.join(Auto::DIR, "#{name_root}.cc")
       end
 
       def dl_template
         @dl_template ||=
-          File.join(TEMPLATE_DIR, "list.cc")
+          File.join(Auto::TEMPLATE_DIR, "list.cc")
       end
 
       def dl_compile_task(path,source)
@@ -232,9 +230,9 @@ module Build
 
     default_tasks
 
-    box_init_dl = File.join(Build::Auto::LIB_DIR, "box_init.so")
-    box_init_dl_cc = File.join(Build::Auto::DIR, "box_init.cc")
-    box_init_template = File.join(TEMPLATE_DIR, "box_init.cc")
+    box_init_dl = File.join(Auto::LIB_DIR, "box_init.so")
+    box_init_dl_cc = File.join(Auto::DIR, "box_init.cc")
+    box_init_template = File.join(Auto::TEMPLATE_DIR, "box_init.cc")
     erb_task(box_init_template, box_init_dl_cc)
     dl_compile_task(box_init_dl, box_init_dl_cc)
     task :build => box_init_dl

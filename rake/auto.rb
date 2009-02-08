@@ -74,6 +74,8 @@ EOS
 
     ERB_DIR = "erb"
 
+    TEMPLATE_DIR = File.join(ERB_DIR, "template")
+
     def self.erb_task(source, target)
       target_dir = File.dirname(target)
       directory target_dir
@@ -102,15 +104,6 @@ EOS
                    Regexp.escape(comment_prefix) +
                    '[[:blank:]]*\z')
       @erb_out.sub!(@comment_strip_regexp, "")
-    end
-
-    [
-     [ "auto", DIR     ],
-    ].each do |erb_dir, prefix|
-        Dir.glob(File.join(ERB_DIR, "#{erb_dir}/**/*")) do |source|
-        target = File.join(prefix, source.sub(%r{^erb/.*?/}, ""))
-        erb_task(source, target)
-      end
     end
   end
 end

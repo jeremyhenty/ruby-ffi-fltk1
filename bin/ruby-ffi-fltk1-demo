@@ -33,7 +33,7 @@ def run_demo(demo)
   fork { exec demo_path }
 end
 
-Window.new(300, 600, "FFI-FLTK1 demonstration") do |win|
+Window.new(300, 700, "FFI-FLTK1 demonstration") do |win|
   buttons_button = Button.new(0,   0, 300, 100, "Buttons")
   buttons_button.callback { run_demo "buttons" }
   boxes_button = Button.new(0, 100, 300, 100, "Boxes")
@@ -42,9 +42,11 @@ Window.new(300, 600, "FFI-FLTK1 demonstration") do |win|
   resizing_button.callback { run_demo "resizing" }
   packs_button = Button.new(0, 300, 300, 100, "Packs")
   packs_button.callback { run_demo "packs" }
-  layout_button = Button.new(0, 400, 300, 100, "Layout")
+  scrolls_button = Button.new(0, 400, 300, 100, "Scrolls")
+  scrolls_button.callback { run_demo "scrolls" }
+  layout_button = Button.new(0, 500, 300, 100, "Layout")
   layout_button.callback { run_demo "layout" }
-  close_button = Button.new(0, 500, 300, 100, "Close")
+  close_button = Button.new(0, 600, 300, 100, "Close")
   close_button.callback { win.hide }
   win.show
 end

@@ -1,0 +1,55 @@
+#!/usr/bin/env ruby
+
+# Copyright (C) 2008, 2009 Jeremy Henty.
+
+# This file is part of Ruby-FFI-FLTK1.
+
+# Ruby-FFI-FLTK1 is free software: you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+
+# Ruby-FFI-FLTK1 is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+# General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see http://www.gnu.org/licenses/.
+
+
+$VERBOSE = true
+
+require "rubygems"
+require "ffi/fltk1"
+
+include FFI
+include FFI::FLTK
+
+keys = Scroll::TYPES.keys
+keys.delete "ALWAYS_ON" # this is really a flag, useless on its own
+count = keys.size
+height = 50
+width = 300
+
+Window.new(width, count * height, "Scrolls") do |win|
+  Pack.new do |pack|
+    pack.widget_type = Pack::Type::VERTICAL
+    keys.sort.each do |key|
+      Pack.new(0, height) do |pack1|
+        pack1.widget_type = Pack::Type::HORIZONTAL
+        Scroll.new(width, 0) do |scroll|
+          scroll.widget_type = Scroll::TYPES[key]
+          Box.new(400, 75, key)
+          pack1.resizable = scroll
+        end
+      end
+    end
+    pack.resizable = pack
+    win.resizable = pack
+  end
+  win.size_range(1, 1, 0, 0)
+  win.show
+end
+
+FLTK.run

@@ -72,7 +72,7 @@ module Build
         end
       end
 
-      def default_tasks
+      def defaults
         erb_tasks
         ruby_task
         dl_task
@@ -222,7 +222,7 @@ module Build
     NAME_PATTERN =
       %r{\AFL_(.*)\z}
 
-    default_tasks
+    defaults
 
     box_init_dl = File.join(Auto::LIB_DIR, "box_init.so")
     box_init_dl_cc = File.join(Auto::DIR, "box_init.cc")
@@ -232,53 +232,79 @@ module Build
     task :build => box_init_dl
   end
 
-  # Pack
+  # Widget types
 
-  class Pack < Constants
+  class Types < Constants
 
-    def self.names_
+    module Extension
 
-      _class_decl_pattern = %r{
+      def names_
+
+        # extract the class declaration from the FLTK header
+        pack_header = header("#{fl_name}.h")
+        raise Build::Error, "missing #{fl_name} class declaration" unless
+          _class_decl_match = class_declaration_pattern.match(pack_header)
+        _class_decl = _class_decl_match.captures.first
+
+        # extract the type enumeration from the class declaration
+        raise Build::Error, "missing #{fl_name} type enumeration" unless
+          enumeration_match = ENUMERATION_PATTERN.match(_class_decl)
+        enumeration = enumeration_match.captures.first
+
+        # extract the names from the enumeration
+        enum_names = enumeration.split("\n").collect do |enum|
+          next unless enumeration_item_match =
+            ENUMERATION_ITEM_PATTERN.match(enum)
+          enumeration_item_match.captures.first
+        end.compact
+
+        return enum_names
+      end
+
+      def class_declaration_pattern
+        %r{
 ^\bclass\b
 [^\n]*
-\bFl_Pack\b
+\b#{fl_name}\b
 [^\n]*
 \{
 (.*?) # class contents
 ^\}[[:space:]]*;
 }mx
+      end
 
-      enumeration_pattern =
-        %r{\benum\b[[:space:]]*\{(.*?)\}}m
+      def fl_name ; "Fl_#{name_base}" ; end
 
-      # extract the class declaration from the FLTK header
-      pack_header = header("Fl_Pack.h")
-      raise Build::Error, "missing Fl_Pack class declaration" unless
-        _class_decl_match = _class_decl_pattern.match(pack_header)
-      _class_decl = _class_decl_match.captures.first
-
-      # extract the type enumeration from the class declaration
-      raise Build::Error, "missing Fl_Pack type enumeration" unless
-        enumeration_match = enumeration_pattern.match(_class_decl)
-      enumeration = enumeration_match.captures.first
-
-      # extract the names from the enumeration
-      enum_pattern = %r{\A[[:blank:]]*([[:alpha:]_]+)[[:blank:]]+=}
-      enum_names = enumeration.split("\n").collect do |enum|
-        next unless enum_match = enum_pattern.match(enum)
-        enum_match.captures.first
-      end.compact
-
-      return enum_names
+      def defaults
+        cc_name_root "#{name_root}_types"
+        cc_headers [ "#{fl_name}.H" ]
+        super
+      end
     end
 
+    extend Extension
+
+    delegate_to_class :fl_name
+
+    ENUMERATION_PATTERN =
+      %r{\benum\b[[:space:]]*\{(.*?)\}}m
+
+    ENUMERATION_ITEM_PATTERN =
+      %r{\A[[:blank:]]*([[:alpha:]_]+)[[:blank:]]+=}
+
     def ruby_names_ ; names ; end
+    def cc_name(name) ; "#{fl_name}::#{name}" ; end
+  end
 
-    def cc_name(name) ; "Fl_Pack::#{name}" ; end
+  # Pack
 
-    cc_name_root "pack_types"
-    cc_headers [ "Fl_Pack.H" ]
+  class Pack < Types
+    defaults
+  end
 
-    default_tasks
+  # Scroll
+
+  class Scroll < Types
+    defaults
   end
 end

@@ -30,12 +30,16 @@ count = Box::TYPES.size
 height = 25
 width = 250
 
-Window.new(width, count * height, "Boxes") do |win|
-  Pack.new do |pack|
-    pack.widget_type = Pack::Type::VERTICAL
-    Box::TYPES.keys.sort.each do |key|
-      box = Box.new(width, height, key)
-      box.box(Box::TYPES[key])
+Window.new(width, 300, "Boxes") do |win|
+  Scroll.new do |scroll|
+    scroll.widget_type = Scroll::Type::VERTICAL
+    # allow horizontal space for the vertical scrollbar
+    Pack.new(width-20, scroll.h) do |pack|
+      pack.widget_type = Pack::Type::VERTICAL
+      Box::TYPES.keys.sort.each do |key|
+        box = Box.new(0, height, key)
+        box.box(Box::TYPES[key])
+      end
     end
   end
   win.show

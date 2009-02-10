@@ -39,7 +39,10 @@ module FFI::FLTK
       options = DEFAULTS.dup
       options.merge!(options_) if options_
       if options[:attach_new]
-        key = name.gsub(%r{\A.*::}, "").downcase
+        # convert ClassName to Class_Name, then downcase
+        key = name.gsub(%r{\A.*::}, ""
+                        ).gsub(%r{([^[:upper:]])([[:upper:]])}
+                               ) { "#{$1}_#{$2}" }.downcase
         ffi_pointer_new_method :"ffi_#{key}_new_xywhl"
       end
     end
@@ -392,27 +395,27 @@ DEF
     ffi_wrapper
   end
 
-  class Check_Button < Button
+  class CheckButton < Button
     ffi_wrapper
   end
 
-  class Light_Button < Button
+  class LightButton < Button
     ffi_wrapper
   end
 
-  class Repeat_Button < Button
+  class RepeatButton < Button
     ffi_wrapper
   end
 
-  class Return_Button < Button
+  class ReturnButton < Button
     ffi_wrapper
   end
 
-  class Round_Button < Button
+  class RoundButton < Button
     ffi_wrapper
   end
 
-  class Toggle_Button < Button
+  class ToggleButton < Button
     ffi_wrapper
   end
 

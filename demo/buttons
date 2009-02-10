@@ -29,12 +29,12 @@ include FFI::FLTK
 button_classes =
   [
    Button,
-   Check_Button,
-   Light_Button,
-   Repeat_Button,
-   Return_Button,
-   Round_Button,
-   Toggle_Button,
+   CheckButton,
+   LightButton,
+   RepeatButton,
+   ReturnButton,
+   RoundButton,
+   ToggleButton,
   ]
 
 height = 25

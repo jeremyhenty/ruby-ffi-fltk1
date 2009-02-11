@@ -387,6 +387,10 @@ DEF
   attach_function :ffi_fl_box_initialize, [ ], :void
   ffi_fl_box_initialize
 
+  class MenuBar < Widget
+    ffi_wrapper
+  end
+
   class Box < Widget
     ffi_wrapper
   end

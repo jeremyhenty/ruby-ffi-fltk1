@@ -30,6 +30,7 @@
 #include <FL/Fl_Scroll.H>
 #include <FL/Fl_Window.H>
 #include <FL/Fl_Box.H>
+#include <FL/Fl_Menu_Bar.H>
 #include <FL/Fl_Button.H>
 #include <FL/Fl_Check_Button.H>
 #include <FL/Fl_Light_Button.H>
@@ -331,6 +332,14 @@ void ffi_window_size_range(void *p_win,
 // Box
 
 class FFI_Box
+{ // <% widget_class do %>
+};
+
+// <% end %>
+
+// Menu_Bar
+
+class FFI_Menu_Bar
 { // <% widget_class do %>
 };
 

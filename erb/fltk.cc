@@ -343,6 +343,30 @@ class FFI_Menu_Bar
 { // <% widget_class do %>
 };
 
+extern "C" {
+
+void ffi_menu_add_i(void *p_menu,
+		    const char *label, int shortcut,
+		    void *callback,
+		    int flags)
+{
+  ((FFI_Menu_Bar *) p_menu)->add(label, shortcut,
+				 FFI_Widget::callback_caller,
+				 callback, flags);
+}
+
+void ffi_menu_add_s(void *p_menu,
+		    const char *label, const char *shortcut,
+		    void *callback,
+		    int flags)
+{
+  ((FFI_Menu_Bar *) p_menu)->add(label, shortcut,
+				 FFI_Widget::callback_caller,
+				 callback, flags);
+}
+
+} // extern "C"
+
 // <% end %>
 
 // Button

@@ -388,6 +388,72 @@ DEF
   ffi_fl_box_initialize
 
   class MenuBar < Widget
+
+    def initialize(*args)
+      super
+      @ffi_menu_items = [ ]
+    end
+
+    def add(*args)
+      item = Item.new(self, *args)
+      @ffi_menu_items << item
+      return item
+    end
+
+    ffi_callback :ffi_menu_item_callback, [ ], :void
+
+    # add(), with an "int" shortcut
+    ffi_attach_function :ffi_menu_add_i,
+    [ :pointer, :string, :int, :ffi_menu_item_callback, :int ],
+    :int
+
+    # add(), with a "const char *" shortcut
+    ffi_attach_function :ffi_menu_add_s,
+    [ :pointer, :string, :string, :ffi_menu_item_callback, :int ],
+    :int
+
+    class Item
+
+      def initialize(widget, label, shortcut = 0,
+                     callback = nil, user_data = nil, flags = 0)
+        @ffi_ffi_callback = method(:ffi_ffi_callback)
+        @ffi_widget = widget
+        @ffi_callback = callback
+        @ffi_user_data = user_data
+
+        ffi_method = nil
+
+        # coerce shortcut to something meaningful and set ffi_method
+        begin
+          shortcut = Integer(shortcut)
+          ffi_method = :ffi_menu_add_i
+        rescue ArgumentError
+          begin
+            shortcut = String(shortcut)
+            ffi_method = :ffi_menu_add_s
+          rescue ArgumentError
+          end
+        end
+
+        # if ffi_method is still nil then we failed to coerce shortcut
+        unless ffi_method
+          raise ArgumentError,
+          "shortcut must be an Integer or a String"
+        end
+
+        # tell the widget to add this item
+        @ffi_widget.ffi_send(ffi_method,
+                             String(label), shortcut,
+                             @ffi_ffi_callback, flags)
+      end
+
+      def ffi_ffi_callback
+        if @ffi_callback
+          @ffi_callback.call(@ffi_widget, @ffi_user_data)
+        end
+      end
+    end
+
     ffi_wrapper
   end
 

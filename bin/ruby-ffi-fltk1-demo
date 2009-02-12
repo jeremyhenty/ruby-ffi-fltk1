@@ -33,21 +33,24 @@ def run_demo(demo)
   fork { exec demo_path }
 end
 
-Window.new(300, 700, "FFI-FLTK1 demonstration") do |win|
-  buttons_button = Button.new(0,   0, 300, 100, "Buttons")
-  buttons_button.callback { run_demo "buttons" }
-  boxes_button = Button.new(0, 100, 300, 100, "Boxes")
-  boxes_button.callback { run_demo "box-types" }
-  resizing_button = Button.new(0, 200, 300, 100, "Resizing")
-  resizing_button.callback { run_demo "resizing" }
-  packs_button = Button.new(0, 300, 300, 100, "Packs")
-  packs_button.callback { run_demo "packs" }
-  scrolls_button = Button.new(0, 400, 300, 100, "Scrolls")
-  scrolls_button.callback { run_demo "scrolls" }
-  layout_button = Button.new(0, 500, 300, 100, "Layout")
-  layout_button.callback { run_demo "layout" }
-  close_button = Button.new(0, 600, 300, 100, "Close")
-  close_button.callback { win.hide }
+Window.new(300, 30, "FFI-FLTK1 demonstration") do |win|
+
+  menu_bar = MenuBar.new
+  menu_bar_cb = lambda { win.hide }
+  menu_bar.add("File/Close", 0, menu_bar_cb, nil, 0)
+
+  [
+   [ "Buttons", "buttons", ],
+   [ "Boxes", "box-types", ],
+   [ "Resizing", "resizing", ],
+   [ "Packs", "packs", ],
+   [ "Scrolls", "scrolls", ],
+   [ "Layout", "layout", ],
+  ].each do |label, demo|
+    callback = lambda { run_demo(demo) }
+    menu_bar.add("Demo/#{label}", 0, callback, nil, 0)
+  end
+
   win.show
 end
 

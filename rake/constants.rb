@@ -273,7 +273,14 @@ module Build
 }mx
       end
 
-      def fl_name ; "Fl_#{name_base}" ; end
+      def fl_name
+        @fl_name ||=
+          begin
+            base = name_base.gsub(%r{([^[:upper:]])([[:upper:]])}
+                                  ) { "#{$1}_#{$2}" }
+            "Fl_#{base}"
+          end
+      end
 
       def defaults
         cc_name_root "#{name_root}_types"

@@ -422,7 +422,7 @@ DEF
   attach_function :ffi_fl_box_initialize, [ ], :void
   ffi_fl_box_initialize
 
-  class MenuBar < Widget
+  class Menu < Widget
 
     def initialize(*args)
       super
@@ -488,7 +488,9 @@ DEF
         end
       end
     end
+  end
 
+  class MenuBar < Menu
     ffi_wrapper
   end
 

@@ -430,7 +430,7 @@ DEF
     end
 
     def add(*args)
-      item = Item.new(self, *args)
+      item = MenuItem.new(self, *args)
       @ffi_menu_items << item
       return item
     end
@@ -446,46 +446,46 @@ DEF
     ffi_attach_function :ffi_menu_add_s,
     [ :pointer, :string, :string, :ffi_menu_item_callback, :int ],
     :int
+  end
 
-    class Item
+  class MenuItem
 
-      def initialize(widget, label, shortcut = 0,
-                     callback = nil, userdata = nil, flags = 0)
-        @ffi_ffi_callback = method(:ffi_ffi_callback)
-        @ffi_widget = widget
-        @ffi_callback = callback
-        @ffi_userdata = userdata
+    def initialize(widget, label, shortcut = 0,
+                   callback = nil, userdata = nil, flags = 0)
+      @ffi_ffi_callback = method(:ffi_ffi_callback)
+      @ffi_widget = widget
+      @ffi_callback = callback
+      @ffi_userdata = userdata
 
-        ffi_method = nil
+      ffi_method = nil
 
-        # coerce shortcut to something meaningful and set ffi_method
+      # coerce shortcut to something meaningful and set ffi_method
+      begin
+        shortcut = Integer(shortcut)
+        ffi_method = :ffi_menu_add_i
+      rescue ArgumentError
         begin
-          shortcut = Integer(shortcut)
-          ffi_method = :ffi_menu_add_i
+          shortcut = String(shortcut)
+          ffi_method = :ffi_menu_add_s
         rescue ArgumentError
-          begin
-            shortcut = String(shortcut)
-            ffi_method = :ffi_menu_add_s
-          rescue ArgumentError
-          end
         end
-
-        # if ffi_method is still nil then we failed to coerce shortcut
-        unless ffi_method
-          raise ArgumentError,
-          "shortcut must be an Integer or a String"
-        end
-
-        # tell the widget to add this item
-        @ffi_widget.ffi_send(ffi_method,
-                             String(label), shortcut,
-                             @ffi_ffi_callback, flags)
       end
 
-      def ffi_ffi_callback
-        if @ffi_callback
-          @ffi_callback.call(@ffi_widget, @ffi_userdata)
-        end
+      # if ffi_method is still nil then we failed to coerce shortcut
+      unless ffi_method
+        raise ArgumentError,
+        "shortcut must be an Integer or a String"
+      end
+
+      # tell the widget to add this item
+      @ffi_widget.ffi_send(ffi_method,
+                           String(label), shortcut,
+                           @ffi_ffi_callback, flags)
+    end
+
+    def ffi_ffi_callback
+      if @ffi_callback
+        @ffi_callback.call(@ffi_widget, @ffi_userdata)
       end
     end
   end

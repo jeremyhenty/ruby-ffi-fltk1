@@ -226,6 +226,22 @@ module FFI::FLTK
       return nil
     end
 
+    def userdata(*args)
+      count = args.size
+      case count
+      when 0
+        return @ffi_userdata
+      when 1
+        @ffi_userdata, = *args
+        return nil
+      else
+        raise ArgumentError,
+          "wrong number of arguments (%d for 1)" % [ count ]
+      end
+    end
+
+    alias :userdata= :userdata
+
     def ffi_ffi_callback
       if @ffi_callback
         @ffi_callback.call(self, @ffi_userdata)

@@ -297,13 +297,11 @@ module Build
   end
 
   # Pack
-
   class Pack < Types
     defaults
   end
 
   # Scroll
-
   class Scroll < Types
     defaults
   end

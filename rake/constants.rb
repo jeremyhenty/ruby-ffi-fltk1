@@ -241,9 +241,9 @@ module Build
       def names_
 
         # extract the class declaration from the FLTK header
-        pack_header = header("#{fl_name}.h")
+        _header = header("#{fl_name}.h")
         raise Build::Error, "missing #{fl_name} class declaration" unless
-          _class_decl_match = class_declaration_pattern.match(pack_header)
+          _class_decl_match = class_declaration_pattern.match(_header)
         _class_decl = _class_decl_match.captures.first
 
         # extract the type enumeration from the class declaration

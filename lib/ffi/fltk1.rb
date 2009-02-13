@@ -108,6 +108,9 @@ module FFI::FLTK
       ffi_send(:ffi_set_delete_callback, @ffi_widget_deleted_callback)
       @ffi_fl_address = ffi_send(:ffi_widget_fl_pointer).address
       WIDGETS[@ffi_fl_address] = self
+      @ffi_ffi_callback = method(:ffi_ffi_callback)
+      @ffi_callback = nil
+      @ffi_userdata = nil
     end
 
     def ffi_pointer_new(*args)
@@ -168,10 +171,8 @@ module FFI::FLTK
     ffi_attach_function :ffi_widget_fl_pointer, [ :pointer ], :pointer
 
     ffi_callback :ffi_widget_callback, [ ], :void
-    ffi_attach_function :ffi_widget_set_callback,
+    ffi_attach_function :ffi_callback_set,
     [ :pointer, :ffi_widget_callback ], :void
-    ffi_attach_function :ffi_widget_unset_callback,
-    [ :pointer ], :void
 
     class DeletedError < Error ; end
 
@@ -195,22 +196,40 @@ module FFI::FLTK
       @ffi_widget_deleted
     end
 
-    def callback(*cbs, &cb1)
-      return @ffi_callback if cbs.empty? && !cb1
-      count = cbs.size
-      raise ArgumentError, "wrong number of arguments (%d for 1))" %
-        [ count ] if count > 1
-      cb0 = cbs.first
-      raise ArgumentError, "cannot supply both a Proc and a block" if
-        cb0 && cb1
-      cb = cb0 || cb1
-      @ffi_callback = cb
-      if @ffi_callback
-        ffi_send(:ffi_widget_set_callback, @ffi_callback)
+    def callback(*args, &callback)
+      count = args.size
+      if block_given?
+        @ffi_callback = callback
+        case count
+        when 0, 1
+          @ffi_userdata = *args
+        else
+          raise ArgumentError,
+          "wrong number of arguments (%d for 1)" % [ count ]
+        end
       else
-        ffi_send(:ffi_widget_unset_callback)
+        case count
+        when 0
+          return @ffi_callback
+        when 1, 2
+          @ffi_callback, @ffi_userdata = *args
+        else
+          raise ArgumentError,
+          "wrong number of arguments (%d for 2)" % [ count ]
+        end
       end
-      return @ffi_callback
+      if @ffi_callback
+        ffi_send(:ffi_callback_set, @ffi_ffi_callback)
+      else
+        ffi_send(:ffi_callback_set, nil)
+      end
+      return nil
+    end
+
+    def ffi_ffi_callback
+      if @ffi_callback
+        @ffi_callback.call(self, @ffi_userdata)
+      end
     end
 
     alias :callback= :callback

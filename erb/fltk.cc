@@ -135,16 +135,10 @@ void *ffi_widget_fl_pointer(void *p_widget)
   return (Fl_Widget *)((FFI_Widget *) p_widget);
 }
 
-void ffi_widget_set_callback(void *p_widget, void *cb)
+void ffi_callback_set(void *p_widget, void *cb)
 {
   FFI_Widget *widget = (FFI_Widget *) p_widget;
   widget->callback(FFI_Widget::callback_caller, cb);
-}
-
-void ffi_widget_unset_callback(void *p_widget)
-{
-  FFI_Widget *widget = (FFI_Widget *) p_widget;
-  widget->callback(FFI_Widget::callback_caller, (void *) 0);
 }
 
 void ffi_widget_redraw(void *p_widget)

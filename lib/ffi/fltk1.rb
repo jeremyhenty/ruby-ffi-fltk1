@@ -434,11 +434,11 @@ DEF
     class Item
 
       def initialize(widget, label, shortcut = 0,
-                     callback = nil, user_data = nil, flags = 0)
+                     callback = nil, userdata = nil, flags = 0)
         @ffi_ffi_callback = method(:ffi_ffi_callback)
         @ffi_widget = widget
         @ffi_callback = callback
-        @ffi_user_data = user_data
+        @ffi_userdata = userdata
 
         ffi_method = nil
 
@@ -468,7 +468,7 @@ DEF
 
       def ffi_ffi_callback
         if @ffi_callback
-          @ffi_callback.call(@ffi_widget, @ffi_user_data)
+          @ffi_callback.call(@ffi_widget, @ffi_userdata)
         end
       end
     end

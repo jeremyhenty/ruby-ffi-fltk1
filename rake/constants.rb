@@ -297,7 +297,7 @@ module Build
       %r{\benum\b[[:space:]]*\{(.*?)\}}m
 
     ENUMERATION_ITEM_PATTERN =
-      %r{\A[[:blank:]]*([[:alpha:]_]+)[[:blank:]]+=}
+      %r{\A[[:blank:]]*([[:alpha:]_]+)[[:blank:]]*=}
 
     def ruby_names_ ; names ; end
     def cc_name(name) ; "#{fl_name}::#{name}" ; end

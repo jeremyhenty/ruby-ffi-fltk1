@@ -490,6 +490,8 @@ DEF
     end
   end
 
+  require "ffi/fltk1/auto/menuitem"
+
   class MenuBar < Menu
     ffi_wrapper
   end

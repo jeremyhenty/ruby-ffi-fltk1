@@ -312,4 +312,42 @@ module Build
   class Scroll < Types
     defaults
   end
+
+  # MenuItem
+  class MenuItem < Types
+
+    def self.names_
+
+      _header = header("#{fl_name}.h")
+
+      # extract the type enumeration from the header
+      raise Build::Error, "missing #{fl_name} type enumeration" unless
+        enumeration_match = ENUMERATION_PATTERN.match(_header)
+      enumeration = enumeration_match.captures.first
+
+      # extract the names from the enumeration
+      enum_names = enumeration.split("\n").collect do |enum|
+        next unless enumeration_item_match =
+          ENUMERATION_ITEM_PATTERN.match(enum)
+        enumeration_item_match.captures.first
+      end.compact
+
+      return enum_names
+    end
+
+    def ruby_names_
+      names.collect do |name|
+        raise Build::Error, "invalid #{fl_name} type name: '#{name}'" unless
+          name_match = NAME_PATTERN.match(name)
+        name_match.captures.first
+      end
+    end
+
+    def cc_name(name) ; name ; end
+
+    NAME_PATTERN =
+      %r{\AFL_(?:MENU_)?(.*)\z}
+
+    defaults
+  end
 end

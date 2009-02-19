@@ -142,6 +142,9 @@ module Build
 
       def ffi_name ; "ffi_#{cc_name_root}" ; end
 
+      def fl_name ; @fl_name ||= fl_name_ ; end
+      def fl_name_ ; name_base ; end
+
       def header(path)
         header_dir = Build.fltk_config[:header_dir]
         return IO.read(File.join(header_dir, path))
@@ -151,12 +154,35 @@ module Build
     extend Extension
 
     define_constant_methods :cc_name_root, :cc_headers
-    delegate_to_class :name_base, :names, :values, :ffi_name
+    delegate_to_class :name_base, :names, :values, :fl_name, :ffi_name
 
     def ruby_class_name ; name_base ; end
 
     def ruby_names
       @ruby_names ||= ruby_names_
+    end
+
+    module RubyNames
+      # prepackaged definitions of ruby_names_
+
+      module Names
+        def ruby_names_ ; names ; end
+      end
+
+      module Pattern
+        def self.included(mod)
+          mod.define_constant_methods :ruby_name_pattern
+        end
+
+        def ruby_names_
+          names.collect do |name|
+            raise Build::Error,
+            "invalid #{fl_name} type name: '#{name}'" unless
+              name_match = ruby_name_pattern.match(name)
+            name_match.captures.first
+          end
+        end
+      end
     end
 
     def cc_variable ; cc_name_root ; end
@@ -206,21 +232,13 @@ module Build
       return enum_names
     end
 
-    def ruby_names_
-      names.collect do |name|
-        raise Build::Error, "invalid Box type name: '#{name}'" unless
-          name_match = NAME_PATTERN.match(name)
-        name_match.captures.first
-      end
-    end
-
     def cc_name(name) ; name ; end
 
     cc_name_root "boxes"
     cc_headers [ "Enumerations.H" ]
 
-    NAME_PATTERN =
-      %r{\AFL_(.*)\z}
+    include Constants::RubyNames::Pattern
+    ruby_name_pattern %r{\AFL_(.*)\z}
 
     defaults
 
@@ -273,13 +291,12 @@ module Build
 }mx
       end
 
-      def fl_name
-        @fl_name ||=
-          begin
-            base = name_base.gsub(%r{([^[:upper:]])([[:upper:]])}
-                                  ) { "#{$1}_#{$2}" }
-            "Fl_#{base}"
-          end
+      def fl_name_
+        begin
+          base = name_base.gsub(%r{([^[:upper:]])([[:upper:]])}
+                                ) { "#{$1}_#{$2}" }
+          "Fl_#{base}"
+        end
       end
 
       def defaults
@@ -291,15 +308,14 @@ module Build
 
     extend Extension
 
-    delegate_to_class :fl_name
-
     ENUMERATION_PATTERN =
       %r{\benum\b[[:space:]]*\{(.*?)\}}m
 
     ENUMERATION_ITEM_PATTERN =
       %r{\A[[:blank:]]*([[:alpha:]_]+)[[:blank:]]*=}
 
-    def ruby_names_ ; names ; end
+    include Constants::RubyNames::Names
+
     def cc_name(name) ; "#{fl_name}::#{name}" ; end
   end
 
@@ -335,18 +351,10 @@ module Build
       return enum_names
     end
 
-    def ruby_names_
-      names.collect do |name|
-        raise Build::Error, "invalid #{fl_name} type name: '#{name}'" unless
-          name_match = NAME_PATTERN.match(name)
-        name_match.captures.first
-      end
-    end
-
     def cc_name(name) ; name ; end
 
-    NAME_PATTERN =
-      %r{\AFL_(?:MENU_)?(.*)\z}
+    include Constants::RubyNames::Pattern
+    ruby_name_pattern %r{\AFL_(?:MENU_)?(.*)\z}
 
     defaults
   end

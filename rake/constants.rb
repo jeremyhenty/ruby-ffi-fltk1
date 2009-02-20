@@ -27,7 +27,14 @@ require "./rake/auto"
 
 module Build
 
-  class Constants < Auto
+  class Constants_ < Auto
+    def self.constant_method(_method)
+      raise Build::Error,
+      "constant method %s has not been defined" % [ _method ]
+    end
+  end
+
+  class Constants < Constants_
 
     module Extension
 
@@ -60,9 +67,7 @@ module Build
         case count
         when 0
           value = @constants && @constants[_method]
-          raise Build::Error,
-          "constant method %s has not been defined" % [ _method ] unless value
-          return value
+          return value || superclass.constant_method(_method)
         when 1
           value, = *args
           (@constants ||= Hash.new)[_method] = value
@@ -149,11 +154,31 @@ module Build
         header_dir = Build.fltk_config[:header_dir]
         return IO.read(File.join(header_dir, path))
       end
+
+      def enum_names(source)
+        # extract the type enumeration
+        raise Build::Error, "missing #{fl_name} type enumeration" unless
+          enumeration_match = enumeration_pattern.match(source)
+        enumeration = enumeration_match.captures.first
+
+        # extract the names from the enumeration
+        separator = enumeration_item_separator
+        pattern = enumeration_item_pattern
+        enumeration.split(separator).collect do |enum|
+          next unless enumeration_item_match = pattern.match(enum)
+          enumeration_item_match.captures.first
+        end.compact
+      end
     end
 
     extend Extension
 
-    define_constant_methods :cc_name_root, :cc_headers
+    define_constant_methods \
+    :cc_name_root, :cc_headers,
+    :enumeration_pattern,
+    :enumeration_item_separator,
+    :enumeration_item_pattern
+
     delegate_to_class :name_base, :names, :values, :fl_name, :ffi_name
 
     def ruby_class_name ; name_base ; end
@@ -200,8 +225,22 @@ module Build
   class Box < Constants
 
     def self.names_
+      _names = enum_names(header("Enumerations.h"))
 
-      enumeration_pattern = %r{
+      # remove "FL_FREE_BOXTYPE", it's not a real box type
+      raise Build::Error, "missing FL_FREE_BOXTYPE" unless
+        _names.last == "FL_FREE_BOXTYPE"
+      _names.pop
+
+      return _names
+    end
+
+    def cc_name(name) ; name ; end
+
+    cc_name_root "boxes"
+    cc_headers [ "Enumerations.H" ]
+
+    enumeration_pattern %r{
 \benum\b
 [[:space:]]+
 \bFl_Boxtype\b
@@ -211,31 +250,8 @@ module Build
 \}[[:space:]]*;
 }mx
 
-      # extract the Fl_Boxtype enumeration from the FLTK header
-      enumerations = header("Enumerations.h")
-      raise Build::Error, "missing Fl_Boxtype enumeration" unless
-        enumeration_match = enumeration_pattern.match(enumerations)
-      enumeration = enumeration_match.captures.first
-
-      # extract the names from the enumeration
-      enum_pattern = %r{(FL_[[:alpha:]_]+)}
-      enum_names = enumeration.split(',').collect do |enum|
-        next unless enum_match = enum_pattern.match(enum)
-        enum_match.captures.first
-      end.compact
-
-      # remove "FL_FREE_BOXTYPE", it's not a real box type
-      raise Build::Error, "missing FL_FREE_BOXTYPE" unless
-        enum_names.last == "FL_FREE_BOXTYPE"
-      enum_names.pop
-
-      return enum_names
-    end
-
-    def cc_name(name) ; name ; end
-
-    cc_name_root "boxes"
-    cc_headers [ "Enumerations.H" ]
+    enumeration_item_separator ","
+    enumeration_item_pattern %r{(FL_[[:alpha:]_]+)}
 
     include Constants::RubyNames::Pattern
     ruby_name_pattern %r{\AFL_(.*)\z}
@@ -257,26 +273,11 @@ module Build
     module Extension
 
       def names_
-
-        # extract the class declaration from the FLTK header
         _header = header("#{fl_name}.h")
         raise Build::Error, "missing #{fl_name} class declaration" unless
           _class_decl_match = class_declaration_pattern.match(_header)
         _class_decl = _class_decl_match.captures.first
-
-        # extract the type enumeration from the class declaration
-        raise Build::Error, "missing #{fl_name} type enumeration" unless
-          enumeration_match = ENUMERATION_PATTERN.match(_class_decl)
-        enumeration = enumeration_match.captures.first
-
-        # extract the names from the enumeration
-        enum_names = enumeration.split("\n").collect do |enum|
-          next unless enumeration_item_match =
-            ENUMERATION_ITEM_PATTERN.match(enum)
-          enumeration_item_match.captures.first
-        end.compact
-
-        return enum_names
+        return enum_names(_class_decl)
       end
 
       def class_declaration_pattern
@@ -308,11 +309,9 @@ module Build
 
     extend Extension
 
-    ENUMERATION_PATTERN =
-      %r{\benum\b[[:space:]]*\{(.*?)\}}m
-
-    ENUMERATION_ITEM_PATTERN =
-      %r{\A[[:blank:]]*([[:alpha:]_]+)[[:blank:]]*=}
+    enumeration_pattern %r{\benum\b[[:space:]]*\{(.*?)\}}m
+    enumeration_item_separator "\n"
+    enumeration_item_pattern %r{\A[[:blank:]]*([[:alpha:]_]+)[[:blank:]]*=}
 
     include Constants::RubyNames::Names
 
@@ -333,22 +332,7 @@ module Build
   class MenuItem < Types
 
     def self.names_
-
-      _header = header("#{fl_name}.h")
-
-      # extract the type enumeration from the header
-      raise Build::Error, "missing #{fl_name} type enumeration" unless
-        enumeration_match = ENUMERATION_PATTERN.match(_header)
-      enumeration = enumeration_match.captures.first
-
-      # extract the names from the enumeration
-      enum_names = enumeration.split("\n").collect do |enum|
-        next unless enumeration_item_match =
-          ENUMERATION_ITEM_PATTERN.match(enum)
-        enumeration_item_match.captures.first
-      end.compact
-
-      return enum_names
+      enum_names(header("#{fl_name}.h"))
     end
 
     def cc_name(name) ; name ; end

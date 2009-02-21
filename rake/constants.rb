@@ -225,7 +225,7 @@ module Build
   class Box < Constants
 
     def self.names_
-      _names = enum_names(header("Enumerations.h"))
+      _names = enum_names(header("Enumerations.H"))
 
       # remove "FL_FREE_BOXTYPE", it's not a real box type
       raise Build::Error, "missing FL_FREE_BOXTYPE" unless
@@ -273,7 +273,7 @@ module Build
     module Extension
 
       def names_
-        _header = header("#{fl_name}.h")
+        _header = header("#{fl_name}.H")
         raise Build::Error, "missing #{fl_name} class declaration" unless
           _class_decl_match = class_declaration_pattern.match(_header)
         _class_decl = _class_decl_match.captures.first
@@ -332,7 +332,7 @@ module Build
   class MenuItem < Types
 
     def self.names_
-      enum_names(header("#{fl_name}.h"))
+      enum_names(header("#{fl_name}.H"))
     end
 
     def cc_name(name) ; name ; end

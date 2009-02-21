@@ -174,7 +174,7 @@ module Build
     extend Extension
 
     define_constant_methods \
-    :cc_name_root, :cc_headers,
+    :cc_name_root, :cc_header,
     :enumeration_pattern,
     :enumeration_item_separator,
     :enumeration_item_pattern
@@ -212,11 +212,9 @@ module Build
 
     def cc_variable ; cc_name_root ; end
 
-    def include_cc_headers
+    def include_cc_header
       comment_strip
-      cc_headers.collect do |header|
-        "#include<FL/#{header}>"
-      end * "\n"
+      "#include <FL/#{cc_header}>"
     end
   end
 
@@ -238,7 +236,7 @@ module Build
     def cc_name(name) ; name ; end
 
     cc_name_root "boxes"
-    cc_headers [ "Enumerations.H" ]
+    cc_header "Enumerations.H"
 
     enumeration_pattern %r{
 \benum\b
@@ -302,7 +300,7 @@ module Build
 
       def defaults
         cc_name_root "#{name_root}_types"
-        cc_headers [ "#{fl_name}.H" ]
+        cc_header "#{fl_name}.H"
         super
       end
     end

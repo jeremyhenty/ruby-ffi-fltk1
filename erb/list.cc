@@ -19,7 +19,7 @@
 
 // <%= generated %>
 
-// <%= include_cc_headers %>
+// <%= include_cc_header %>
 
 static int <%= cc_variable %>[<%= names.size %>] = {
 <% names.each do |name|

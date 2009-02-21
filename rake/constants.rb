@@ -130,22 +130,17 @@ module Build
         @name_root ||= name_base.downcase
       end
 
-      def values
-        @values ||=
-          begin
-            require "ffi"
-            extend FFI::Library
-            ffi_lib dl_path
-            attach_function ffi_name, [ ], :pointer
-            send(ffi_name).read_array_of_int(names.size)
-          end
+      def values(name, size)
+        require "ffi"
+        extend FFI::Library
+        ffi_lib dl_path
+        attach_function name, [ ], :pointer
+        send(name).read_array_of_int(size)
       end
 
       def names
         @names ||= names_
       end
-
-      def ffi_name ; "ffi_#{cc_name_root}" ; end
 
       def fl_name ; @fl_name ||= fl_name_ ; end
       def fl_name_ ; name_base ; end
@@ -179,7 +174,17 @@ module Build
     :enumeration_item_separator,
     :enumeration_item_pattern
 
-    delegate_to_class :name_base, :names, :values, :fl_name, :ffi_name
+    delegate_to_class :name_base, :names, :fl_name
+
+    def values
+      @values ||=
+        self.class.values(ffi_name, names.size)
+    end
+
+    def ffi_name
+      @ffi_name ||=
+        "ffi_#{cc_name_root}"
+    end
 
     def ruby_class_name ; name_base ; end
 

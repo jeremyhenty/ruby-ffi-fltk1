@@ -138,32 +138,8 @@ module Build
         send(name).read_array_of_int(size)
       end
 
-      def names
-        @names ||= names_
-      end
-
       def fl_name ; @fl_name ||= fl_name_ ; end
       def fl_name_ ; name_base ; end
-
-      def header
-        header_dir = Build.fltk_config[:header_dir]
-        return IO.read(File.join(header_dir, cc_header))
-      end
-
-      def enum_names(source)
-        # extract the type enumeration
-        raise Build::Error, "missing #{fl_name} type enumeration" unless
-          enumeration_match = enumeration_pattern.match(source)
-        enumeration = enumeration_match.captures.first
-
-        # extract the names from the enumeration
-        separator = enumeration_item_separator
-        pattern = enumeration_item_pattern
-        enumeration.split(separator).collect do |enum|
-          next unless enumeration_item_match = pattern.match(enum)
-          enumeration_item_match.captures.first
-        end.compact
-      end
     end
 
     extend Extension
@@ -174,7 +150,31 @@ module Build
     :enumeration_item_separator,
     :enumeration_item_pattern
 
-    delegate_to_class :name_base, :names, :fl_name
+    delegate_to_class :name_base, :fl_name
+
+    def names
+      @names ||= names_
+    end
+
+    def header
+      header_dir = Build.fltk_config[:header_dir]
+      return IO.read(File.join(header_dir, cc_header))
+    end
+
+    def enum_names(source)
+      # extract the type enumeration
+      raise Build::Error, "missing #{fl_name} type enumeration" unless
+        enumeration_match = enumeration_pattern.match(source)
+      enumeration = enumeration_match.captures.first
+
+      # extract the names from the enumeration
+      separator = enumeration_item_separator
+      pattern = enumeration_item_pattern
+      enumeration.split(separator).collect do |enum|
+        next unless enumeration_item_match = pattern.match(enum)
+        enumeration_item_match.captures.first
+      end.compact
+    end
 
     def values
       @values ||=
@@ -227,7 +227,7 @@ module Build
 
   class Box < Constants
 
-    def self.names_
+    def names_
       _names = enum_names(header)
 
       # remove "FL_FREE_BOXTYPE", it's not a real box type
@@ -275,25 +275,6 @@ module Build
 
     module Extension
 
-      def names_
-        raise Build::Error, "missing #{fl_name} class declaration" unless
-          _class_decl_match = class_declaration_pattern.match(header)
-        _class_decl = _class_decl_match.captures.first
-        return enum_names(_class_decl)
-      end
-
-      def class_declaration_pattern
-        %r{
-^\bclass\b
-[^\n]*
-\b#{fl_name}\b
-[^\n]*
-\{
-(.*?) # class contents
-^\}[[:space:]]*;
-}mx
-      end
-
       def fl_name_
         begin
           base = name_base.gsub(%r{([^[:upper:]])([[:upper:]])}
@@ -315,6 +296,25 @@ module Build
     enumeration_item_separator "\n"
     enumeration_item_pattern %r{\A[[:blank:]]*([[:alpha:]_]+)[[:blank:]]*=}
 
+    def names_
+
+      _class_declaration_pattern = %r{
+^\bclass\b
+[^\n]*
+\b#{fl_name}\b
+[^\n]*
+\{
+(.*?) # class contents
+^\}[[:space:]]*;
+}mx
+
+      raise Build::Error, "missing #{fl_name} class declaration" unless
+        _class_declaration_match =
+        _class_declaration_pattern.match(header)
+      _class_declaration = _class_declaration_match.captures.first
+      return enum_names(_class_declaration)
+    end
+
     include Constants::RubyNames::Names
 
     def cc_name(name) ; "#{fl_name}::#{name}" ; end
@@ -333,10 +333,7 @@ module Build
   # MenuItem
   class MenuItem < Types
 
-    def self.names_
-      enum_names(header)
-    end
-
+    def names_ ; enum_names(header) ; end
     def cc_name(name) ; name ; end
 
     include Constants::RubyNames::Pattern

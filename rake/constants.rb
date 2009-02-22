@@ -88,19 +88,11 @@ module Build
       end
 
       def ruby_task
+        ruby_path = File.join(Auto::LIB_DIR, "#{name_root}.rb")
+        ruby_template = File.join(Auto::ERB_DIR, "list.rb")
         task :build => ruby_path
         erb_task(ruby_template, ruby_path)
         file ruby_path => dl_path
-      end
-
-      def ruby_path
-        @ruby_path ||=
-          File.join(Auto::LIB_DIR, "#{name_root}.rb")
-      end
-
-      def ruby_template
-        @ruby_template ||=
-          File.join(Auto::ERB_DIR, "list.rb")
       end
 
       def dl_task

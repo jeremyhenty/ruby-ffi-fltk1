@@ -84,6 +84,7 @@ module Build
       end
 
       def erb_tasks
+        dl_template = File.join(Auto::ERB_DIR, "list.cc")
         erb_task(dl_template, dl_source)
       end
 
@@ -107,11 +108,6 @@ module Build
       def dl_source
         @dl_source ||=
           File.join(Auto::DIR, "#{name_root}.cc")
-      end
-
-      def dl_template
-        @dl_template ||=
-          File.join(Auto::ERB_DIR, "list.cc")
       end
 
       def name_base

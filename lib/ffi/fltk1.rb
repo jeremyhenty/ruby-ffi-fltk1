@@ -450,8 +450,8 @@ DEF
 
   class MenuItem
 
-    def initialize(widget, label, shortcut = 0,
-                   callback = nil, userdata = nil, flags = 0)
+    def initialize(widget, label, shortcut = nil,
+                   callback = nil, userdata = nil, flags = nil)
       @ffi_ffi_callback = method(:ffi_ffi_callback)
       @ffi_widget = widget
       @ffi_callback = callback
@@ -480,7 +480,7 @@ DEF
       # tell the widget to add this item
       @ffi_widget.ffi_send(ffi_method,
                            String(label), shortcut,
-                           @ffi_ffi_callback, flags)
+                           @ffi_ffi_callback, Integer(flags))
     end
 
     def ffi_ffi_callback

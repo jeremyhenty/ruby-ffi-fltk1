@@ -30,14 +30,14 @@ module Build
   class Error < StandardError ; end
 end
 
-require "./rake/auto"
-require "./rake/fltk_config"
-require "./rake/constants"
-require "./rake/fltk"
-require "./rake/demo"
-require "./rake/gem"
+require "./build/auto"
+require "./build/fltk_config"
+require "./build/constants"
+require "./build/fltk"
+require "./build/demo"
+require "./build/gem"
 
 # ensure that "extra.rb" exists, and load it
-require "./rake/extra"
+require "./build/extra"
 Rake::Task["extra.rb"].invoke
 require "./extra"

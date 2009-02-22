@@ -23,7 +23,7 @@
 # They use ERb to create Ruby and C++ source from lists of constant
 # names.
 
-require "./rake/auto"
+require "./build/auto"
 
 module Build
 

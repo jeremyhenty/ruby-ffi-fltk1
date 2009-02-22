@@ -34,7 +34,7 @@ module Build
     s.add_dependency "ffi", ">= 0.2.0"
     s.files =
       FileList["COPYING", "AUTHORS",
-               "lib/**/*.rb", "rake/**/*.rb",
+               "lib/**/*.rb", "build/*.rb",
                "wrapper/*.cc", "erb/**/*", "include/*.h",
                "bin/*", "demo/*"].to_a
     s.extensions = "Rakefile"

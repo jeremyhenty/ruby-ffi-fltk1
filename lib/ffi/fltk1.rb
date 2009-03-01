@@ -530,4 +530,36 @@ DEF
     ffi_wrapper
   end
 
+  class Input < Widget
+    ffi_wrapper
+  end
+
+  class SecretInput < Input
+    ffi_wrapper
+  end
+
+  class IntInput < Input
+    ffi_wrapper
+  end
+
+  class FloatInput < Input
+    ffi_wrapper
+  end
+
+  class MultilineInput < Input
+    ffi_wrapper
+  end
+
+  class FileInput < Input
+    ffi_wrapper
+  end
+
+  class Output < Input
+    ffi_wrapper
+  end
+
+  class MultilineOutput < Output
+    ffi_wrapper
+  end
+
 end

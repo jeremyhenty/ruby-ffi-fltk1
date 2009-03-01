@@ -38,6 +38,14 @@
 #include <FL/Fl_Return_Button.H>
 #include <FL/Fl_Round_Button.H>
 #include <FL/Fl_Toggle_Button.H>
+#include <FL/Fl_Input.H>
+#include <FL/Fl_Secret_Input.H>
+#include <FL/Fl_Int_Input.H>
+#include <FL/Fl_Float_Input.H>
+#include <FL/Fl_Multiline_Input.H>
+#include <FL/Fl_File_Input.H>
+#include <FL/Fl_Output.H>
+#include <FL/Fl_Multiline_Output.H>
 #include <FL/fl_ask.H>
 
 extern "C" {
@@ -414,6 +422,70 @@ class FFI_Round_Button
 // Toggle_Button
 
 class FFI_Toggle_Button
+{ // <% widget_class do %>
+};
+
+// <% end %>
+
+// Input
+
+class FFI_Input
+{ // <% widget_class do %>
+};
+
+// <% end %>
+
+// Secret_Input
+
+class FFI_Secret_Input
+{ // <% widget_class do %>
+};
+
+// <% end %>
+
+// Int_Input
+
+class FFI_Int_Input
+{ // <% widget_class do %>
+};
+
+// <% end %>
+
+// Float_Input
+
+class FFI_Float_Input
+{ // <% widget_class do %>
+};
+
+// <% end %>
+
+// Multiline_Input
+
+class FFI_Multiline_Input
+{ // <% widget_class do %>
+};
+
+// <% end %>
+
+// File_Input
+
+class FFI_File_Input
+{ // <% widget_class do %>
+};
+
+// <% end %>
+
+// Output
+
+class FFI_Output
+{ // <% widget_class do %>
+};
+
+// <% end %>
+
+// Multiline_Output
+
+class FFI_Multiline_Output
 { // <% widget_class do %>
 };
 

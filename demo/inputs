@@ -1,0 +1,125 @@
+#!/usr/bin/env ruby
+
+# Copyright (C) 2008, 2009 Jeremy Henty.
+
+# This file is part of Ruby-FFI-FLTK1.
+
+# Ruby-FFI-FLTK1 is free software: you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+
+# Ruby-FFI-FLTK1 is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+# General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see http://www.gnu.org/licenses/.
+
+
+$VERBOSE = true
+
+require "rubygems"
+require "ffi/fltk1"
+
+include FFI
+include FFI::FLTK
+
+input_classes =
+  [
+   Input,
+   SecretInput,
+   IntInput,
+   FloatInput,
+   MultilineInput,
+   FileInput,
+  ]
+
+# heights
+button_height = 25
+input_height = 25
+multiline_input_height = 100
+file_input_extra_height = 10
+
+# widths
+label_width = 100
+input_width = 100
+output_width = 300
+
+label_input_width = label_width + input_width
+width = label_input_width + output_width
+inputs_height =
+  (input_classes.size - 1) * input_height +
+  multiline_input_height +
+  file_input_extra_height
+height = inputs_height + button_height
+
+class Class
+  def basename
+    name.gsub(%r{\AFFI::FLTK::}, "")
+  end
+end
+
+Window.new(width, height, "Form") do |win|
+  Pack.new do |pack|
+    pack.widget_type = Pack::Type::VERTICAL
+
+    inputs = [ ]
+    output = nil
+
+    Pack.new(0, inputs_height) do |inputs_output_pack| 
+      inputs_output_pack.widget_type = Pack::Type::HORIZONTAL
+
+      Pack.new(label_input_width, 0) do |inputs_pack|
+        inputs_pack.widget_type = Pack::Type::VERTICAL
+        input_classes.each do |_class|
+          height =
+            if _class == MultilineInput
+              multiline_input_height
+            elsif _class == FileInput
+              input_height + file_input_extra_height
+            else
+              input_height
+            end
+          Pack.new(0, height) do |input_pack|
+            input_pack.widget_type = Pack::Type::HORIZONTAL
+            label = _class.basename
+            Box.new(label_width, 0, label)
+            input = _class.new(input_width, 0)
+            inputs << input
+          end
+        end
+      end
+
+      output = MultilineOutput.new(output_width, 0)
+
+      inputs_output_pack.resizable = output
+      pack.resizable = inputs_output_pack
+    end
+
+    update_button = Button.new(0, button_height, "Update")
+    update_button.callback do
+      output.value = inputs.collect do |input|
+        value =
+          case input
+          when MultilineInput
+            input.value.gsub(%r{^}, "  ")
+          else
+            input.value
+          end
+        space =
+          case input
+          when MultilineInput; "\n"
+          else; " "
+          end
+        "#{input.class.basename}:#{space}#{value}"
+      end * "\n"
+    end
+
+    win.resizable = pack
+  end
+  win.show
+end
+
+FLTK.run

@@ -531,6 +531,27 @@ DEF
   end
 
   class Input < Widget
+
+    ffi_attach_function :ffi_input_value,
+    [ :pointer ], :string
+    ffi_attach_function :ffi_input_value_set,
+    [ :pointer, :string ], :void
+
+    def value(*args)
+            count = args.size
+      case count
+      when 0
+        ffi_send(:ffi_input_value)
+      when 1
+        ffi_send(:ffi_input_value_set, String(args.first))
+      else
+        raise ArgumentError,
+        "wrong number of arguments (%d for 1))" % [ count ]
+      end
+    end
+
+    alias :value= :value
+
     ffi_wrapper
   end
 

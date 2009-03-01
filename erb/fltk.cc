@@ -433,6 +433,22 @@ class FFI_Input
 { // <% widget_class do %>
 };
 
+extern "C" {
+
+const char *ffi_input_value(void *p_widget)
+{
+  FFI_Input *widget = (FFI_Input *) p_widget;
+  return widget->value();
+}
+
+void ffi_input_value_set(void *p_widget, const char *value)
+{
+  FFI_Input *widget = (FFI_Input *) p_widget;
+  widget->value(value);
+}
+
+} // extern "C"
+
 // <% end %>
 
 // Secret_Input

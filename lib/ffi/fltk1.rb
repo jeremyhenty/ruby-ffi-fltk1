@@ -555,6 +555,8 @@ DEF
     ffi_wrapper
   end
 
+  require "ffi/fltk1/auto/input"
+
   class SecretInput < Input
     ffi_wrapper
   end

@@ -329,4 +329,35 @@ module Build
 
     defaults
   end
+
+  # Input
+  class Input < Types
+
+    module Extension
+      def fl_name_
+        "#{super}_" # the header is "Fl_Input_.H"
+      end
+    end
+
+    extend Extension
+
+    def names_
+      pattern = %r{#define[[:blank:]]+(FL_[_A-Z]+)}
+      header.scan(pattern).collect { |match| match[0] }
+    end
+
+    def cc_name(name) ; name ; end
+
+    def ruby_names_
+      names.collect do |name|
+        name.sub!("_INPUT", "")
+        name.sub!("NORMAL_", "")
+        name.sub!(%r{\AFL_}, "")
+        name
+      end
+    end
+
+    defaults
+  end
+
 end

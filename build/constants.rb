@@ -27,118 +27,92 @@ require "./build/auto"
 
 module Build
 
-  class Constants_ < Auto
-    def self.constant_method(_method)
-      raise Build::Error,
-      "constant method %s has not been defined" % [ _method ]
-    end
-  end
+  class Constants < Auto
 
-  class Constants < Constants_
-
-    module Extension
+    extension = Module.new do
 
       def define_constant_methods(*methods)
-        delegate_to_class(*methods)
         _module = Module.new do
           methods.each do |_method|
-            define_method(_method) do |*args|
-              constant_method(_method, *args)
+            define_method(_method) do |value|
+              define_method(_method) do
+                value
+              end
             end
           end
         end
         extend _module
       end
 
-      def delegate_to_class(*methods)
-        methods.each do |_method|
-          delegate_to_class_(_method)
-        end
-      end
-
-      def delegate_to_class_(_method)
-        define_method(_method) do
-          self.class.send(_method)
-        end
-      end
-
-      def constant_method(_method, *args)
-        count = args.size
-        case count
-        when 0
-          value = @constants && @constants[_method]
-          return value || superclass.constant_method(_method)
-        when 1
-          value, = *args
-          (@constants ||= Hash.new)[_method] = value
-        else
-          raise ArgumentError,
-          "wrong number of arguments (%d for 1)" % [ count ]
-        end
-      end
-
-      def defaults
-        erb_tasks
-        ruby_task
-        dl_task
-      end
-
-      def erb_tasks
-        dl_template = File.join(Auto::ERB_DIR, "list.cc")
-        erb_task(dl_template, dl_source)
-      end
-
-      def ruby_task
-        ruby_path = File.join(Auto::LIB_DIR, "#{name_root}.rb")
-        ruby_template = File.join(Auto::ERB_DIR, "list.rb")
-        task :build => ruby_path
-        erb_task(ruby_template, ruby_path)
-        file ruby_path => dl_path
-      end
-
-      def dl_task
-        dl_compile_task(dl_path, dl_source)
-      end
-
-      def dl_path
-        @dl_path ||=
-          File.join(Auto::DIR, "#{name_root}.so")
-      end
-
-      def dl_source
-        @dl_source ||=
-          File.join(Auto::DIR, "#{name_root}.cc")
-      end
-
-      def name_base
-        @name_base ||= name.sub(%r{\A.*::}, "")
-      end
-
-      def name_root
-        @name_root ||= name_base.downcase
-      end
-
-      def values(name, size)
+      def values(dl_path, name, size)
         require "ffi"
         extend FFI::Library
         ffi_lib dl_path
         attach_function name, [ ], :pointer
         send(name).read_array_of_int(size)
       end
-
-      def fl_name ; @fl_name ||= fl_name_ ; end
-      def fl_name_ ; name_base ; end
     end
 
-    extend Extension
+    extend extension
+
+    def initialize
+      erb_tasks
+      ruby_task
+      dl_task
+    end
+
+    def erb_tasks
+      dl_template = File.join(Auto::ERB_DIR, "list.cc")
+      erb_task(dl_template, dl_source)
+    end
+
+    def ruby_task
+      ruby_path = File.join(Auto::LIB_DIR, "#{name_root}.rb")
+      ruby_template = File.join(Auto::ERB_DIR, "list.rb")
+      task :build => ruby_path
+      erb_task(ruby_template, ruby_path)
+      file ruby_path => dl_path
+    end
+
+    def dl_task
+      dl_compile_task(dl_path, dl_source)
+    end
+
+    def dl_path
+      @dl_path ||=
+        File.join(Auto::DIR, "#{name_root}.so")
+    end
+
+    def dl_source
+      @dl_source ||=
+        File.join(Auto::DIR, "#{name_root}.cc")
+    end
+
+    def name_base
+      @name_base ||=
+        self.class.name.sub(%r{\A.*::}, "")
+    end
+
+    def name_root
+      @name_root ||=
+        name_base.downcase
+    end
+
+    def fl_name ; @fl_name ||= fl_name_ ; end
+    def fl_name_ ; name_base ; end
 
     define_constant_methods \
-    :cc_name_root, :cc_header,
     :enumeration_pattern,
     :enumeration_item_separator,
     :enumeration_item_pattern
 
-    delegate_to_class :name_base, :fl_name
+    def cc_name_root
+      @cc_name_root ||= cc_name_root_
+    end
+
+    def cc_header
+      @cc_header ||= cc_header_
+    end
 
     def names
       @names ||= names_
@@ -166,7 +140,7 @@ module Build
 
     def values
       @values ||=
-        self.class.values(ffi_name, names.size)
+        self.class.values(dl_path, ffi_name, names.size)
     end
 
     def ffi_name
@@ -227,9 +201,8 @@ module Build
     end
 
     def cc_name(name) ; name ; end
-
-    cc_name_root "boxes"
-    cc_header "Enumerations.H"
+    def cc_name_root_ ; "boxes" ; end
+    def cc_header_ ; "Enumerations.H" ; end
 
     enumeration_pattern %r{
 \benum\b
@@ -247,38 +220,37 @@ module Build
     include Constants::RubyNames::Pattern
     ruby_name_pattern %r{\AFL_(.*)\z}
 
-    defaults
+    def initialize
+      super
+      box_init_dl = File.join(Auto::LIB_DIR, "box_init.so")
+      box_init_dl_cc = File.join(Auto::DIR, "box_init.cc")
+      box_init_template = File.join(Auto::ERB_DIR, "box_init.cc")
+      erb_task(box_init_template, box_init_dl_cc)
+      dl_compile_task(box_init_dl, box_init_dl_cc)
+      task :build => box_init_dl
+    end
 
-    box_init_dl = File.join(Auto::LIB_DIR, "box_init.so")
-    box_init_dl_cc = File.join(Auto::DIR, "box_init.cc")
-    box_init_template = File.join(Auto::ERB_DIR, "box_init.cc")
-    erb_task(box_init_template, box_init_dl_cc)
-    dl_compile_task(box_init_dl, box_init_dl_cc)
-    task :build => box_init_dl
+    instance
   end
 
   # Widget types
 
   class Types < Constants
 
-    module Extension
+    def initialize
+      super
+    end
 
-      def fl_name_
-        begin
-          base = name_base.gsub(%r{([^[:upper:]])([[:upper:]])}
-                                ) { "#{$1}_#{$2}" }
-          "Fl_#{base}"
-        end
-      end
-
-      def defaults
-        cc_name_root "#{name_root}_types"
-        cc_header "#{fl_name}.H"
-        super
+    def fl_name_
+      begin
+        base = name_base.gsub(%r{([^[:upper:]])([[:upper:]])}
+                              ) { "#{$1}_#{$2}" }
+        "Fl_#{base}"
       end
     end
 
-    extend Extension
+    def cc_name_root ; "#{name_root}_types" ; end
+    def cc_header_ ; "#{fl_name}.H" ; end
 
     enumeration_pattern %r{\benum\b[[:space:]]*\{(.*?)\}}m
     enumeration_item_separator "\n"
@@ -310,12 +282,12 @@ module Build
 
   # Pack
   class Pack < Types
-    defaults
+    instance
   end
 
   # Scroll
   class Scroll < Types
-    defaults
+    instance
   end
 
   # MenuItem
@@ -327,19 +299,15 @@ module Build
     include Constants::RubyNames::Pattern
     ruby_name_pattern %r{\AFL_(?:MENU_)?(.*)\z}
 
-    defaults
+    instance
   end
 
   # Input
   class Input < Types
 
-    module Extension
-      def fl_name_
-        "#{super}_" # the header is "Fl_Input_.H"
-      end
+    def fl_name_
+      "#{super}_" # the header is "Fl_Input_.H"
     end
-
-    extend Extension
 
     def names_
       pattern = %r{#define[[:blank:]]+(FL_[_A-Z]+)}
@@ -357,7 +325,7 @@ module Build
       end
     end
 
-    defaults
+    instance
   end
 
 end

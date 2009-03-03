@@ -106,12 +106,16 @@ DEFINITIONS
         %r{[[:blank:]]*(\n.*)\z}
     end
 
-    library = File.join(Auto::LIB_DIR, "fltk.so")
-    source = File.join(Auto::DIR, "fltk.cc")
-    template = File.join(Auto::ERB_DIR, "fltk.cc")
+    def initialize
+      library = File.join(Auto::LIB_DIR, "fltk.so")
+      source = File.join(Auto::DIR, "fltk.cc")
+      template = File.join(Auto::ERB_DIR, "fltk.cc")
 
-    erb_task(template, source)
-    dl_compile_task(library, source)
-    task :build => library
+      erb_task(template, source)
+      dl_compile_task(library, source)
+      task :build => library
+    end
+
+    instance
   end
 end

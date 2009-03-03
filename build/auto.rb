@@ -19,6 +19,8 @@
 
 # Tasks and methods to auto-generate files from templates using ERb.
 
+require "singleton"
+
 module Build
 
   # directories
@@ -27,6 +29,8 @@ module Build
   directory LIB_DIR
 
   class Auto
+
+    include Singleton
 
     # directories
 
@@ -38,22 +42,15 @@ module Build
     directory LIB_DIR
     CLOBBER << LIB_DIR
 
-    # initialize in and out paths
-
-    def initialize(in_path, out_path)
-      @in_path  = in_path
-      @out_path = out_path
-    end
-
     # comments
 
     def comment_prefix
       @comment_prefix ||=
-        case @out_path
+        case @target
         when %r{\.rb$}; "#"
         when %r{\.cc$}; "//"
         else raise Build::Error,
-          "the comment prefix for #{@out_path} is unknown"
+          "the comment prefix for #{@target} is unknown"
         end
     end
 
@@ -74,7 +71,7 @@ EOS
 
     ERB_DIR = "erb"
 
-    def self.erb_task(source, target)
+    def erb_task(source, target)
       target_dir = File.dirname(target)
       directory target_dir
       file target => [ target_dir, source ] do
@@ -82,18 +79,18 @@ EOS
       end
     end
 
-    def self.erb(*args)
-      new(*args).erb
-    end
-
     attr_reader :erb_out
 
-    def erb
+    def erb(source, target)
       require "erb"
-      input = IO.read(@in_path)
+      @comment_prefix = nil
+      @comment_strip_regexp = nil
+      @source  = source
+      @target = target
+      input = IO.read(@source)
       template = ERB.new(input, nil, nil, "@erb_out")
       output = template.result(binding)
-      File.open(@out_path, "w") { |out_file| out_file.write(output) }
+      File.open(@target, "w") { |out_file| out_file.write(output) }
     end
 
     def comment_strip
@@ -105,7 +102,7 @@ EOS
     end
 
     # compiling
-    def self.dl_compile_task(path,source)
+    def dl_compile_task(path,source)
       file path => [ File.dirname(path), source ] do |t|
         Build.dl_compile(t.name, t.prerequisites.last)
       end

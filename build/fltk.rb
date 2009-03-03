@@ -23,39 +23,29 @@ module Build
 
   class FLTK < Auto
 
-    def widget_class(&block)
-      Widget_Class.new(self).run(&block)
-    end
+    def widget_class
 
-    class Widget_Class
+      # parse the class declaration
+      comment_strip
+      raise Build::Error, "cannot find a widget class declaration" unless
+        declaration_match = DECLARATION_PATTERN.match(erb_out)
+      ffi_class_name, = *declaration_match.captures
+      raise Build::Error, "invalid widget class name #{class_name}" unless
+        name_match = NAME_PATTERN.match(ffi_class_name)
+      ffi_class_key, = *name_match.captures
+      fl_class_name = "Fl_#{ffi_class_key}"
+      ffi_class_key.downcase!
+      puts "line %4s: class: %s" %
+        [ caller[1].match(CALLER_PATTERN)[1], ffi_class_name ]
 
-      def initialize(auto)
-        @auto = auto
+      # augment the class declaration
+      erb_out.sub!(DECLARATION_END_PATTERN) do
+        " : public FFI, public #{fl_class_name}#{$1}"
       end
 
-      def run
-
-        # parse the class declaration
-        @auto.comment_strip
-        raise Build::Error, "cannot find a widget class declaration" unless
-          declaration_match = DECLARATION_PATTERN.match(@auto.erb_out)
-        ffi_class_name, = *declaration_match.captures
-        raise Build::Error, "invalid widget class name #{class_name}" unless
-          name_match = NAME_PATTERN.match(ffi_class_name)
-        ffi_class_key, = *name_match.captures
-        fl_class_name = "Fl_#{ffi_class_key}"
-        ffi_class_key.downcase!
-        puts "line %4s: class: %s" %
-          [ caller[1].match(CALLER_PATTERN)[1], ffi_class_name ]
-
-        # augment the class declaration
-        @auto.erb_out.sub!(DECLARATION_END_PATTERN) do
-          " : public FFI, public #{fl_class_name}#{$1}"
-        end
-
-        # add the automatic declarations
-        @auto.comment_strip
-        @auto.erb_out << <<DECLARATIONS
+      # add the automatic declarations
+      comment_strip
+      erb_out << <<DECLARATIONS
 
 // auto-generated declarations : begin
 public:
@@ -64,11 +54,11 @@ public:
 // auto-generated declarations : end
 DECLARATIONS
 
-        yield
+      yield
 
-        # add the automatic definitions
-        @auto.comment_strip
-        @auto.erb_out << <<DEFINITIONS
+      # add the automatic definitions
+      comment_strip
+      erb_out << <<DEFINITIONS
 // auto-generated definitions : begin
 
 #{ffi_class_name}::#{ffi_class_name}(int x, int y, int w, int h, const char *l) :
@@ -91,20 +81,19 @@ void *ffi_#{ffi_class_key}_new_xywhl(int x, int y, int w, int h, const char *l)
 
 // auto-generated definitions : end
 DEFINITIONS
-      end
-
-      DECLARATION_PATTERN =
-        %r{^class[[:blank:]]+([^[:blank:]]+)[[:blank:]]*\n\{\z}x
-
-      NAME_PATTERN =
-        %r{\AFFI_(.*)\z}
-
-      CALLER_PATTERN =
-        %r{:([[:digit:]]+):}
-
-      DECLARATION_END_PATTERN =
-        %r{[[:blank:]]*(\n.*)\z}
     end
+
+    DECLARATION_PATTERN =
+      %r{^class[[:blank:]]+([^[:blank:]]+)[[:blank:]]*\n\{\z}x
+
+    NAME_PATTERN =
+      %r{\AFFI_(.*)\z}
+
+    CALLER_PATTERN =
+      %r{:([[:digit:]]+):}
+
+    DECLARATION_END_PATTERN =
+      %r{[[:blank:]]*(\n.*)\z}
 
     def initialize
       library = File.join(Auto::LIB_DIR, "fltk.so")

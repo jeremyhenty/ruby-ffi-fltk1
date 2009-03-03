@@ -150,8 +150,14 @@ module Build
 
     def ruby_class_name ; name_base ; end
 
+    def ruby_names_
+      names.collect do |name|
+        ruby_name(name)
+      end
+    end
+
     module RubyNames
-      # prepackaged definitions of ruby_names_
+      # prepackaged definitions of ruby names
 
       module Names
         def ruby_names_ ; names ; end
@@ -162,13 +168,11 @@ module Build
           mod.define_constant_methods :ruby_name_pattern
         end
 
-        def ruby_names_
-          names.collect do |name|
-            raise Build::Error,
-            "invalid #{fl_name} type name: '#{name}'" unless
-              name_match = ruby_name_pattern.match(name)
-            name_match.captures.first
-          end
+        def ruby_name(name)
+          raise Build::Error,
+          "invalid #{fl_name} type name: '#{name}'" unless
+            name_match = ruby_name_pattern.match(name)
+          name_match.captures.first
         end
       end
     end
@@ -267,18 +271,20 @@ module Build
       return enum_names(_class_declaration)
     end
 
-    include Constants::RubyNames::Names
-
     def cc_name(name) ; "#{fl_name}::#{name}" ; end
   end
 
+  class Types1 < Types
+    include Constants::RubyNames::Names
+  end
+
   # Pack
-  class Pack < Types
+  class Pack < Types1
     instance
   end
 
   # Scroll
-  class Scroll < Types
+  class Scroll < Types1
     instance
   end
 
@@ -308,13 +314,12 @@ module Build
 
     def cc_name(name) ; name ; end
 
-    def ruby_names_
-      names.collect do |name|
-        name.sub!("_INPUT", "")
-        name.sub!("NORMAL_", "")
-        name.sub!(%r{\AFL_}, "")
-        name
-      end
+    def ruby_name(name)
+      _name = name.dup
+      _name.sub!("_INPUT", "")
+      _name.sub!("NORMAL_", "")
+      _name.sub!(%r{\AFL_}, "")
+      _name
     end
 
     instance

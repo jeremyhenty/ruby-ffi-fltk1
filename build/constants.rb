@@ -237,10 +237,6 @@ module Build
 
   class Types < Constants
 
-    def initialize
-      super
-    end
-
     def fl_name_
       begin
         base = name_base.gsub(%r{([^[:upper:]])([[:upper:]])}

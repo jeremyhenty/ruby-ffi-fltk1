@@ -44,6 +44,14 @@ module Build
         extend _module
       end
 
+      def memoize(*methods)
+        methods.each do |_method|
+          define_method(_method) do
+            memoized(_method)
+          end
+        end
+      end
+
       def values(dl_path, name, size)
         require "ffi"
         extend FFI::Library
@@ -55,7 +63,18 @@ module Build
 
     extend extension
 
+    memoize \
+    :dl_path, :dl_source, :name_base, :name_root,
+    :ffi_name, :fl_name, :cc_name_root, :cc_header,
+    :names, :values, :ruby_names
+
+    def memoized(_method)
+      @memoized[_method] ||=
+        send("#{_method}_")
+    end
+
     def initialize
+      @memoized = { }
       erb_tasks
       ruby_task
       dl_task
@@ -78,45 +97,28 @@ module Build
       dl_compile_task(dl_path, dl_source)
     end
 
-    def dl_path
-      @dl_path ||=
-        File.join(Auto::DIR, "#{name_root}.so")
+    def dl_path_
+      File.join(Auto::DIR, "#{name_root}.so")
     end
 
-    def dl_source
-      @dl_source ||=
-        File.join(Auto::DIR, "#{name_root}.cc")
+    def dl_source_
+      File.join(Auto::DIR, "#{name_root}.cc")
     end
 
-    def name_base
-      @name_base ||=
-        self.class.name.sub(%r{\A.*::}, "")
+    def name_base_
+      self.class.name.sub(%r{\A.*::}, "")
     end
 
-    def name_root
-      @name_root ||=
-        name_base.downcase
+    def name_root_
+      name_base.downcase
     end
 
-    def fl_name ; @fl_name ||= fl_name_ ; end
     def fl_name_ ; name_base ; end
 
     define_constant_methods \
     :enumeration_pattern,
     :enumeration_item_separator,
     :enumeration_item_pattern
-
-    def cc_name_root
-      @cc_name_root ||= cc_name_root_
-    end
-
-    def cc_header
-      @cc_header ||= cc_header_
-    end
-
-    def names
-      @names ||= names_
-    end
 
     def header
       header_dir = Build.fltk_config[:header_dir]
@@ -138,21 +140,15 @@ module Build
       end.compact
     end
 
-    def values
-      @values ||=
-        self.class.values(dl_path, ffi_name, names.size)
+    def values_
+      self.class.values(dl_path, ffi_name, names.size)
     end
 
-    def ffi_name
-      @ffi_name ||=
-        "ffi_#{cc_name_root}"
+    def ffi_name_
+      "ffi_#{cc_name_root}"
     end
 
     def ruby_class_name ; name_base ; end
-
-    def ruby_names
-      @ruby_names ||= ruby_names_
-    end
 
     module RubyNames
       # prepackaged definitions of ruby_names_

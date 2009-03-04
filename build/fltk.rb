@@ -25,7 +25,7 @@ module Build
 
     DEFAULTS = {
       :abstract => false,
-    }
+    }.freeze
 
     def widget_class(options_=nil)
 

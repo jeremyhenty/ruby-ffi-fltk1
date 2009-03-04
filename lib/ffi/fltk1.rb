@@ -33,7 +33,7 @@ module FFI::FLTK
 
     DEFAULTS = {
       :attach_new => true,
-    }
+    }.freeze
 
     def self.ffi_wrapper(options_=nil)
       options = DEFAULTS.dup

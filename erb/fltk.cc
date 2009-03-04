@@ -46,6 +46,7 @@
 #include <FL/Fl_File_Input.H>
 #include <FL/Fl_Output.H>
 #include <FL/Fl_Multiline_Output.H>
+#include <FL/Fl_Valuator.H>
 #include <FL/fl_ask.H>
 
 extern "C" {
@@ -503,6 +504,14 @@ class FFI_Output
 
 class FFI_Multiline_Output
 { // <% widget_class do %>
+};
+
+// <% end %>
+
+// Valuator
+
+class FFI_Valuator
+{ // <% widget_class :abstract => true do %>
 };
 
 // <% end %>

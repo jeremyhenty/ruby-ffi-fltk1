@@ -585,4 +585,7 @@ DEF
     ffi_wrapper
   end
 
+  class Valuator < Widget
+  end
+
 end

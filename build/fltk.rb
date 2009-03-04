@@ -23,7 +23,14 @@ module Build
 
   class FLTK < Auto
 
-    def widget_class
+    DEFAULTS = {
+      :abstract => false,
+    }
+
+    def widget_class(options_=nil)
+
+      options = DEFAULTS.dup
+      options.merge!(options_) if options_
 
       # parse the class declaration
       comment_strip
@@ -43,9 +50,10 @@ module Build
         " : public FFI, public #{fl_class_name}#{$1}"
       end
 
-      # add the automatic declarations
       comment_strip
-      erb_out << <<DECLARATIONS
+
+      # add the automatic declarations
+      erb_out << <<DECLARATIONS unless options[:abstract]
 
 // auto-generated declarations : begin
 public:
@@ -55,10 +63,10 @@ public:
 DECLARATIONS
 
       yield
+      comment_strip
 
       # add the automatic definitions
-      comment_strip
-      erb_out << <<DEFINITIONS
+      erb_out << <<DEFINITIONS unless options[:abstract]
 // auto-generated definitions : begin
 
 #{ffi_class_name}::#{ffi_class_name}(int x, int y, int w, int h, const char *l) :

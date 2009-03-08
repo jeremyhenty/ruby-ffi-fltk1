@@ -281,6 +281,25 @@ DEF
 
       alias_method :"#{meth0}=", meth0
     end
+
+    ffi_attach_function :ffi_widget_label_set,
+    [ :pointer, :string ], :void
+
+    def label(*args)
+      count = args.size
+      case count
+      when 0
+        @ffi_label.dup
+      when 1
+        _label = String(args.first)
+        ffi_send(:ffi_widget_label_set, _label)
+        @ffi_label = _label
+      else
+        "wrong number of arguments (%d for 1))" % [ count ]
+      end
+    end
+
+    alias :label= :label
   end
 
   class Group < Widget

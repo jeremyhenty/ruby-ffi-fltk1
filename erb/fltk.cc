@@ -229,6 +229,12 @@ void ffi_widget_h_set(void *p_widget, int h)
   widget->h(h);
 }
 
+void ffi_widget_label_set(void *p_widget, const char *label)
+{
+  FFI_Widget *widget = (FFI_Widget *) p_widget;
+  widget->label(label);
+}
+
 } // extern "C"
 
 // <% end %>

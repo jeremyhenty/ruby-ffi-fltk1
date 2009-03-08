@@ -318,7 +318,9 @@ module Build
       _name = name.dup
       _name.sub!("_INPUT", "")
       _name.sub!("NORMAL_", "")
-      _name.sub!(%r{\AFL_}, "")
+      raise Build::Error, "invalid %s type: %s" %
+        [ fl_name, name ] unless
+        _name.sub!(%r{\AFL_}, "")
       _name
     end
 

@@ -586,6 +586,24 @@ DEF
   end
 
   class Valuator < Widget
+
+    ffi_attach_function :ffi_valuator_value,
+    [ :pointer ], :double
+    ffi_attach_function :ffi_valuator_value_set,
+    [ :pointer, :double ], :void
+
+    def value
+      count = args.size
+      case count
+      when 0
+        ffi_send(:ffi_valuator_value)
+      when 1
+        ffi_send(:ffi_valuator_value_set, Float(args.first))
+      else
+        raise ArgumentError,
+        "wrong number of arguments (%d for 1))" % [ count ]
+      end
+    end
   end
 
   require "ffi/fltk1/auto/valuator"

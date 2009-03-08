@@ -514,4 +514,20 @@ class FFI_Valuator
 { // <% widget_class :abstract => true do %>
 };
 
+extern "C" {
+
+double ffi_valuator_value(void *p_widget)
+{              
+  FFI_Valuator *widget = (FFI_Valuator *) p_widget;
+  return widget->value();
+}
+
+void ffi_valuator_value_set(void *p_widget, double value)
+{
+  FFI_Valuator *widget = (FFI_Valuator *) p_widget;
+  widget->value(value);
+}
+
+} // extern "C"
+
 // <% end %>

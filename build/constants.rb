@@ -29,6 +29,8 @@ module Build
 
   class Constants < Auto
 
+    class Error < Build::Error ; end
+
     extension = Module.new do
 
       def define_constant_methods(*methods)
@@ -127,7 +129,8 @@ module Build
 
     def enum_names(source)
       # extract the type enumeration
-      raise Build::Error, "missing #{fl_name} type enumeration" unless
+      raise Constants::Error,
+      "missing #{fl_name} type enumeration" unless
         enumeration_match = enumeration_pattern.match(source)
       enumeration = enumeration_match.captures.first
 
@@ -169,7 +172,7 @@ module Build
         end
 
         def ruby_name(name)
-          raise Build::Error,
+          raise Constants::Error,
           "invalid #{fl_name} type name: '#{name}'" unless
             name_match = ruby_name_pattern.match(name)
           name_match.captures.first
@@ -193,7 +196,7 @@ module Build
       _names = enum_names(header)
 
       # remove "FL_FREE_BOXTYPE", it's not a real box type
-      raise Build::Error, "missing FL_FREE_BOXTYPE" unless
+      raise Constants::Error, "missing FL_FREE_BOXTYPE" unless
         _names.last == "FL_FREE_BOXTYPE"
       _names.pop
 
@@ -264,7 +267,8 @@ module Build
 ^\}[[:space:]]*;
 }mx
 
-      raise Build::Error, "missing #{fl_name} class declaration" unless
+      raise Constants::Error,
+      "missing #{fl_name} class declaration" unless
         _class_declaration_match =
         _class_declaration_pattern.match(header)
       _class_declaration = _class_declaration_match.captures.first
@@ -318,7 +322,7 @@ module Build
       _name = name.dup
       _name.sub!("_INPUT", "")
       _name.sub!("NORMAL_", "")
-      raise Build::Error, "invalid %s type: %s" %
+      raise Constants::Error, "invalid %s type: %s" %
         [ fl_name, name ] unless
         _name.sub!(%r{\AFL_}, "")
       _name

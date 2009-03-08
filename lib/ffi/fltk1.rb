@@ -608,4 +608,8 @@ DEF
 
   require "ffi/fltk1/auto/valuator"
 
+  class Adjuster < Valuator
+    ffi_wrapper
+  end
+
 end

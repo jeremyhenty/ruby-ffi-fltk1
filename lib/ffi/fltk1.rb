@@ -236,7 +236,7 @@ module FFI::FLTK
         return nil
       else
         raise ArgumentError,
-          "wrong number of arguments (%d for 1)" % [ count ]
+        "wrong number of arguments (%d for 1)" % [ count ]
       end
     end
 
@@ -538,7 +538,7 @@ DEF
     [ :pointer, :string ], :void
 
     def value(*args)
-            count = args.size
+      count = args.size
       case count
       when 0
         ffi_send(:ffi_input_value)

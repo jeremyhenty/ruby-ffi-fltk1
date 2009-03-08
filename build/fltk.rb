@@ -43,7 +43,7 @@ module Build
       fl_class_name = "Fl_#{ffi_class_key}"
       ffi_class_key.downcase!
       puts "line %4s: class: %s" %
-        [ caller[1].match(CALLER_PATTERN)[1], ffi_class_name ]
+        [ caller[0].match(CALLER_PATTERN)[1], ffi_class_name ]
 
       # augment the class declaration
       erb_out.sub!(DECLARATION_END_PATTERN) do

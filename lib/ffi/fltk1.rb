@@ -588,4 +588,6 @@ DEF
   class Valuator < Widget
   end
 
+  require "ffi/fltk1/auto/valuator"
+
 end

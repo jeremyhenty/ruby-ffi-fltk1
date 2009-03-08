@@ -331,4 +331,25 @@ module Build
     instance
   end
 
+  # Valuator
+  class Valuator < Types
+
+    def cc_name(name) ; name ; end
+
+    def names_
+      pattern = %r{#define[[:blank:]]+(FL_[_A-Z]+)}
+      header.scan(pattern).collect { |match| match[0] }
+    end
+
+    def ruby_name(name)
+      _name = name.dup
+      raise Constants::Error, "invalid %s type: %s" %
+        [ fl_name, name ] unless
+        _name.sub!(%r{\AFL_}, "")
+      _name
+    end
+
+    instance
+  end
+
 end

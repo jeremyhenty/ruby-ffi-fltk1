@@ -63,7 +63,7 @@ module FFI::FLTK
         nil
       else
         raise ArgumentError,
-        "wrong number of arguments (%d for 1))" % [ count ]
+        "wrong number of arguments (%d for 1)" % [ count ]
       end
     end
   end
@@ -134,7 +134,7 @@ module FFI::FLTK
       when 5
         @ffi_label = args[-1] = String(args.last).dup
       else
-        raise ArgumentError, "wrong number of arguments (%d for 5))" %
+        raise ArgumentError, "wrong number of arguments (%d for 5)" %
           [ count ]
       end
       ffi_pointer_new_(*args)
@@ -295,7 +295,7 @@ DEF
         ffi_send(:ffi_widget_label_set, _label)
         @ffi_label = _label
       else
-        "wrong number of arguments (%d for 1))" % [ count ]
+        "wrong number of arguments (%d for 1)" % [ count ]
       end
     end
 
@@ -319,7 +319,7 @@ DEF
         nil
       else 
         raise ArgumentError,
-        "wrong number of arguments (%d for 1))" % [ count ]
+        "wrong number of arguments (%d for 1)" % [ count ]
       end
     end
 
@@ -373,7 +373,7 @@ DEF
         nil
       else
         raise ArgumentError,
-        "wrong number of arguments (%d for 1))" % [ count ]
+        "wrong number of arguments (%d for 1)" % [ count ]
       end
     end
 
@@ -421,7 +421,7 @@ DEF
         @ffi_label = args[-1] = String(args.last).dup
         ffi_window_new_xywhl(*args)
       else
-        raise ArgumentError, "wrong number of arguments (%d for %d))" %
+        raise ArgumentError, "wrong number of arguments (%d for %d)" %
           [ count, count < 2 ? 2 : 5 ]
       end
     end
@@ -565,7 +565,7 @@ DEF
         ffi_send(:ffi_input_value_set, String(args.first))
       else
         raise ArgumentError,
-        "wrong number of arguments (%d for 1))" % [ count ]
+        "wrong number of arguments (%d for 1)" % [ count ]
       end
     end
 
@@ -620,7 +620,7 @@ DEF
         ffi_send(:ffi_valuator_value_set, Float(args.first))
       else
         raise ArgumentError,
-        "wrong number of arguments (%d for 1))" % [ count ]
+        "wrong number of arguments (%d for 1)" % [ count ]
       end
     end
   end

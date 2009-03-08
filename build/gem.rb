@@ -35,7 +35,7 @@ module Build
     s.files =
       FileList["COPYING", "AUTHORS",
                "lib/**/*.rb", "build/*.rb", "erb/**/*",
-               "bin/*", "demo/*"].to_a
+               "bin/*", "demo/**/*"].to_a
     s.extensions = "Rakefile"
     s.executables = [ DEMO_NAME ]
   end

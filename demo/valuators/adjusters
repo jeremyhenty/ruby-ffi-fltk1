@@ -26,35 +26,10 @@ require "ffi/fltk1"
 include FFI
 include FFI::FLTK
 
-def run_demo(demo)
-  demo_path =
-    File.join(File.dirname(File.dirname(__FILE__)),
-              "demo", demo)
-  fork { exec demo_path }
-end
-
-Window.new(300, 30, "FFI-FLTK1 demonstration") do |win|
-
-  menu_bar = MenuBar.new
-  menu_bar_cb = lambda { win.hide }
-  menu_bar.add("File/Close", 0, menu_bar_cb, nil, 0)
-
-  [
-   [ "MenuBar", "menubar", ],
-   [ "Buttons", "buttons", ],
-   [ "Boxes", "box-types", ],
-   [ "Resizing", "resizing", ],
-   [ "Packs", "packs", ],
-   [ "Scrolls", "scrolls", ],
-   [ "Layout", "layout", ],
-   [ "Inputs", "inputs", ],
-   [  "Valuators/Adjusters", "valuators/adjusters", ],
-   [ "Window callback", "window-callback", ],
-  ].each do |label, demo|
-    callback = lambda { run_demo(demo) }
-    menu_bar.add("Demo/#{label}", 0, callback, nil, 0)
-  end
-
+Window.new(250, 40, "Buttons") do |win|
+  adjuster = Adjuster.new(win.w, 20)
+  value = Box.new(0, 20, win.w, 20, adjuster.value)
+  adjuster.callback { value.label = adjuster.value }
   win.show
 end
 

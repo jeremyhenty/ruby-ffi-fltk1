@@ -592,7 +592,7 @@ DEF
     ffi_attach_function :ffi_valuator_value_set,
     [ :pointer, :double ], :void
 
-    def value
+    def value(*args)
       count = args.size
       case count
       when 0

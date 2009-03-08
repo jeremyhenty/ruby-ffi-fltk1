@@ -292,11 +292,14 @@ module Build
     instance
   end
 
+  class Types2 < Types
+    def cc_name(name) ; name ; end
+  end
+
   # MenuItem
-  class MenuItem < Types
+  class MenuItem < Types2
 
     def names_ ; enum_names(header) ; end
-    def cc_name(name) ; name ; end
 
     include Constants::RubyNames::Pattern
     ruby_name_pattern %r{\AFL_(?:MENU_)?(.*)\z}
@@ -304,51 +307,46 @@ module Build
     instance
   end
 
-  # Input
-  class Input < Types
+  class Types3 < Types2
 
-    def fl_name_
-      "#{super}_" # the header is "Fl_Input_.H"
-    end
+    # convert "#define FL_FOO" to a Ruby constant FOO
 
     def names_
       pattern = %r{#define[[:blank:]]+(FL_[_A-Z]+)}
       header.scan(pattern).collect { |match| match[0] }
     end
 
-    def cc_name(name) ; name ; end
-
     def ruby_name(name)
-      _name = name.dup
-      _name.sub!("_INPUT", "")
-      _name.sub!("NORMAL_", "")
+      ruby_name_get(name.dup, name)
+    end
+
+    def ruby_name_get(name, name_orig)
       raise Constants::Error, "invalid %s type: %s" %
-        [ fl_name, name ] unless
-        _name.sub!(%r{\AFL_}, "")
-      _name
+        [ fl_name, name_orig ] unless
+        name.sub!(%r{\AFL_}, "")
+      name
+    end
+  end
+
+  # Input
+  class Input < Types3
+
+    def fl_name_
+      "#{super}_" # the header is "Fl_Input_.H"
+    end
+
+    # remove some extra stuff from the C macro names
+    def ruby_name_get(name, name_orig)
+      name.sub!("_INPUT", "")
+      name.sub!("NORMAL_", "")
+      super(name, name_orig)
     end
 
     instance
   end
 
   # Valuator
-  class Valuator < Types
-
-    def cc_name(name) ; name ; end
-
-    def names_
-      pattern = %r{#define[[:blank:]]+(FL_[_A-Z]+)}
-      header.scan(pattern).collect { |match| match[0] }
-    end
-
-    def ruby_name(name)
-      _name = name.dup
-      raise Constants::Error, "invalid %s type: %s" %
-        [ fl_name, name ] unless
-        _name.sub!(%r{\AFL_}, "")
-      _name
-    end
-
+  class Valuator < Types3
     instance
   end
 

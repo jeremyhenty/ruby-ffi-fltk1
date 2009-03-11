@@ -122,17 +122,17 @@ module FFI::FLTK
         args << nil
       when 1
         args.unshift(*current_group_size)
-        @ffi_label = args[-1] = String(args.last).dup
+        @ffi_label = args[-1] = String(args.last).dup.freeze
       when 2
         args.unshift(0, 0)
         args << nil
       when 3
         args.unshift(0, 0)
-        @ffi_label = args[-1] = String(args.last).dup
+        @ffi_label = args[-1] = String(args.last).dup.freeze
       when 4
         args << nil
       when 5
-        @ffi_label = args[-1] = String(args.last).dup
+        @ffi_label = args[-1] = String(args.last).dup.freeze
       else
         raise ArgumentError, "wrong number of arguments (%d for 5)" %
           [ count ]
@@ -291,7 +291,7 @@ DEF
       when 0
         @ffi_label.dup
       when 1
-        _label = String(args.first)
+        _label = String(args.first).freeze
         ffi_send(:ffi_widget_label_set, _label)
         @ffi_label = _label
       else
@@ -412,13 +412,13 @@ DEF
         args << nil
         ffi_window_new_whl(*args)
       when 3
-        @ffi_label = args[-1] = String(args.last).dup
+        @ffi_label = args[-1] = String(args.last).dup.freeze
         ffi_window_new_whl(*args)
       when 4
         args << nil
         ffi_window_new_xywhl(*args)
       when 5
-        @ffi_label = args[-1] = String(args.last).dup
+        @ffi_label = args[-1] = String(args.last).dup.freeze
         ffi_window_new_xywhl(*args)
       else
         raise ArgumentError, "wrong number of arguments (%d for %d)" %

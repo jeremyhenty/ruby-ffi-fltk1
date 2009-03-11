@@ -26,7 +26,7 @@ require "ffi/fltk1"
 include FFI
 include FFI::FLTK
 
-Window.new(250, 40, "Buttons") do |win|
+Window.new(250, 40, "Adjusters") do |win|
   adjuster = Adjuster.new(win.w, 20)
   value = Box.new(0, 20, win.w, 20, adjuster.value)
   adjuster.callback { value.label = adjuster.value }

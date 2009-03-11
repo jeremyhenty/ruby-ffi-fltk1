@@ -637,4 +637,8 @@ DEF
 
   require "ffi/fltk1/auto/counter"
 
+  class Dial < Valuator
+    ffi_wrapper
+  end
+
 end

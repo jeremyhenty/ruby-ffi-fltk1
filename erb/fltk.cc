@@ -49,6 +49,7 @@
 #include <FL/Fl_Valuator.H>
 #include <FL/Fl_Adjuster.H>
 #include <FL/Fl_Counter.H>
+#include <FL/Fl_Dial.H>
 #include <FL/fl_ask.H>
 
 extern "C" {
@@ -551,6 +552,14 @@ class FFI_Adjuster
 // Counter
 
 class FFI_Counter
+{ // <% widget_class do %>
+};
+
+// <% end %>
+
+// Dial
+
+class FFI_Dial
 { // <% widget_class do %>
 };
 

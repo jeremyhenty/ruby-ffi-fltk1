@@ -350,4 +350,16 @@ module Build
     instance
   end
 
+  # Counter
+  class Counter < Types3
+
+    # remove some extra stuff from the C macro names
+    def ruby_name_get(name, name_orig)
+      name.sub!("_COUNTER", "")
+      super(name, name_orig)
+    end
+
+    instance
+  end
+
 end

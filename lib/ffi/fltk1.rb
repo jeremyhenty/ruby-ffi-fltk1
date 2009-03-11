@@ -635,4 +635,6 @@ DEF
     ffi_wrapper
   end
 
+  require "ffi/fltk1/auto/counter"
+
 end

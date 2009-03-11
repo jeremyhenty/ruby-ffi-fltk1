@@ -43,12 +43,12 @@ Window.new(300, 30, "FFI-FLTK1 demonstration") do |win|
    [ "MenuBar", "menubar", ],
    [ "Buttons", "buttons", ],
    [ "Boxes", "box-types", ],
-   [ "Resizing", "resizing", ],
-   [ "Packs", "packs", ],
-   [ "Scrolls", "scrolls", ],
-   [ "Layout", "layout", ],
+   [ "Groups/Resizing", "resizing", ],
+   [ "Groups/Packs", "packs", ],
+   [ "Groups/Scrolls", "scrolls", ],
    [ "Inputs", "inputs", ],
    [  "Valuators/Adjusters", "valuators/adjusters", ],
+   [ "Layout", "layout", ],
    [ "Window callback", "window-callback", ],
   ].each do |label, demo|
     callback = lambda { run_demo(demo) }

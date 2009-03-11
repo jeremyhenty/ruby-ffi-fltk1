@@ -48,6 +48,7 @@
 #include <FL/Fl_Multiline_Output.H>
 #include <FL/Fl_Valuator.H>
 #include <FL/Fl_Adjuster.H>
+#include <FL/Fl_Counter.H>
 #include <FL/fl_ask.H>
 
 extern "C" {
@@ -542,6 +543,14 @@ void ffi_valuator_value_set(void *p_widget, double value)
 // Adjuster
 
 class FFI_Adjuster
+{ // <% widget_class do %>
+};
+
+// <% end %>
+
+// Counter
+
+class FFI_Counter
 { // <% widget_class do %>
 };
 

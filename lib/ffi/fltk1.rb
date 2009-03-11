@@ -631,4 +631,8 @@ DEF
     ffi_wrapper
   end
 
+  class Counter < Valuator
+    ffi_wrapper
+  end
+
 end

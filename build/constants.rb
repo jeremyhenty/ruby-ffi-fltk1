@@ -328,8 +328,23 @@ module Build
     end
   end
 
+  class Types4 < Types3
+
+    # remove the class name from the C macro names
+    def ruby_name_get(name, name_orig)
+      name.sub!(name_in_macro, "")
+      super
+    end
+
+    memoize :name_in_macro
+
+    def name_in_macro_
+      "_#{name_base.upcase}"
+    end
+  end
+
   # Input
-  class Input < Types3
+  class Input < Types4
 
     def fl_name_
       "#{super}_" # the header is "Fl_Input_.H"
@@ -337,9 +352,9 @@ module Build
 
     # remove some extra stuff from the C macro names
     def ruby_name_get(name, name_orig)
-      name.sub!("_INPUT", "")
+      name = super
       name.sub!("NORMAL_", "")
-      super(name, name_orig)
+      name
     end
 
     instance
@@ -351,26 +366,12 @@ module Build
   end
 
   # Counter
-  class Counter < Types3
-
-    # remove some extra stuff from the C macro names
-    def ruby_name_get(name, name_orig)
-      name.sub!("_COUNTER", "")
-      super(name, name_orig)
-    end
-
+  class Counter < Types4
     instance
   end
 
   # Dial
-  class Dial < Types3
-
-    # remove some extra stuff from the C macro names
-    def ruby_name_get(name, name_orig)
-      name.sub!("_DIAL", "")
-      super(name, name_orig)
-    end
-
+  class Dial < Types4
     instance
   end
 

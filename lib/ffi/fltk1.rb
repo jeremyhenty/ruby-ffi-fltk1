@@ -647,4 +647,8 @@ DEF
     ffi_wrapper
   end
 
+  class Slider < Valuator
+    ffi_wrapper
+  end
+
 end

@@ -51,6 +51,7 @@
 #include <FL/Fl_Counter.H>
 #include <FL/Fl_Dial.H>
 #include <FL/Fl_Roller.H>
+#include <FL/Fl_Slider.H>
 #include <FL/fl_ask.H>
 
 extern "C" {
@@ -569,6 +570,14 @@ class FFI_Dial
 // Roller
 
 class FFI_Roller
+{ // <% widget_class do %>
+};
+
+// <% end %>
+
+// Slider
+
+class FFI_Slider
 { // <% widget_class do %>
 };
 

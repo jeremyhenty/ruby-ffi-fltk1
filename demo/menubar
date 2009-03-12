@@ -28,7 +28,7 @@ include FFI::FLTK
 
 include MenuItem::Type
 
-Window.new(500, 30, "menubar") do |win|
+Window.new(500, 30, "MenuBar") do |win|
   menubar = MenuBar.new
   menubar.add("&alpha")
   menubar.add("&beta")

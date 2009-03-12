@@ -375,4 +375,9 @@ module Build
     instance
   end
 
+  # Slider
+  class Slider < Types4
+    instance
+  end
+
 end

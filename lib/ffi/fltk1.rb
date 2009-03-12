@@ -643,4 +643,8 @@ DEF
 
   require "ffi/fltk1/auto/dial"
 
+  class Roller < Valuator
+    ffi_wrapper
+  end
+
 end

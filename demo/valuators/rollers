@@ -1,0 +1,52 @@
+#!/usr/bin/env ruby
+
+# Copyright (C) 2008, 2009 Jeremy Henty.
+
+# This file is part of Ruby-FFI-FLTK1.
+
+# Ruby-FFI-FLTK1 is free software: you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+
+# Ruby-FFI-FLTK1 is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+# General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see http://www.gnu.org/licenses/.
+
+
+$VERBOSE = true
+
+require "rubygems"
+require "ffi/fltk1"
+
+include FFI
+include FFI::FLTK
+
+value_format = "%0.2f"
+
+Window.new(200, 200, "Rollers") do |win|
+
+  roller_h = Roller.new(20, 0, 180, 20)
+  roller_h.widget_type = Valuator::Type::HORIZONTAL
+  value_box_h = Box.new(90, 20, 40, 20)
+
+  roller_v = Roller.new(0, 20, 20, 180)
+  roller_v.widget_type = Valuator::Type::VERTICAL
+  value_box_v = Box.new(20, 100, 40, 20)
+
+  [
+   [ roller_h, value_box_h ],
+   [ roller_v, value_box_v ],
+  ].each do |roller, box|
+    box.label = value_format % [ roller.value ]
+    roller.callback { box.label = value_format % [ roller.value ] }
+  end
+
+  win.show
+end
+
+FLTK.run

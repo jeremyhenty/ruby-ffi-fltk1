@@ -50,6 +50,7 @@ Window.new(300, 30, "FFI-FLTK1 demonstration") do |win|
    [  "Valuators/Adjusters", "valuators/adjusters", ],
    [  "Valuators/Counters", "valuators/counters", ],
    [  "Valuators/Dials", "valuators/dials", ],
+   [  "Valuators/Rollers", "valuators/rollers", ],
    [ "Layout", "layout", ],
    [ "Window callback", "window-callback", ],
   ].each do |label, demo|

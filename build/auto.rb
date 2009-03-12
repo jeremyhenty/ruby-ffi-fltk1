@@ -19,8 +19,6 @@
 
 # Tasks and methods to auto-generate files from templates using ERb.
 
-require "singleton"
-
 module Build
 
   # directories
@@ -29,8 +27,6 @@ module Build
   directory LIB_DIR
 
   class Auto
-
-    include Singleton
 
     # directories
 

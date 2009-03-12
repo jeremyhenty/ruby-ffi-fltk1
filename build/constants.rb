@@ -233,7 +233,7 @@ module Build
       task :build => box_init_dl
     end
 
-    instance
+    new
   end
 
   # Widget types
@@ -284,12 +284,12 @@ module Build
 
   # Pack
   class Pack < Types1
-    instance
+    new
   end
 
   # Scroll
   class Scroll < Types1
-    instance
+    new
   end
 
   class Types2 < Types
@@ -304,7 +304,7 @@ module Build
     include Constants::RubyNames::Pattern
     ruby_name_pattern %r{\AFL_(?:MENU_)?(.*)\z}
 
-    instance
+    new
   end
 
   class Types3 < Types2
@@ -357,27 +357,27 @@ module Build
       name
     end
 
-    instance
+    new
   end
 
   # Valuator
   class Valuator < Types3
-    instance
+    new
   end
 
   # Counter
   class Counter < Types4
-    instance
+    new
   end
 
   # Dial
   class Dial < Types4
-    instance
+    new
   end
 
   # Slider
   class Slider < Types4
-    instance
+    new
   end
 
 end

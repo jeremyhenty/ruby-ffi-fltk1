@@ -113,6 +113,6 @@ DEFINITIONS
       task :build => library
     end
 
-    instance
+    new
   end
 end

@@ -706,4 +706,8 @@ METHOD
 
   require "ffi/fltk1/auto/slider"
 
+  class Scrollbar < Slider
+    ffi_wrapper
+  end
+
 end

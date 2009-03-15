@@ -1,0 +1,85 @@
+#!/usr/bin/env ruby
+
+# Copyright (C) 2008, 2009 Jeremy Henty.
+
+# This file is part of Ruby-FFI-FLTK1.
+
+# Ruby-FFI-FLTK1 is free software: you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+
+# Ruby-FFI-FLTK1 is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+# General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see http://www.gnu.org/licenses/.
+
+
+$VERBOSE = true
+
+require "rubygems"
+require "ffi/fltk1"
+
+include FFI
+include FFI::FLTK
+
+types = Slider::TYPES.keys
+horizontal_types = types.grep(%r{HOR}).sort
+vertical_types   = types.grep(%r{VERT}).sort
+
+label_width  = 100
+label_height = 25
+
+h_slider_width  = 200
+h_slider_height = 25
+v_slider_width  = 25
+v_slider_height = 250
+
+window_width =
+  label_width + h_slider_width
+
+h_sliders_height =
+  horizontal_types.size * h_slider_height
+window_height =
+  h_sliders_height + v_slider_height
+
+Window.new(window_width, window_height, "Value Sliders") do |win|
+
+  Pack.new do |pack|
+    pack.widget_type = Pack::Type::VERTICAL
+
+    horizontal_types.each do |h_type|
+      Pack.new(0, h_slider_height) do |pack2|
+        pack2.widget_type = Pack::Type::HORIZONTAL
+        Box.new(label_width, 0, h_type)
+        slider = ValueSlider.new(h_slider_width, 0)
+        slider.widget_type = Slider::TYPES[h_type]
+      end
+    end
+
+    Group.new(0, h_sliders_height, window_width, v_slider_height) do |group|
+
+      x = group.x
+      y = group.y
+      w = group.w
+      h = group.h
+
+      vertical_types.each do |v_type|
+        label = Box.new(x, y, label_width, label_height, v_type)
+        y += label.h
+        h -= label.h
+        slider = ValueSlider.new(x, y, v_slider_width, h)
+        slider.widget_type = Slider::TYPES[v_type]
+        x += slider.w
+      end
+    end
+
+  end
+
+  win.show
+end
+
+FLTK.run

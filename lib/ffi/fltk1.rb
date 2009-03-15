@@ -714,4 +714,12 @@ METHOD
     ffi_wrapper
   end
 
+  class ValueInput < Valuator
+    ffi_wrapper
+  end
+
+  class ValueOutput < Valuator
+    ffi_wrapper
+  end
+
 end

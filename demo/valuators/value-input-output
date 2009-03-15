@@ -1,0 +1,62 @@
+#!/usr/bin/env ruby
+
+# Copyright (C) 2008, 2009 Jeremy Henty.
+
+# This file is part of Ruby-FFI-FLTK1.
+
+# Ruby-FFI-FLTK1 is free software: you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+
+# Ruby-FFI-FLTK1 is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+# General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see http://www.gnu.org/licenses/.
+
+
+$VERBOSE = true
+
+require "rubygems"
+require "ffi/fltk1"
+
+include FFI
+include FFI::FLTK
+
+value_classes =
+  [ ValueInput, ValueOutput ]
+
+label_width  = 100
+label_height = 25
+
+slider_width  = 200
+slider_height = 25
+
+window_width =
+  label_width + slider_width
+window_height =
+  value_classes.size * slider_height
+
+Window.new(window_width, window_height, "Value Input/Output") do |win|
+
+  Pack.new do |pack|
+    pack.widget_type = Pack::Type::VERTICAL
+    value_classes.each do |v_class|
+      name = v_class.name
+      name.gsub!(%r{\A.*::}, "")
+      Pack.new(0, slider_height) do |pack2|
+        pack2.widget_type = Pack::Type::HORIZONTAL
+        Box.new(label_width, 0, name)
+        slider = v_class.new(slider_width, 0)
+        slider.step = 0.01
+      end
+    end
+  end
+
+  win.show
+end
+
+FLTK.run

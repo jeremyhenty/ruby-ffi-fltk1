@@ -606,23 +606,76 @@ DEF
 
   class Valuator < Widget
 
-    ffi_attach_function :ffi_valuator_value,
+    [ :value, :minimum, :maximum ].each do |meth0|
+      class_eval <<METHOD
+    ffi_attach_function :ffi_valuator_#{meth0},
     [ :pointer ], :double
-    ffi_attach_function :ffi_valuator_value_set,
+    ffi_attach_function :ffi_valuator_#{meth0}_set,
     [ :pointer, :double ], :void
 
-    def value(*args)
+    def #{meth0}(*args)
       count = args.size
       case count
       when 0
-        ffi_send(:ffi_valuator_value)
+        ffi_send(:ffi_valuator_#{meth0})
       when 1
-        ffi_send(:ffi_valuator_value_set, Float(args.first))
+        ffi_send(:ffi_valuator_#{meth0}_set, Float(args.first))
       else
         raise ArgumentError,
         "wrong number of arguments (%d for 1)" % [ count ]
       end
     end
+METHOD
+
+      alias_method :"#{meth0}=", meth0
+    end
+
+    [ :range, :bounds ].each do |meth0|
+      class_eval <<METHOD
+    ffi_attach_function :ffi_valuator_#{meth0},
+    [ :pointer, :double, :double ], :void
+
+    def #{meth0}(minimum, maximum)
+      ffi_send(:ffi_valuator_#{meth0}, minimum, maximum)
+    end
+METHOD
+    end
+
+    ffi_attach_function :ffi_valuator_step,
+    [ :pointer ], :double
+    ffi_attach_function :ffi_valuator_step_set_double,
+    [ :pointer, :double ], :void
+    ffi_attach_function :ffi_valuator_step_set_int_int,
+    [ :pointer, :int, :int ], :void
+
+    def step(*args)
+      count = args.size
+      case count
+      when 0
+        ffi_send(:ffi_valuator_step)
+      when 1
+        ffi_send(:ffi_valuator_step_set_double,
+                 Float(args.first))
+      when 2
+        ffi_send(:ffi_valuator_step_set_int_int,
+                 Integer(args[0]), Integer(args[1]))
+      else
+        raise ArgumentError,
+        "wrong number of arguments (%d for 2)" % [ count ]
+      end
+    end
+
+    alias_method :step=, :step
+
+    ffi_attach_function :ffi_valuator_precision,
+    [ :pointer, :int ], :void
+
+    def precision(_precision)
+      ffi_send(:ffi_valuator_precision, _precision)
+    end
+
+    alias_method :precision=, :precision
+
   end
 
   require "ffi/fltk1/auto/valuator"

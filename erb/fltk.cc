@@ -539,6 +539,66 @@ void ffi_valuator_value_set(void *p_widget, double value)
   widget->value(value);
 }
 
+double ffi_valuator_minimum(void *p_widget)
+{
+  FFI_Valuator *widget = (FFI_Valuator *) p_widget;
+  return widget->minimum();
+}
+
+void ffi_valuator_minimum_set(void *p_widget, double minimum)
+{
+  FFI_Valuator *widget = (FFI_Valuator *) p_widget;
+  widget->minimum(minimum);
+}
+
+double ffi_valuator_maximum(void *p_widget)
+{
+  FFI_Valuator *widget = (FFI_Valuator *) p_widget;
+  return widget->maximum();
+}
+
+void ffi_valuator_maximum_set(void *p_widget, double maximum)
+{
+  FFI_Valuator *widget = (FFI_Valuator *) p_widget;
+  widget->maximum(maximum);
+}
+
+void ffi_valuator_range(void *p_widget, double minimum, double maximum)
+{
+  FFI_Valuator *widget = (FFI_Valuator *) p_widget;
+  widget->range(minimum, maximum);
+}
+
+void ffi_valuator_bounds(void *p_widget, double minimum, double maximum)
+{
+  FFI_Valuator *widget = (FFI_Valuator *) p_widget;
+  widget->bounds(minimum, maximum);
+}
+
+double ffi_valuator_step(void *p_widget)
+{
+  FFI_Valuator *widget = (FFI_Valuator *) p_widget;
+  return widget->step();
+}
+
+void ffi_valuator_step_set_double(void *p_widget, double step)
+{
+  FFI_Valuator *widget = (FFI_Valuator *) p_widget;
+  widget->step(step);
+}
+
+void ffi_valuator_step_set_int_int(void *p_widget, int numerator, int denominator)
+{
+  FFI_Valuator *widget = (FFI_Valuator *) p_widget;
+  widget->step(numerator, denominator);
+}
+
+void ffi_valuator_precision(void *p_widget, int precision)
+{
+  FFI_Valuator *widget = (FFI_Valuator *) p_widget;
+  widget->precision(precision);
+}
+
 } // extern "C"
 
 // <% end %>

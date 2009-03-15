@@ -710,4 +710,8 @@ METHOD
     ffi_wrapper
   end
 
+  class ValueSlider < Slider
+    ffi_wrapper
+  end
+
 end

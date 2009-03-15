@@ -53,6 +53,7 @@
 #include <FL/Fl_Roller.H>
 #include <FL/Fl_Slider.H>
 #include <FL/Fl_Scrollbar.H>
+#include <FL/Fl_Value_Slider.H>
 #include <FL/fl_ask.H>
 
 extern "C" {
@@ -647,6 +648,14 @@ class FFI_Slider
 // Scrollbar
 
 class FFI_Scrollbar
+{ // <% widget_class do %>
+};
+
+// <% end %>
+
+// Value_Slider
+
+class FFI_Value_Slider
 { // <% widget_class do %>
 };
 

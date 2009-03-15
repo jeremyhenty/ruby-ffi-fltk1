@@ -30,6 +30,8 @@ module Build
     s.version = "0.0.1"
     s.summary = "A binding of the FLTK1 GUI toolkit using FFI."
 
+    s.homepage = "http://starurchin.org/ruby-ffi-fltk1/"
+
     s.platform = Gem::Platform::RUBY
     s.add_dependency "ffi", ">= 0.2.0"
     s.files =

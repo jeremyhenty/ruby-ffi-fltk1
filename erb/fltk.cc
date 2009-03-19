@@ -153,6 +153,12 @@ void *ffi_widget_fl_pointer(void *p_widget)
   return (Fl_Widget *)((FFI_Widget *) p_widget);
 }
 
+void *ffi_widget_parent(void *p_widget)
+{
+  FFI_Widget *widget = (FFI_Widget *) p_widget;
+  return widget->parent();
+}
+
 void ffi_callback_set(void *p_widget, void *cb)
 {
   FFI_Widget *widget = (FFI_Widget *) p_widget;

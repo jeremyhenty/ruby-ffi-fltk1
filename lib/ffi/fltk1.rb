@@ -170,6 +170,12 @@ module FFI::FLTK
 
     ffi_attach_function :ffi_widget_fl_pointer, [ :pointer ], :pointer
 
+    ffi_attach_function :ffi_widget_parent, [ :pointer ], :pointer
+
+    def parent
+      from_ffi(ffi_send(:ffi_widget_parent))
+    end
+
     ffi_callback :ffi_widget_callback, [ ], :void
     ffi_attach_function :ffi_callback_set,
     [ :pointer, :ffi_widget_callback ], :void

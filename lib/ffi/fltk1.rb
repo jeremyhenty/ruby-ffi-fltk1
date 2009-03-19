@@ -114,48 +114,40 @@ module FFI::FLTK
     end
 
     def ffi_pointer_new(*args)
-      @ffi_label = nil
-      count = args.size
-      case count
-      when 0
-        args.unshift(*current_group_size)
-        args << nil
-      when 1
-        args.unshift(*current_group_size)
-        @ffi_label = args[-1] = String(args.last).dup.freeze
-      when 2
-        args.unshift(0, 0)
-        args << nil
-      when 3
-        args.unshift(0, 0)
-        @ffi_label = args[-1] = String(args.last).dup.freeze
-      when 4
-        args << nil
-      when 5
-        @ffi_label = args[-1] = String(args.last).dup.freeze
-      else
-        raise ArgumentError, "wrong number of arguments (%d for 5)" %
-          [ count ]
-      end
-      ffi_pointer_new_(*args)
+      ffi_pointer_new_args_size_check(args.size)
+      args.push(nil) if args.size % 2 == 0
+      @ffi_label = String(args.pop).dup.freeze
+      method, args = ffi_pointer_new_method_args(args)
+      FFI::FLTK.send(*( [ method ] + args + [ @ffi_label ] ))
     end
 
-    class NoCurrentGroupError < Error ; end
-
-    def current_group_size
-      current = Group::current
-      unless current
-        raise NoCurrentGroupError,
-        "there is no current group, so you must specify the widget size"
-      end
-      x = current.is_a?(Window) ? 0 : current.x
-      y = current.is_a?(Window) ? 0 : current.y
-      return [ x, y, current.w, current.h ]
+    def ffi_pointer_new_method_args(args)
+      args.unshift(nil, nil) while args.size < 4
+      _method = self.class.ffi_pointer_new_method
+      [ _method, ffi_pointer_new_args(args) ]
     end
 
-    def ffi_pointer_new_(*args)
-      FFI::FLTK.send(self.class.ffi_pointer_new_method, *args)
+    def ffi_pointer_new_args(args)
+      current = Group.current
+      parent = current ? current.parent : nil
+      _x_default = current ? current.x_default : 0
+      _y_default = current ? current.y_default : 0
+      x, y, w, h = *args
+      x ||= _x_default
+      y ||= _y_default
+      w ||= (current ? (_x_default + current.w - x) : 0)
+      h ||= (current ? (_y_default + current.h - y) : 0)
+      [ x, y, w, h ]
     end
+
+    def ffi_pointer_new_args_size_check(size)
+      raise ArgumentError,
+      "wrong number of arguments (%d for 5)" % [ size ] if
+        size > 5
+    end
+
+    def x_default ; parent ? x : 0 ; end
+    def y_default ; parent ? y : 0 ; end
 
     def self.ffi_send(meth, *args)
       args = args.collect { |arg| to_ffi(arg) }
@@ -387,6 +379,9 @@ DEF
   end
 
   class Pack < Group
+    def x_default ; 0 ; end
+    def y_default ; 0 ; end
+
     ffi_wrapper
   end
 
@@ -407,30 +402,27 @@ DEF
     ffi_attach_function :ffi_window_new_whl,
     [ :int, :int, :string ], :pointer
 
-    ffi_attach_function :ffi_window_show, [ :pointer ], :void
-    ffi_attach_function :ffi_window_hide, [ :pointer ], :void
-
-    def ffi_pointer_new(*args)
-      @ffi_label = nil
-      count = args.size
-      case count
-      when 2
-        args << nil
-        ffi_window_new_whl(*args)
-      when 3
-        @ffi_label = args[-1] = String(args.last).dup.freeze
-        ffi_window_new_whl(*args)
-      when 4
-        args << nil
-        ffi_window_new_xywhl(*args)
-      when 5
-        @ffi_label = args[-1] = String(args.last).dup.freeze
-        ffi_window_new_xywhl(*args)
+    def ffi_pointer_new_method_args(args)
+      if args.size < 4
+        # only the width and height, just call the other constructor
+        [ :ffi_window_new_whl, args ]
       else
-        raise ArgumentError, "wrong number of arguments (%d for %d)" %
-          [ count, count < 2 ? 2 : 5 ]
+        # process the args as normal and call the usual constructor 
+        [ :ffi_window_new_xywhl, ffi_pointer_new_args(args) ]
       end
     end
+
+    def ffi_pointer_new_args_size_check(size)
+      raise ArgumentError,
+      "wrong number of arguments (%d for 5)" % [ size ] if
+        size > 5
+      raise ArgumentError,
+      "wrong number of arguments (%d for 2)" % [ size ] if
+        size < 2
+    end
+
+    ffi_attach_function :ffi_window_show, [ :pointer ], :void
+    ffi_attach_function :ffi_window_hide, [ :pointer ], :void
 
     def show ; ffi_send(:ffi_window_show) ; end
     def hide ; ffi_send(:ffi_window_hide) ; end

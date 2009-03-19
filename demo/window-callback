@@ -26,13 +26,14 @@ require "ffi/fltk1"
 include FFI
 include FFI::FLTK
 
-Window.new(200, 30, "Window callback") do |win|
+Window.new(300, 30, "Window callback") do |win|
+  Box.new("Close me to trigger the callback!")
   win.callback("42") do |widget, userdata|
+    win.hide
     FLTK.alert <<ALERT
 widget:    #{widget}
 user data: #{userdata.inspect}
 ALERT
-    win.hide
   end
   win.show
 end

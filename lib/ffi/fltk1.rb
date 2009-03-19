@@ -436,9 +436,6 @@ DEF
     end
   end
 
-  attach_function :ffi_fl_box_initialize, [ ], :void
-  ffi_fl_box_initialize
-
   class Menu < Widget
 
     def initialize(*args)
@@ -516,6 +513,9 @@ DEF
   class Box < Widget
     ffi_wrapper
   end
+
+  attach_function :ffi_fl_box_initialize, [ ], :void
+  ffi_fl_box_initialize
 
   require "ffi/fltk1/auto/box"
 

@@ -61,7 +61,7 @@ class Class
   end
 end
 
-Window.new(width, height, "Form") do |win|
+Window.new(width, height, "Inputs") do |win|
   Pack.new do |pack|
     pack.widget_type = Pack::Type::VERTICAL
 

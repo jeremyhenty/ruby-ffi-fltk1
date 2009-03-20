@@ -22,6 +22,12 @@ require "rake/clean"
 
 task :default => :build
 
+# tests (first!)
+desc "Run the tests"
+task :test do
+  sh "spec test"
+end
+
 desc "Build all the files"
 task :build # we will add dependencies later
 

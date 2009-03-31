@@ -25,7 +25,7 @@ include FFI::FLTK
 describe Widget do
 
   before do
-    @box = FLTK::Box.new(0, 0, 0, 0)
+    @box = Box.new(0, 0, 0, 0)
   end
 
   # getters/setters

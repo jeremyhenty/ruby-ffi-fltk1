@@ -46,7 +46,7 @@ describe Group do
 
   # getters/setters
   [
-   [ :resizable, nil, @group],
+   [ :resizable, nil, @group ],
   ].each do |meth, *values|
     values.each do |value|
       [ meth, :"#{meth}=" ].each do |meth1|
